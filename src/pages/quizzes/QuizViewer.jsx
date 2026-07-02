@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
@@ -198,16 +198,80 @@ export default function QuizViewer() {
               return (
                 <div
                   key={question.id}
-                  className={`p-3 rounded mb-2 ${
+                  className={`p-4 rounded mb-3 ${
                     detail?.is_correct ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'
                   }`}
                 >
-                  <p className="text-sm font-medium">
+                  <p className="font-medium mb-3">
                     {index + 1}. {question.question_text}
                     <span className="ml-2">
                       {detail?.is_correct ? '✓' : '✗'}
                     </span>
                   </p>
+                  
+                  {question.type === 'true_false' ? (
+                    <div className="space-y-2 ml-4">
+                      {['true', 'false'].map((value) => {
+                        const isStudentAnswer = detail?.true_false_answer === value;
+                        const isCorrect = question.correct_answer === value;
+                        return (
+                          <div
+                            key={value}
+                            className={`p-2 rounded border-2 ${
+                              isStudentAnswer && isCorrect
+                                ? 'bg-green-500 border-green-600 text-white'
+                                : isStudentAnswer
+                                ? 'bg-red-500 border-red-600 text-white'
+                                : isCorrect
+                                ? 'bg-green-400 border-green-500 text-white'
+                                : 'bg-transparent border-gray-300'
+                            }`}
+                          >
+                            <span className="text-sm">
+                              {value === 'true' ? 'True' : 'False'}
+                              {isStudentAnswer && ' (Your answer)'}
+                              {isCorrect && !isStudentAnswer && ' (Correct)'}
+                              {isStudentAnswer && isCorrect && ' ✓'}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="space-y-2 ml-4">
+                      {question.answers.map((answer) => {
+                        const isStudentAnswer = detail?.answer_id === answer.id;
+                        const isCorrect = answer.is_correct;
+                        console.log('Answer:', answer.answer_text, 'isStudentAnswer:', isStudentAnswer, 'isCorrect:', isCorrect, 'detail:', detail);
+                        return (
+                          <div
+                            key={answer.id}
+                            className={`p-2 rounded border-2 ${
+                              isStudentAnswer && isCorrect
+                                ? 'bg-green-500 border-green-600 text-white'
+                                : isStudentAnswer
+                                ? 'bg-red-500 border-red-600 text-white'
+                                : isCorrect
+                                ? 'bg-green-400 border-green-500 text-white'
+                                : 'bg-transparent border-gray-300'
+                            }`}
+                            style={{
+                              backgroundColor: isStudentAnswer && isCorrect ? '#22c55e' : isStudentAnswer ? '#ef4444' : isCorrect ? '#4ade80' : 'transparent',
+                              borderColor: isStudentAnswer && isCorrect ? '#16a34a' : isStudentAnswer ? '#dc2626' : isCorrect ? '#22c55e' : '#d1d5db',
+                              color: (isStudentAnswer || isCorrect) ? 'white' : 'black'
+                            }}
+                          >
+                            <span className="text-sm">
+                              {answer.answer_text}
+                              {isStudentAnswer && ' (Your answer)'}
+                              {isCorrect && !isStudentAnswer && ' (Correct)'}
+                              {isStudentAnswer && isCorrect && ' ✓'}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -273,16 +337,80 @@ export default function QuizViewer() {
               return (
                 <div
                   key={question.id}
-                  className={`p-3 rounded mb-2 ${
+                  className={`p-4 rounded mb-3 ${
                     detail?.is_correct ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'
                   }`}
                 >
-                  <p className="text-sm font-medium">
+                  <p className="font-medium mb-3">
                     {index + 1}. {question.question_text}
                     <span className="ml-2">
                       {detail?.is_correct ? '✓' : '✗'}
                     </span>
                   </p>
+                  
+                  {question.type === 'true_false' ? (
+                    <div className="space-y-2 ml-4">
+                      {['true', 'false'].map((value) => {
+                        const isStudentAnswer = detail?.true_false_answer === value;
+                        const isCorrect = question.correct_answer === value;
+                        return (
+                          <div
+                            key={value}
+                            className={`p-2 rounded border-2 ${
+                              isStudentAnswer && isCorrect
+                                ? 'bg-green-500 border-green-600 text-white'
+                                : isStudentAnswer
+                                ? 'bg-red-500 border-red-600 text-white'
+                                : isCorrect
+                                ? 'bg-green-400 border-green-500 text-white'
+                                : 'bg-transparent border-gray-300'
+                            }`}
+                          >
+                            <span className="text-sm">
+                              {value === 'true' ? 'True' : 'False'}
+                              {isStudentAnswer && ' (Your answer)'}
+                              {isCorrect && !isStudentAnswer && ' (Correct)'}
+                              {isStudentAnswer && isCorrect && ' ✓'}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="space-y-2 ml-4">
+                      {question.answers.map((answer) => {
+                        const isStudentAnswer = detail?.answer_id === answer.id;
+                        const isCorrect = answer.is_correct;
+                        console.log('Answer:', answer.answer_text, 'isStudentAnswer:', isStudentAnswer, 'isCorrect:', isCorrect, 'detail:', detail);
+                        return (
+                          <div
+                            key={answer.id}
+                            className={`p-2 rounded border-2 ${
+                              isStudentAnswer && isCorrect
+                                ? 'bg-green-500 border-green-600 text-white'
+                                : isStudentAnswer
+                                ? 'bg-red-500 border-red-600 text-white'
+                                : isCorrect
+                                ? 'bg-green-400 border-green-500 text-white'
+                                : 'bg-transparent border-gray-300'
+                            }`}
+                            style={{
+                              backgroundColor: isStudentAnswer && isCorrect ? '#22c55e' : isStudentAnswer ? '#ef4444' : isCorrect ? '#4ade80' : 'transparent',
+                              borderColor: isStudentAnswer && isCorrect ? '#16a34a' : isStudentAnswer ? '#dc2626' : isCorrect ? '#22c55e' : '#d1d5db',
+                              color: (isStudentAnswer || isCorrect) ? 'white' : 'black'
+                            }}
+                          >
+                            <span className="text-sm">
+                              {answer.answer_text}
+                              {isStudentAnswer && ' (Your answer)'}
+                              {isCorrect && !isStudentAnswer && ' (Correct)'}
+                              {isStudentAnswer && isCorrect && ' ✓'}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               );
             })}
