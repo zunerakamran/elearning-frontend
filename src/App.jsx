@@ -14,6 +14,8 @@ import QuizForm from './pages/quizzes/QuizForm';
 import QuizViewer from './pages/quizzes/QuizViewer';
 import InstructorDashboard from './pages/instructor/InstructorDashboard';
 import CourseStudents from './pages/instructor/CourseStudents';
+import AssignmentForm from './pages/assignments/AssignmentForm';
+import AssignmentDetail from './pages/assignments/AssignmentDetail';
 
 function ProtectedRoute({ children, role }) {
   const { user, loading } = useAuth();
@@ -43,6 +45,22 @@ function App() {
         <Route path="/instructor/dashboard" element={<ProtectedRoute role="instructor"><InstructorDashboard /></ProtectedRoute>} />
         <Route path="/courses/:id/students" element={<ProtectedRoute role="instructor"><CourseStudents /></ProtectedRoute>} />
         <Route path="/" element={<Navigate to="/courses" />} />
+        <Route
+          path="/courses/:courseId/assignments/create"
+          element={
+            <ProtectedRoute role="instructor">
+              <AssignmentForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/courses/:courseId/assignments/:assignmentId"
+          element={
+            <ProtectedRoute>
+              <AssignmentDetail />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </div>
   );

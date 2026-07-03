@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import axios from 'axios';
 import api from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
 
@@ -103,6 +104,38 @@ export default function LessonViewer() {
         }
     }
 
+    async function handleDownloadFile(file) {
+        try {
+            const response = await api.get(`/lessons/${lessonId}/files/${file.id}`, {
+                responseType: 'blob',
+            });
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', file.file_name);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error('Download error:', err);
+            alert('Failed to download file. Please try again.');
+        }
+    }
+
+    async function handleViewFile(file) {
+        try {
+            const response = await api.get(`/lessons/${lessonId}/files/${file.id}`, {
+                responseType: 'blob',
+            });
+            const url = window.URL.createObjectURL(new Blob([response.data], { type: file.file_type }));
+            window.open(url, '_blank');
+        } catch (err) {
+            console.error('View error:', err);
+            alert('Failed to view file. Please try again.');
+        }
+    }
+
     // Keep showing loading until BOTH auth and data are ready
     if (authLoading || state.loading) {
         return <div className="p-8 text-center">Loading lesson...</div>;
@@ -123,6 +156,7 @@ export default function LessonViewer() {
                             {state.lesson.content_type === 'video' && '🎬'}
                             {state.lesson.content_type === 'text' && '📄'}
                             {state.lesson.content_type === 'quiz' && '📝'}
+                            {state.lesson.content_type === 'files' && '📁'}
                         </span>
                         <span className="text-xs uppercase font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded capitalize">
                             {state.lesson.content_type}
@@ -152,6 +186,53 @@ export default function LessonViewer() {
                     {state.lesson.content_type === 'text' && state.lesson.text_content && (
                         <div className="prose max-w-none text-gray-700 whitespace-pre-wrap leading-relaxed">
                             {state.lesson.text_content}
+                        </div>
+                    )}
+
+                    {/* Files lesson */}
+                    {state.lesson.content_type === 'files' && state.lesson.files && (
+                        <div className="space-y-3">
+                            <h3 className="font-semibold text-gray-700 mb-3">
+                                Learning Materials ({state.lesson.files.length})
+                            </h3>
+                            {state.lesson.files.length === 0 ? (
+                                <p className="text-gray-500 text-center py-4">No files uploaded yet.</p>
+                            ) : (
+                                state.lesson.files.map((file) => (
+                                    <div
+                                        key={file.id}
+                                        className="flex items-center gap-3 bg-gray-50 rounded-lg p-4 border hover:bg-gray-100 transition-colors"
+                                    >
+                                        <span className="text-2xl">
+                                            {file.file_type?.includes('pdf') && '📄'}
+                                            {file.file_type?.includes('word') && '📝'}
+                                            {file.file_type?.includes('powerpoint') && '📊'}
+                                            {file.file_type?.includes('image') && '🖼️'}
+                                            {!file.file_type && '📎'}
+                                        </span>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="font-medium text-gray-800 truncate">{file.file_name}</p>
+                                            <p className="text-xs text-gray-500">
+                                                {file.file_size ? `${(file.file_size / 1024 / 1024).toFixed(2)} MB` : ''}
+                                            </p>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => handleViewFile(file)}
+                                                className="text-blue-600 hover:text-blue-800 text-sm font-medium px-3 py-1 rounded hover:bg-blue-50 transition-colors"
+                                            >
+                                                👁️ View
+                                            </button>
+                                            <button
+                                                onClick={() => handleDownloadFile(file)}
+                                                className="text-blue-600 hover:text-blue-800 text-sm font-medium px-3 py-1 rounded hover:bg-blue-50 transition-colors"
+                                            >
+                                                📎 Download
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     )}
 

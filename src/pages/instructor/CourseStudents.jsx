@@ -8,6 +8,8 @@ export default function CourseStudents() {
   const [students, setStudents] = useState([]);
   const [quizzes, setQuizzes] = useState([]);
   const [attempts, setAttempts] = useState({});
+  const [assignments, setAssignments] = useState([]);
+  const [submissions, setSubmissions] = useState({});
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('students');
 
@@ -16,9 +18,11 @@ export default function CourseStudents() {
       api.get(`/courses/${id}`),
       api.get(`/courses/${id}/students`),
       api.get(`/courses/${id}/modules`),
-    ]).then(([courseRes, studentsRes, modulesRes]) => {
+      api.get(`/courses/${id}/assignments`),
+    ]).then(([courseRes, studentsRes, modulesRes, assignmentsRes]) => {
       setCourse(courseRes.data);
       setStudents(studentsRes.data);
+      setAssignments(assignmentsRes.data);
 
       // Extract quiz lesson IDs and fetch quiz data separately
       const quizLessonIds = [];
@@ -68,6 +72,22 @@ export default function CourseStudents() {
     });
   }, [activeTab, quizzes]);
 
+  // Load submissions when switching to assignments tab
+  useEffect(() => {
+    if (activeTab !== 'assignments' || assignments.length === 0) return;
+
+    assignments.forEach((assignment) => {
+      api.get(`/assignments/${assignment.id}/submissions`)
+        .then((res) => {
+          setSubmissions((prev) => ({ ...prev, [assignment.id]: res.data }));
+        })
+        .catch((err) => {
+          console.error('Error fetching submissions for assignment', assignment.id, ':', err);
+          setSubmissions((prev) => ({ ...prev, [assignment.id]: [] }));
+        });
+    });
+  }, [activeTab, assignments]);
+
   if (loading) return <div className="p-8 text-center">Loading...</div>;
 
   return (
@@ -109,6 +129,16 @@ export default function CourseStudents() {
             }`}
           >
             Quiz Results
+          </button>
+          <button
+            onClick={() => setActiveTab('assignments')}
+            className={`px-4 py-2 rounded text-sm font-medium ${
+              activeTab === 'assignments'
+                ? 'bg-blue-600 text-white'
+                : 'bg-white text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            Assignment Results
           </button>
         </div>
 
@@ -193,6 +223,70 @@ export default function CourseStudents() {
                             </td>
                             <td className="p-4 text-gray-500 text-sm">
                               {new Date(attempt.created_at).toLocaleDateString()}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
+        {/* Assignment Results Tab */}
+        {activeTab === 'assignments' && (
+          <div className="space-y-6">
+            {assignments.length === 0 ? (
+              <div className="bg-white rounded-lg shadow p-6">
+                <p className="text-gray-500">No assignments in this course yet.</p>
+              </div>
+            ) : (
+              assignments.map((assignment) => (
+                <div key={assignment.id} className="bg-white rounded-lg shadow overflow-hidden">
+                  <div className="p-4 border-b bg-gray-50">
+                    <h3 className="font-semibold">{assignment.title}</h3>
+                    <p className="text-gray-400 text-sm">
+                      Total Marks: {assignment.total_marks}
+                      {assignment.due_date && ` · Due: ${new Date(assignment.due_date).toLocaleDateString()}`}
+                    </p>
+                  </div>
+
+                  {!submissions[assignment.id] ? (
+                    <p className="p-4 text-gray-400 text-sm">Loading submissions...</p>
+                  ) : submissions[assignment.id].length === 0 ? (
+                    <p className="p-4 text-gray-500">No submissions yet.</p>
+                  ) : (
+                    <table className="w-full">
+                      <thead className="border-b">
+                        <tr>
+                          <th className="text-left p-4 text-sm font-semibold text-gray-600">Student</th>
+                          <th className="text-left p-4 text-sm font-semibold text-gray-600">Email</th>
+                          <th className="text-left p-4 text-sm font-semibold text-gray-600">Marks</th>
+                          <th className="text-left p-4 text-sm font-semibold text-gray-600">Status</th>
+                          <th className="text-left p-4 text-sm font-semibold text-gray-600">Submitted Date</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {submissions[assignment.id].map((submission) => (
+                          <tr key={submission.id} className="border-b hover:bg-gray-50">
+                            <td className="p-4 font-medium">{submission.student?.name}</td>
+                            <td className="p-4 text-gray-500 text-sm">{submission.student?.email}</td>
+                            <td className="p-4 font-semibold">
+                              {submission.marks !== null ? `${submission.marks}/${assignment.total_marks}` : '-'}
+                            </td>
+                            <td className="p-4">
+                              <span className={`text-xs font-semibold px-2 py-1 rounded ${
+                                submission.marks !== null
+                                  ? 'bg-green-100 text-green-700'
+                                  : 'bg-yellow-100 text-yellow-700'
+                              }`}>
+                                {submission.marks !== null ? 'Graded' : 'Pending'}
+                              </span>
+                            </td>
+                            <td className="p-4 text-gray-500 text-sm">
+                              {new Date(submission.submitted_at).toLocaleDateString()}
                             </td>
                           </tr>
                         ))}

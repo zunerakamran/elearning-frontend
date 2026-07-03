@@ -12,6 +12,7 @@ export default function LessonForm() {
     text_content: '',
     order: 0,
   });
+  const [files, setFiles] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -24,7 +25,22 @@ export default function LessonForm() {
     setError(null);
     setLoading(true);
     try {
-      const res = await api.post(`/modules/${moduleId}/lessons`, form);
+      let res;
+      if (form.content_type === 'files') {
+        // Use FormData for file uploads
+        const formData = new FormData();
+        formData.append('title', form.title);
+        formData.append('content_type', form.content_type);
+        formData.append('order', form.order);
+        files.forEach((file) => {
+          formData.append('files[]', file);
+        });
+        res = await api.post(`/modules/${moduleId}/lessons`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+      } else {
+        res = await api.post(`/modules/${moduleId}/lessons`, form);
+      }
       console.log('Lesson created:', res.data);
       if (form.content_type === 'quiz') {
         const lessonId = res.data.id || res.data.lesson?.id;
@@ -74,6 +90,7 @@ export default function LessonForm() {
               <option value="text">Text</option>
               <option value="video">Video</option>
               <option value="quiz">Quiz</option>
+              <option value="files">Files (PDF, Word, Images, etc.)</option>
             </select>
           </div>
 
@@ -112,6 +129,52 @@ export default function LessonForm() {
               <p className="text-sm text-yellow-700">
                 Quiz content will be added separately after creating the lesson.
               </p>
+            </div>
+          )}
+
+          {form.content_type === 'files' && (
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">
+                Upload Files
+              </label>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                <input
+                  type="file"
+                  multiple
+                  onChange={(e) => setFiles(Array.from(e.target.files))}
+                  className="hidden"
+                  id="lesson-files"
+                  accept=".pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.txt"
+                />
+                <label htmlFor="lesson-files" className="cursor-pointer">
+                  {files.length > 0 ? (
+                    <div className="text-green-600 text-sm">
+                      <p className="text-2xl mb-2">📎</p>
+                      <p>{files.length} file(s) selected</p>
+                      <ul className="mt-2 text-xs text-gray-600">
+                        {files.map((file, index) => (
+                          <li key={index} className="truncate">
+                            {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                          </li>
+                        ))}
+                      </ul>
+                      <button
+                        type="button"
+                        onClick={(e) => { e.preventDefault(); setFiles([]); }}
+                        className="mt-2 text-red-400 hover:text-red-600 text-xs"
+                      >
+                        Clear all
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="text-gray-400 text-sm">
+                      <p className="text-2xl mb-1">📁</p>
+                      <p>Click to upload files</p>
+                      <p className="text-xs mt-1">PDF, Word, PowerPoint, Images (Max 10MB each)</p>
+                    </div>
+                  )}
+                </label>
+              </div>
             </div>
           )}
 
