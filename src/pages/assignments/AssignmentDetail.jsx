@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
+import Badge from '../../components/ui/Badge';
 
 export default function AssignmentDetail() {
   const { courseId, assignmentId } = useParams();
@@ -196,7 +197,14 @@ export default function AssignmentDetail() {
     }
   }
 
-  if (loading) return <div className="p-8 text-center">Loading...</div>;
+  if (loading) return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4" />
+        <p className="text-gray-500">Loading...</p>
+      </div>
+    </div>
+  );
   if (!assignment) return null;
 
   const isInstructor = user?.role === 'instructor';
@@ -204,76 +212,96 @@ export default function AssignmentDetail() {
   const isPastDue = assignment.due_date ? new Date(assignment.due_date) < new Date() : false;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {message && (
-          <div className={`mb-4 p-4 rounded-lg ${
-            messageType === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+          <div className={`mb-6 p-4 rounded-xl ${
+            messageType === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'
           }`}>
             {message}
           </div>
         )}
-        <div className="bg-white rounded-lg shadow p-8">
-          <Link to={`/courses/${courseId}?tab=assignments`} className="text-blue-600 text-sm hover:underline">
-            ← Back to assignments
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
+          <Link to={`/courses/${courseId}?tab=assignments`} className="inline-flex items-center gap-2 text-indigo-600 text-sm font-medium hover:text-indigo-700 transition-colors mb-6">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to assignments
           </Link>
 
-          <h1 className="text-3xl font-bold mt-4 mb-2">{assignment.title}</h1>
-          <div className="flex items-center gap-4 text-sm text-gray-500 mb-6">
-            <span>Total Marks: {assignment.total_marks}</span>
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">{assignment.title}</h1>
+          <div className="flex flex-wrap items-center gap-4 text-sm mb-6">
+            <Badge variant="info">Total Marks: {assignment.total_marks}</Badge>
             {assignment.due_date && (
-              <span>Due: {new Date(assignment.due_date).toLocaleString()}</span>
+              <Badge variant={isPastDue ? 'danger' : 'success'}>
+                Due: {new Date(assignment.due_date).toLocaleString()}
+              </Badge>
             )}
           </div>
 
-          <div className="prose max-w-none mb-6">
+          <div className="prose prose-indigo max-w-none mb-6 text-gray-700">
             <p>{assignment.instructions}</p>
           </div>
 
           {assignment.file_path && (
             <div className="mb-6">
-              <h3 className="font-semibold mb-2">Attachment</h3>
+              <h3 className="font-semibold text-gray-900 mb-3">Attachment</h3>
               <div className="flex gap-3">
                 <button
                   onClick={handleViewAttachment}
-                  className="text-blue-600 hover:underline cursor-pointer"
+                  className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-medium transition-colors"
                 >
-                  👁️ View
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  View
                 </button>
                 <button
                   onClick={handleDownloadAttachment}
-                  className="text-blue-600 hover:underline cursor-pointer"
+                  className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-medium transition-colors"
                 >
-                  📎 Download ({assignment.file_name || 'attachment'})
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  Download ({assignment.file_name || 'attachment'})
                 </button>
               </div>
             </div>
           )}
 
           {isInstructor && (
-            <div className="flex gap-3 mt-6">
+            <div className="flex gap-3 mt-6 pt-6 border-t border-gray-200">
               <button
                 onClick={handleDelete}
-                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                className="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2.5 rounded-lg hover:bg-red-700 transition-colors font-medium"
               >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
                 Delete Assignment
               </button>
             </div>
           )}
 
           {isInstructor && (
-            <div className="mt-6 border-t pt-6">
-              <h2 className="text-xl font-bold mb-4">Student Submissions ({submissions.length})</h2>
+            <div className="mt-8 pt-8 border-t border-gray-200">
+              <h2 className="text-xl font-bold text-gray-900 mb-6">Student Submissions ({submissions.length})</h2>
 
               {submissions.length === 0 ? (
-                <p className="text-gray-500 text-center py-4">No submissions yet.</p>
+                <div className="text-center py-8 bg-gray-50 rounded-xl">
+                  <svg className="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <p className="text-gray-500">No submissions yet.</p>
+                </div>
               ) : (
                 <div className="space-y-4">
                   {submissions.map((submission) => (
-                    <div key={submission.id} className="border rounded-lg p-4 bg-gray-50">
-                      <div className="flex justify-between items-start mb-3">
+                    <div key={submission.id} className="border border-gray-200 rounded-xl p-5 bg-gray-50 hover:bg-gray-100 transition-colors">
+                      <div className="flex justify-between items-start mb-4">
                         <div>
-                          <h3 className="font-semibold text-lg">
+                          <h3 className="font-semibold text-lg text-gray-900">
                             {submission.student?.name || submission.student_email || 'Unknown Student'}
                           </h3>
                           {submission.student?.email && (
@@ -284,9 +312,7 @@ export default function AssignmentDetail() {
                           </p>
                         </div>
                         {submission.marks !== null && (
-                          <div className="bg-green-100 text-green-700 px-3 py-1 rounded font-medium">
-                            {submission.marks}/{assignment.total_marks}
-                          </div>
+                          <Badge variant="success">{submission.marks}/{assignment.total_marks}</Badge>
                         )}
                       </div>
 
@@ -294,21 +320,32 @@ export default function AssignmentDetail() {
                       {submission.file_path && (
                         <div className="mb-4">
                           <p className="font-medium text-gray-700 mb-2">Submitted file:</p>
-                          <div className="flex items-center gap-2 bg-white rounded p-3 border">
-                            <span className="text-2xl">📄</span>
+                          <div className="flex items-center gap-3 bg-white rounded-lg p-3 border border-gray-">
+                            <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                              <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                              </svg>
+                            </div>
                             <span className="text-gray-700 flex-1">{submission.file_name || 'Submitted file'}</span>
                             <div className="flex gap-2">
                               <button
                                 onClick={() => handleViewSubmissionFile(submission.file_url)}
-                                className="text-blue-600 hover:underline text-sm"
+                                className="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-700 text-sm font-medium transition-colors"
                               >
-                                👁️ View
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                View
                               </button>
                               <button
                                 onClick={() => handleDownloadSubmissionFile(submission.id, submission.file_name)}
-                                className="text-blue-600 hover:underline text-sm"
+                                className="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-700 text-sm font-medium transition-colors"
                               >
-                                📎 Download
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                Download
                               </button>
                             </div>
                           </div>
@@ -316,13 +353,13 @@ export default function AssignmentDetail() {
                       )}
 
                       {/* Grading interface */}
-                      <div className="bg-white rounded p-4 border">
-                        <h4 className="font-semibold mb-3">
+                      <div className="bg-white rounded-xl p-5 border border-gray-200">
+                        <h4 className="font-semibold text-gray-900 mb-4">
                           {submission.marks !== null ? 'Grade (Read-only)' : 'Grade this submission'}
                         </h4>
-                        <div className="grid grid-cols-2 gap-4 mb-3">
+                        <div className="grid grid-cols-2 gap-4 mb-4">
                           <div>
-                            <label className="block text-sm font-medium mb-1">Marks (out of {assignment.total_marks})</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Marks (out of {assignment.total_marks})</label>
                             {submission.marks !== null ? (
                               <div className="text-lg font-semibold text-green-600">
                                 {submission.marks}/{assignment.total_marks}
@@ -334,16 +371,16 @@ export default function AssignmentDetail() {
                                 max={assignment.total_marks}
                                 value={gradingData[submission.id]?.marks || ''}
                                 onChange={(e) => handleGradingChange(submission.id, 'marks', e.target.value)}
-                                className="w-full border rounded px-3 py-2"
+                                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                 placeholder="Enter marks"
                               />
                             )}
                           </div>
                         </div>
-                        <div className="mb-3">
-                          <label className="block text-sm font-medium mb-1">Feedback (optional)</label>
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Feedback (optional)</label>
                           {submission.marks !== null ? (
-                            <div className="text-gray-700 bg-gray-50 p-3 rounded">
+                            <div className="text-gray-700 bg-gray-50 p-3 rounded-lg">
                               {submission.feedback || 'No feedback provided'}
                             </div>
                           ) : (
@@ -351,7 +388,7 @@ export default function AssignmentDetail() {
                               value={gradingData[submission.id]?.feedback || ''}
                               onChange={(e) => handleGradingChange(submission.id, 'feedback', e.target.value)}
                               rows={3}
-                              className="w-full border rounded px-3 py-2"
+                              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                               placeholder="Add feedback for the student..."
                             />
                           )}
@@ -359,7 +396,7 @@ export default function AssignmentDetail() {
                         {submission.marks === null && (
                           <button
                             onClick={() => handleSaveGrade(submission.id)}
-                            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                            className="bg-indigo-600 text-white px-4 py-2.5 rounded-lg hover:bg-indigo-700 transition-colors font-medium"
                           >
                             Save Grade
                           </button>
@@ -373,24 +410,35 @@ export default function AssignmentDetail() {
           )}
 
           {isStudent && (
-            <div className="mt-6 border-t pt-6">
-              <h2 className="text-xl font-bold mb-4">Your Submission</h2>
+            <div className="mt-8 pt-8 border-t border-gray-200">
+              <h2 className="text-xl font-bold text-gray-900 mb-6">Your Submission</h2>
 
               {submission ? (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-green-700 font-medium text-lg">✓ Turned in</span>
-                    <span className="text-sm text-gray-500">
-                      {new Date(submission.submitted_at).toLocaleString()}
-                    </span>
+                <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <div>
+                      <span className="text-green-700 font-medium text-lg">Turned in</span>
+                      <p className="text-sm text-gray-500">
+                        {new Date(submission.submitted_at).toLocaleString()}
+                      </p>
+                    </div>
                   </div>
 
                   {/* Show submitted file */}
                   {submission.file_path && (
                     <div className="mb-4">
                       <p className="font-medium text-gray-700 mb-2">Your work:</p>
-                      <div className="flex items-center gap-2 bg-white rounded p-3 border">
-                        <span className="text-2xl">📄</span>
+                      <div className="flex items-center gap-3 bg-white rounded-lg p-3 border border-gray-200">
+                        <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                          <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                        </div>
                         <span className="text-gray-700">{submission.file_name || 'Submitted file'}</span>
                       </div>
                     </div>
@@ -411,8 +459,12 @@ export default function AssignmentDetail() {
                   )}
                 </div>
               ) : isPastDue ? (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-                  <p className="text-2xl mb-2">⏰</p>
+                <div className="bg-red-50 border border-red-200 rounded-xl p-8 text-center">
+                  <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
                   <h3 className="text-lg font-semibold text-red-700 mb-2">Time is over</h3>
                   <p className="text-gray-600">
                     The deadline for this assignment was {new Date(assignment.due_date).toLocaleString()}. 
@@ -421,11 +473,11 @@ export default function AssignmentDetail() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit}>
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium mb-2">
+                  <div className="mb-6">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Upload your work
                     </label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                    <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-indigo-400 transition-colors">
                       <input
                         type="file"
                         onChange={(e) => setFile(e.target.files[0])}
@@ -435,11 +487,20 @@ export default function AssignmentDetail() {
                       <label htmlFor="submission-file" className="cursor-pointer">
                         {file ? (
                           <div className="text-green-600">
-                            📎 {file.name}
+                            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                            </div>
+                            <p className="font-medium">{file.name}</p>
                           </div>
                         ) : (
                           <div className="text-gray-400">
-                            <p className="text-2xl mb-1">📁</p>
+                            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                              </svg>
+                            </div>
                             <p>Click to upload your submission</p>
                           </div>
                         )}
@@ -450,7 +511,7 @@ export default function AssignmentDetail() {
                   <button
                     type="submit"
                     disabled={!file || submitting}
-                    className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+                    className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
                   >
                     {submitting ? 'Submitting...' : 'Submit Assignment'}
                   </button>

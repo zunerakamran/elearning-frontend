@@ -12,7 +12,7 @@ export default function InstructorDashboard() {
   useEffect(() => {
     api.get('/my-courses')
       .then((res) => setCourses(res.data))
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoading(false));
   }, []);
 
@@ -22,91 +22,205 @@ export default function InstructorDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-5xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-indigo-50/20 to-purple-50/20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         {/* Header */}
-        <div className="bg-white rounded-lg shadow p-6 mb-6 flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold">Instructor Dashboard</h1>
-            <p className="text-gray-500 text-sm mt-1">{user?.name} · {user?.email}</p>
-          </div>
-          <div className="flex gap-3">
-            <Link
-              to="/courses/create"
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm"
-            >
-              + New Course
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm"
-            >
-              Log out
-            </button>
+        <div className="mb-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                <span className="text-white text-2xl font-bold">
+                  {user?.name?.charAt(0).toUpperCase()}
+                </span>
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">Welcome back, {user?.name?.split(' ')[0]}!</h1>
+                <p className="text-gray-500 mt-1">Manage your courses and track student progress</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <Link
+                to="/courses/create"
+                className="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 hover:shadow-lg transition-all duration-200 font-medium"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Create Course
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="inline-flex items-center gap-2 bg-white text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-50 hover:shadow-md transition-all duration-200 font-medium border border-gray-200"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Log out
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* My Courses */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-bold mb-4">My Courses</h2>
+        {/* Stats Cards */}
+        {!loading && courses.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-500 text-sm font-medium">Total Courses</p>
+                  <p className="text-3xl font-bold text-gray-900 mt-2">{courses.length}</p>
+                </div>
+                <div className="w-14 h-14 bg-indigo-100 rounded-xl flex items-center justify-center">
+                  <svg className="w-7 h-7 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-500 text-sm font-medium">Total Students</p>
+                  <p className="text-3xl font-bold text-gray-900 mt-2">
+                    {courses.reduce((sum, c) => sum + c.enrollments_count, 0)}
+                  </p>
+                </div>
+                <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center">
+                  <svg className="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-500 text-sm font-medium">Published</p>
+                  <p className="text-3xl font-bold text-gray-900 mt-2">
+                    {courses.filter(c => c.published).length}
+                  </p>
+                </div>
+                <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center">
+                  <svg className="w-7 h-7 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
-          {loading ? (
-            <p className="text-gray-400">Loading your courses...</p>
-          ) : courses.length === 0 ? (
-            <div>
-              <p className="text-gray-500 mb-3">You haven't created any courses yet.</p>
+        {/* My Courses */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">My Courses</h2>
+            {!loading && courses.length > 0 && (
               <Link
                 to="/courses/create"
-                className="text-blue-600 hover:underline text-sm"
+                className="inline-flex items-center gap-2 text-indigo-600 font-medium hover:text-indigo-700 transition-colors"
               >
-                Create your first course →
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Add New
+              </Link>
+            )}
+          </div>
+
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="w-10 h-10 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
+            </div>
+          ) : courses.length === 0 ? (
+            <div className="text-center py-16">
+              <div className="w-20 h-20 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg className="w-10 h-10 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">No courses yet</h3>
+              <p className="text-gray-500 mb-6 max-w-sm mx-auto">Start your teaching journey by creating your first course</p>
+              <Link
+                to="/courses/create"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl hover:from-indigo-700 hover:to-purple-700 hover:shadow-lg transition-all duration-200 font-medium"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Create Your First Course
               </Link>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {courses.map((course) => (
                 <div
                   key={course.id}
-                  className="border rounded-lg p-4 flex items-center justify-between"
+                  className="group border border-gray-200 rounded-2xl p-6 hover:shadow-xl hover:border-indigo-200 transition-all duration-300 bg-white"
                 >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold">{course.title}</h3>
-                      <span className={`text-xs px-2 py-0.5 rounded font-medium ${
+                  <div className="mb-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-900 text-lg group-hover:text-indigo-600 transition-colors">{course.title}</h3>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <span className={`text-xs px-3 py-1.5 rounded-full font-medium ${
                         course.published
                           ? 'bg-green-100 text-green-700'
-                          : 'bg-yellow-100 text-yellow-700'
+                          : 'bg-amber-100 text-amber-700'
                       }`}>
                         {course.published ? 'Published' : 'Draft'}
                       </span>
-                      <span className="text-xs uppercase bg-blue-50 text-blue-600 px-2 py-0.5 rounded">
+                      <span className="text-xs uppercase bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-full font-medium">
                         {course.level}
                       </span>
                     </div>
-                    <p className="text-gray-400 text-sm">
-                      {course.enrollments_count} student{course.enrollments_count !== 1 ? 's' : ''} enrolled
-                    </p>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 text-gray-500 text-sm mb-6">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    {course.enrollments_count} student{course.enrollments_count !== 1 ? 's' : ''} enrolled
                   </div>
 
-                  <div className="flex gap-2 ml-4">
-                    <Link
-                      to={`/courses/${course.id}/students`}
-                      className="bg-gray-100 text-gray-700 px-3 py-1.5 rounded hover:bg-gray-200 text-sm"
-                    >
-                      View Students
-                    </Link>
-                    <Link
-                      to={`/courses/${course.id}`}
-                      className="bg-blue-50 text-blue-600 px-3 py-1.5 rounded hover:bg-blue-100 text-sm"
-                    >
-                      View Course
-                    </Link>
+                  <div className="grid grid-cols-2 gap-2">
                     <Link
                       to={`/courses/${course.id}/edit`}
-                      className="bg-yellow-50 text-yellow-600 px-3 py-1.5 rounded hover:bg-yellow-100 text-sm"
+                      className="inline-flex items-center justify-center gap-1.5 bg-indigo-50 text-indigo-600 px-3 py-2.5 rounded-lg hover:bg-indigo-100 transition-colors text-sm font-medium"
                     >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
                       Edit
+                    </Link>
+                    <Link
+                      to={`/courses/${course.id}/students`}
+                      className="inline-flex items-center justify-center gap-1.5 bg-gray-50 text-gray-700 px-3 py-2.5 rounded-lg hover:bg-gray-100 transition-colors text-sm font-medium"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                      </svg>
+                      Students
+                    </Link>
+                    <Link
+                      to={`/courses/${course.id}/report`}
+                      className="inline-flex items-center justify-center gap-1.5 bg-green-50 text-green-700 px-3 py-2.5 rounded-lg hover:bg-green-100 transition-colors text-sm font-medium"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
+                      Report
+                    </Link>
+                    <Link
+                      to={`/courses/${course.id}/certificates`}
+                      className="inline-flex items-center justify-center gap-1.5 bg-amber-50 text-amber-700 px-3 py-2.5 rounded-lg hover:bg-amber-100 transition-colors text-sm font-medium"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 003.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                      </svg>
+                      Certificates
                     </Link>
                   </div>
                 </div>

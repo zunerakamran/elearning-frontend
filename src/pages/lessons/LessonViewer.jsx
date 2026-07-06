@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import api from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
+import Badge from '../../components/ui/Badge';
 
 export default function LessonViewer() {
     const { moduleId, lessonId } = useParams();
@@ -138,45 +139,80 @@ export default function LessonViewer() {
 
     // Keep showing loading until BOTH auth and data are ready
     if (authLoading || state.loading) {
-        return <div className="p-8 text-center">Loading lesson...</div>;
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4" />
+                    <p className="text-gray-500">Loading lesson...</p>
+                </div>
+            </div>
+        );
     }
 
     if (!state.lesson) {
-        return <div className="p-8 text-center text-red-600">Lesson not found.</div>;
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <p className="text-red-600 font-medium">Lesson not found.</p>
+                </div>
+            </div>
+        );
     }
 
     return (
-        <div className="min-h-screen bg-gray-100 p-8">
-            <div className="max-w-3xl mx-auto">
+        <div className="min-h-screen bg-gray-50">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
                 {/* Lesson content card */}
-                <div className="bg-white rounded-lg shadow p-8 mb-4">
-                    <div className="flex items-center gap-2 mb-6">
-                        <span className="text-2xl">
-                            {state.lesson.content_type === 'video' && '🎬'}
-                            {state.lesson.content_type === 'text' && '📄'}
-                            {state.lesson.content_type === 'quiz' && '📝'}
-                            {state.lesson.content_type === 'files' && '📁'}
-                        </span>
-                        <span className="text-xs uppercase font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded capitalize">
-                            {state.lesson.content_type}
-                        </span>
+                <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 mb-6">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center">
+                            {state.lesson.content_type === 'video' && (
+                                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                            )}
+                            {state.lesson.content_type === 'text' && (
+                                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            )}
+                            {state.lesson.content_type === 'quiz' && (
+                                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                </svg>
+                            )}
+                            {state.lesson.content_type === 'files' && (
+                                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                                </svg>
+                            )}
+                        </div>
+                        <Badge variant="primary" className="capitalize">{state.lesson.content_type}</Badge>
                         {state.completed && (
-                            <span className="ml-auto text-green-600 font-medium text-sm">
-                                ✓ Completed
-                            </span>
+                            <div className="ml-auto flex items-center gap-2 text-green-600 font-medium text-sm">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                                Completed
+                            </div>
                         )}
                     </div>
 
-                    <h1 className="text-2xl font-bold mb-6">{state.lesson.title}</h1>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-6">{state.lesson.title}</h1>
 
                     {/* Video lesson */}
                     {state.lesson.content_type === 'video' && state.lesson.video_url && (
-                        <div className="aspect-video mb-6">
+                        <div className="aspect-video mb-6 rounded-xl overflow-hidden shadow-lg">
                             <iframe
                                 src={state.lesson.video_url.replace('watch?v=', 'embed/')}
                                 title={state.lesson.title}
-                                className="w-full h-full rounded"
+                                className="w-full h-full"
                                 allowFullScreen
                             />
                         </div>
@@ -184,7 +220,7 @@ export default function LessonViewer() {
 
                     {/* Text lesson */}
                     {state.lesson.content_type === 'text' && state.lesson.text_content && (
-                        <div className="prose max-w-none text-gray-700 whitespace-pre-wrap leading-relaxed">
+                        <div className="prose prose-indigo max-w-none text-gray-700 whitespace-pre-wrap leading-relaxed">
                             {state.lesson.text_content}
                         </div>
                     )}
@@ -192,26 +228,51 @@ export default function LessonViewer() {
                     {/* Files lesson */}
                     {state.lesson.content_type === 'files' && state.lesson.files && (
                         <div className="space-y-3">
-                            <h3 className="font-semibold text-gray-700 mb-3">
+                            <h3 className="font-semibold text-gray-900 mb-4">
                                 Learning Materials ({state.lesson.files.length})
                             </h3>
                             {state.lesson.files.length === 0 ? (
-                                <p className="text-gray-500 text-center py-4">No files uploaded yet.</p>
+                                <div className="text-center py-8 bg-gray-50 rounded-xl">
+                                    <svg className="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                                    </svg>
+                                    <p className="text-gray-500">No files uploaded yet.</p>
+                                </div>
                             ) : (
                                 state.lesson.files.map((file) => (
                                     <div
                                         key={file.id}
-                                        className="flex items-center gap-3 bg-gray-50 rounded-lg p-4 border hover:bg-gray-100 transition-colors"
+                                        className="flex items-center gap-4 bg-gray-50 rounded-xl p-4 border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all"
                                     >
-                                        <span className="text-2xl">
-                                            {file.file_type?.includes('pdf') && '📄'}
-                                            {file.file_type?.includes('word') && '📝'}
-                                            {file.file_type?.includes('powerpoint') && '📊'}
-                                            {file.file_type?.includes('image') && '🖼️'}
-                                            {!file.file_type && '📎'}
-                                        </span>
+                                        <div className="w-12 h-12 rounded-lg bg-indigo-100 flex items-center justify-center">
+                                            {file.file_type?.includes('pdf') && (
+                                                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                                </svg>
+                                            )}
+                                            {file.file_type?.includes('word') && (
+                                                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                </svg>
+                                            )}
+                                            {file.file_type?.includes('powerpoint') && (
+                                                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                                                </svg>
+                                            )}
+                                            {file.file_type?.includes('image') && (
+                                                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                            )}
+                                            {!file.file_type && (
+                                                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                                                </svg>
+                                            )}
+                                        </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="font-medium text-gray-800 truncate">{file.file_name}</p>
+                                            <p className="font-medium text-gray-900 truncate">{file.file_name}</p>
                                             <p className="text-xs text-gray-500">
                                                 {file.file_size ? `${(file.file_size / 1024 / 1024).toFixed(2)} MB` : ''}
                                             </p>
@@ -219,15 +280,22 @@ export default function LessonViewer() {
                                         <div className="flex gap-2">
                                             <button
                                                 onClick={() => handleViewFile(file)}
-                                                className="text-blue-600 hover:text-blue-800 text-sm font-medium px-3 py-1 rounded hover:bg-blue-50 transition-colors"
+                                                className="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-indigo-50 transition-colors"
                                             >
-                                                👁️ View
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                </svg>
+                                                View
                                             </button>
                                             <button
                                                 onClick={() => handleDownloadFile(file)}
-                                                className="text-blue-600 hover:text-blue-800 text-sm font-medium px-3 py-1 rounded hover:bg-blue-50 transition-colors"
+                                                className="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-indigo-50 transition-colors"
                                             >
-                                                📎 Download
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                                </svg>
+                                                Download
                                             </button>
                                         </div>
                                     </div>
@@ -387,15 +455,23 @@ export default function LessonViewer() {
                                     )}
                                 </>
                             ) : (
-                                <div className="text-center">
+                                <div className="text-center py-8">
+                                    <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                        </svg>
+                                    </div>
                                     <p className="text-gray-600 mb-4">
                                         This lesson has a quiz. Complete it to mark the lesson as done.
                                     </p>
                                     <Link
                                         to={`/lessons/${lessonId}/quiz`}
-                                        className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 inline-block"
+                                        className="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors font-medium"
                                     >
                                         Start Quiz
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                        </svg>
                                     </Link>
                                 </div>
                             )}
@@ -405,16 +481,40 @@ export default function LessonViewer() {
 
                 {/* Mark complete button (students only, not for quiz lessons) */}
                 {user?.role === 'student' && state.lesson.content_type !== 'quiz' && (
-                    <div className="bg-white rounded-lg shadow p-4 flex items-center justify-between">
-                        <span className="text-gray-600 text-sm">
-                            {state.completed
-                                ? 'You have completed this lesson.'
-                                : 'Mark this lesson as complete when you are done.'}
-                        </span>
+                    <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                                state.completed
+                                    ? 'bg-green-100'
+                                    : 'bg-gray-100'
+                            }`}>
+                                {state.completed ? (
+                                    <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                    </svg>
+                                ) : (
+                                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                )}
+                            </div>
+                            <div>
+                                <p className="font-medium text-gray-900">
+                                    {state.completed
+                                        ? 'Lesson completed'
+                                        : 'Mark lesson as complete'}
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                    {state.completed
+                                        ? 'You can mark it as incomplete if needed'
+                                        : 'When you finish the lesson content'}
+                                </p>
+                            </div>
+                        </div>
                         <button
                             onClick={toggleComplete}
                             disabled={marking}
-                            className={`px-4 py-2 rounded text-white text-sm disabled:opacity-50 ${
+                            className={`px-5 py-2.5 rounded-lg text-white text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
                                 state.completed
                                     ? 'bg-gray-400 hover:bg-gray-500'
                                     : 'bg-green-600 hover:bg-green-700'
@@ -424,7 +524,7 @@ export default function LessonViewer() {
                                 ? 'Saving...'
                                 : state.completed
                                     ? 'Mark as Incomplete'
-                                    : '✓ Mark as Complete'}
+                                    : 'Mark as Complete'}
                         </button>
                     </div>
                 )}

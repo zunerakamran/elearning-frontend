@@ -1,1 +1,21 @@
 @import "tailwindcss";
+
+@theme {
+  --font-family-sans: 'Inter', system-ui, sans-serif;
+}
+
+@media print {
+    body > * {
+        display: none !important;
+    }
+    .print-only {
+        display: block !important;
+    }
+    .print-only * {
+        display: revert !important;
+    }
+}
+
+.print-only {
+    display: none;
+}
