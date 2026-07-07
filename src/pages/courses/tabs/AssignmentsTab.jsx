@@ -1,10 +1,17 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../../api/axios';
+import ConfirmModal from '../../../components/ui/ConfirmModal';
 
 export default function AssignmentsTab({ courseId, isOwner }) {
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: null,
+  });
 
   useEffect(() => {
     api.get(`/courses/${courseId}/assignments`)
@@ -12,10 +19,17 @@ export default function AssignmentsTab({ courseId, isOwner }) {
       .finally(() => setLoading(false));
   }, [courseId]);
 
-  async function handleDelete(id) {
-    if (!confirm('Delete this assignment?')) return;
-    await api.delete(`/courses/${courseId}/assignments/${id}`);
-    setAssignments(assignments.filter((a) => a.id !== id));
+  function handleDelete(id) {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete Assignment',
+      message: 'Are you sure you want to delete this assignment? This action cannot be undone.',
+      onConfirm: async () => {
+        setConfirmModal({ ...confirmModal, isOpen: false });
+        await api.delete(`/courses/${courseId}/assignments/${id}`);
+        setAssignments(assignments.filter((a) => a.id !== id));
+      },
+    });
   }
 
   if (loading) return (
@@ -25,6 +39,7 @@ export default function AssignmentsTab({ courseId, isOwner }) {
   );
 
   return (
+    <>
     <div>
       {/* Create assignment button (instructor only) */}
       {isOwner && (
@@ -91,14 +106,14 @@ export default function AssignmentsTab({ courseId, isOwner }) {
                   <div className="flex gap-2 ml-4">
                     <Link
                       to={`/courses/${courseId}/assignments/${assignment.id}`}
-                      className="inline-flex items-center gap-1 bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-100 transition-colors text-sm font-medium"
+                      className="inline-flex items-center gap-1 bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-100 transition-colors text-sm font-medium cursor-pointer"
                     >
                       {isOwner ? 'View Submissions' : 'View & Submit'}
                     </Link>
                     {isOwner && (
                       <button
                         onClick={() => handleDelete(assignment.id)}
-                        className="inline-flex items-center gap-1 bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 transition-colors text-sm font-medium"
+                        className="inline-flex items-center gap-1 bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 transition-colors text-sm font-medium cursor-pointer"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -114,5 +129,18 @@ export default function AssignmentsTab({ courseId, isOwner }) {
         </div>
       )}
     </div>
+
+    {/* Confirm Modal */}
+    <ConfirmModal
+      isOpen={confirmModal.isOpen}
+      onClose={() => setConfirmModal({ ...confirmModal, isOpen: false })}
+      onConfirm={confirmModal.onConfirm}
+      title={confirmModal.title}
+      message={confirmModal.message}
+      confirmText="Confirm"
+      cancelText="Cancel"
+      variant="danger"
+    />
+    </>
   );
 }

@@ -165,30 +165,41 @@ export default function LessonViewer() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-indigo-50/20 to-purple-50/20">
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
+                {/* Back button */}
+                <Link
+                    to={state.courseId ? `/courses/${state.courseId}` : '/courses'}
+                    className="inline-flex items-center gap-2 text-indigo-600 text-sm font-medium hover:text-indigo-700 transition-colors mb-6"
+                >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                    Back to course
+                </Link>
+
                 {/* Lesson content card */}
-                <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 mb-6">
+                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 mb-6">
                     <div className="flex items-center gap-3 mb-6">
-                        <div className="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
                             {state.lesson.content_type === 'video' && (
-                                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                 </svg>
                             )}
                             {state.lesson.content_type === 'text' && (
-                                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
                             )}
                             {state.lesson.content_type === 'quiz' && (
-                                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                                 </svg>
                             )}
                             {state.lesson.content_type === 'files' && (
-                                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                                 </svg>
                             )}
@@ -208,9 +219,13 @@ export default function LessonViewer() {
 
                     {/* Video lesson */}
                     {state.lesson.content_type === 'video' && state.lesson.video_url && (
-                        <div className="aspect-video mb-6 rounded-xl overflow-hidden shadow-lg">
+                        <div className="aspect-video mb-6 rounded-2xl overflow-hidden shadow-xl border border-gray-200">
                             <iframe
-                                src={state.lesson.video_url.replace('watch?v=', 'embed/')}
+                                src={(() => {
+                                    const url = state.lesson.video_url;
+                                    const videoId = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/)?.[1];
+                                    return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+                                })()}
                                 title={state.lesson.title}
                                 className="w-full h-full"
                                 allowFullScreen
@@ -232,7 +247,7 @@ export default function LessonViewer() {
                                 Learning Materials ({state.lesson.files.length})
                             </h3>
                             {state.lesson.files.length === 0 ? (
-                                <div className="text-center py-8 bg-gray-50 rounded-xl">
+                                <div className="text-center py-8 bg-gradient-to-br from-gray-50 to-indigo-50/30 rounded-2xl">
                                     <svg className="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
                                     </svg>
@@ -242,9 +257,9 @@ export default function LessonViewer() {
                                 state.lesson.files.map((file) => (
                                     <div
                                         key={file.id}
-                                        className="flex items-center gap-4 bg-gray-50 rounded-xl p-4 border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all"
+                                        className="flex items-center gap-4 bg-gradient-to-r from-gray-50 to-indigo-50/30 rounded-xl p-4 border border-gray-200 hover:border-indigo-300 hover:from-indigo-50 hover:to-purple-50 transition-all"
                                     >
-                                        <div className="w-12 h-12 rounded-lg bg-indigo-100 flex items-center justify-center">
+                                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
                                             {file.file_type?.includes('pdf') && (
                                                 <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -280,7 +295,7 @@ export default function LessonViewer() {
                                         <div className="flex gap-2">
                                             <button
                                                 onClick={() => handleViewFile(file)}
-                                                className="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-indigo-50 transition-colors"
+                                                className="inline-flex items-center gap-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-medium px-3 py-1.5 rounded-lg hover:from-indigo-700 hover:to-purple-700 hover:shadow-md transition-all duration-200"
                                             >
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -290,7 +305,7 @@ export default function LessonViewer() {
                                             </button>
                                             <button
                                                 onClick={() => handleDownloadFile(file)}
-                                                className="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-indigo-50 transition-colors"
+                                                className="inline-flex items-center gap-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-medium px-3 py-1.5 rounded-lg hover:from-indigo-700 hover:to-purple-700 hover:shadow-md transition-all duration-200"
                                             >
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -308,145 +323,236 @@ export default function LessonViewer() {
                     {state.lesson.content_type === 'quiz' && (
                         <div>
                             {user?.role === 'instructor' ? (
-                                <div className="text-center">
-                                    <p className="text-gray-600 mb-4">
-                                        This lesson has a quiz. You can view the quiz content.
+                                <div className="text-center py-12 bg-gradient-to-br from-indigo-50 to-purple-50/30 rounded-2xl border border-indigo-100">
+                                    <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                                        <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                        </svg>
+                                    </div>
+                                    <h3 className="text-xl font-semibold text-gray-900 mb-3">Quiz Available</h3>
+                                    <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                                        This lesson contains a quiz. You can view and manage the quiz content as an instructor.
                                     </p>
                                     <Link
                                         to={`/lessons/${lessonId}/quiz`}
-                                        className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 inline-block"
+                                        className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-3 rounded-xl hover:from-indigo-700 hover:to-purple-700 hover:shadow-lg transition-all duration-200 font-medium"
                                     >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
                                         View Quiz
                                     </Link>
                                 </div>
                             ) : state.quizAttempt && state.quiz ? (
                                 <>
-                                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                                        <p className="text-blue-800 text-sm mb-2">
-                                            You have already attempted this quiz. Only one attempt is allowed.
-                                        </p>
-                                        <p className="text-gray-700 font-medium">
-                                            Your Score: {state.quizAttempt.score ?? 0}% · {state.quizAttempt.passed ? '✓ Passed' : '✗ Failed'}
-                                        </p>
+                                    {/* Attempt Summary Card */}
+                                    <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border border-indigo-200 rounded-2xl p-6 mb-6">
+                                        <div className="flex items-center gap-4 mb-4">
+                                            <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${
+                                                state.quizAttempt.passed 
+                                                    ? 'bg-gradient-to-br from-green-400 to-green-500' 
+                                                    : 'bg-gradient-to-br from-orange-400 to-orange-500'
+                                            }`}>
+                                                {state.quizAttempt.passed ? (
+                                                    <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                ) : (
+                                                    <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                                    </svg>
+                                                )}
+                                            </div>
+                                            <div className="flex-1">
+                                                <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                                                    {state.quizAttempt.passed ? 'Quiz Passed!' : 'Quiz Not Passed'}
+                                                </h3>
+                                                <p className="text-gray-600 text-sm">
+                                                    You have completed this quiz. Only one attempt is allowed.
+                                                </p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-3xl font-bold text-indigo-600">{state.quizAttempt.score ?? 0}%</p>
+                                                <p className="text-sm text-gray-500">Your Score</p>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     {!showResults ? (
                                         <button
                                             onClick={() => setShowResults(true)}
-                                            className="bg-gray-600 text-white px-6 py-2 rounded hover:bg-gray-700 inline-block"
+                                            className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-gray-700 to-gray-800 text-white px-6 py-3 rounded-xl hover:from-gray-800 hover:to-gray-900 hover:shadow-lg transition-all duration-200 font-medium cursor-pointer"
                                         >
-                                            View Results
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                            </svg>
+                                            View Detailed Results
                                         </button>
                                     ) : (
-                                        <div className="mb-6">
-                                            <div className="flex justify-center gap-8 mb-6">
-                                                <div className="text-center">
-                                                    <p className="text-3xl font-bold text-green-600">{state.quizAttempt.correct ?? 0}</p>
-                                                    <p className="text-gray-400 text-sm">Correct</p>
+                                        <div className="space-y-6">
+                                            {/* Stats Cards */}
+                                            <div className="grid grid-cols-3 gap-4">
+                                                <div className="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-4 text-center">
+                                                    <p className="text-3xl font-bold text-green-600 mb-1">{state.quizAttempt.correct ?? 0}</p>
+                                                    <p className="text-sm text-green-700 font-medium">Correct</p>
                                                 </div>
-                                                <div className="text-center">
-                                                    <p className="text-3xl font-bold text-red-500">
+                                                <div className="bg-gradient-to-br from-red-50 to-red-100 border border-red-200 rounded-xl p-4 text-center">
+                                                    <p className="text-3xl font-bold text-red-600 mb-1">
                                                         {(state.quizAttempt.total ?? 0) - (state.quizAttempt.correct ?? 0)}
                                                     </p>
-                                                    <p className="text-gray-400 text-sm">Incorrect</p>
+                                                    <p className="text-sm text-red-700 font-medium">Incorrect</p>
                                                 </div>
-                                                <div className="text-center">
-                                                    <p className="text-3xl font-bold text-blue-600">{state.quizAttempt.score ?? 0}%</p>
-                                                    <p className="text-gray-400 text-sm">Score</p>
+                                                <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 border border-indigo-200 rounded-xl p-4 text-center">
+                                                    <p className="text-3xl font-bold text-indigo-600 mb-1">{state.quizAttempt.score ?? 0}%</p>
+                                                    <p className="text-sm text-indigo-700 font-medium">Score</p>
                                                 </div>
                                             </div>
 
-                                            <div className="text-left">
-                                                <h2 className="font-semibold mb-3">Question Breakdown</h2>
+                                            {/* Question Breakdown */}
+                                            <div className="space-y-4">
+                                                <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                                                    <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                                    </svg>
+                                                    Question Breakdown
+                                                </h3>
                                                 {state.quiz.questions.map((question, index) => {
                                                     const detail = state.quizAttempt.details?.find(
                                                         (d) => d.question_id === question.id
                                                     );
+                                                    const isCorrect = detail?.is_correct;
                                                     return (
                                                         <div
                                                             key={question.id}
-                                                            className={`p-4 rounded mb-3 ${
-                                                                detail?.is_correct ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'
+                                                            className={`bg-white rounded-xl border-2 p-5 shadow-sm ${
+                                                                isCorrect 
+                                                                    ? 'border-green-200 bg-gradient-to-br from-green-50/50 to-white' 
+                                                                    : 'border-red-200 bg-gradient-to-br from-red-50/50 to-white'
                                                             }`}
                                                         >
-                                                            <p className="font-medium mb-3">
-                                                                {index + 1}. {question.question_text}
-                                                                {detail && (
-                                                                    <span className="ml-2">
-                                                                        {detail?.is_correct ? '✓' : '✗'}
-                                                                    </span>
-                                                                )}
-                                                            </p>
+                                                            <div className="flex items-start gap-3 mb-4">
+                                                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                                                                    isCorrect 
+                                                                        ? 'bg-gradient-to-br from-green-500 to-green-600' 
+                                                                        : 'bg-gradient-to-br from-red-500 to-red-600'
+                                                                }`}>
+                                                                    {isCorrect ? (
+                                                                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                                        </svg>
+                                                                    ) : (
+                                                                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                                        </svg>
+                                                                    )}
+                                                                </div>
+                                                                <div className="flex-1">
+                                                                    <p className="font-semibold text-gray-900 mb-1">
+                                                                        Question {index + 1}
+                                                                    </p>
+                                                                    <p className="text-gray-700">{question.question_text}</p>
+                                                                </div>
+                                                                <Badge variant={isCorrect ? 'success' : 'danger'} className="capitalize">
+                                                                    {isCorrect ? 'Correct' : 'Incorrect'}
+                                                                </Badge>
+                                                            </div>
                                                             
-                                                            {question.type === 'true_false' ? (
-                                                                <div className="space-y-2 ml-4">
-                                                                    {['true', 'false'].map((value) => {
+                                                            <div className="ml-11 space-y-2">
+                                                                {question.type === 'true_false' ? (
+                                                                    ['true', 'false'].map((value) => {
                                                                         const isStudentAnswer = detail?.submitted_answer === value;
-                                                                        const isCorrect = detail?.correct_answer === value;
-                                                                        console.log('TF Answer:', value, 'isStudentAnswer:', isStudentAnswer, 'isCorrect:', isCorrect, 'detail:', detail);
+                                                                        const isCorrectAnswer = detail?.correct_answer === value;
                                                                         return (
                                                                             <div
                                                                                 key={value}
-                                                                                className={`p-2 rounded border-2 ${
-                                                                                    isStudentAnswer && isCorrect
-                                                                                        ? 'bg-green-500 border-green-600 text-white'
+                                                                                className={`flex items-center gap-3 p-3 rounded-lg border-2 transition-all ${
+                                                                                    isStudentAnswer && isCorrectAnswer
+                                                                                        ? 'bg-green-500 border-green-600 text-white shadow-md'
                                                                                         : isStudentAnswer
-                                                                                        ? 'bg-red-500 border-red-600 text-white'
-                                                                                        : isCorrect
-                                                                                        ? 'bg-green-400 border-green-500 text-white'
-                                                                                        : 'bg-transparent border-gray-300'
+                                                                                        ? 'bg-red-500 border-red-600 text-white shadow-md'
+                                                                                        : isCorrectAnswer
+                                                                                        ? 'bg-green-100 border-green-300 text-green-800'
+                                                                                        : 'bg-gray-50 border-gray-200 text-gray-600'
                                                                                 }`}
-                                                                                style={{
-                                                                                    backgroundColor: isStudentAnswer && isCorrect ? '#22c55e' : isStudentAnswer ? '#ef4444' : isCorrect ? '#4ade80' : 'transparent',
-                                                                                    borderColor: isStudentAnswer && isCorrect ? '#16a34a' : isStudentAnswer ? '#dc2626' : isCorrect ? '#22c55e' : '#d1d5db',
-                                                                                    color: (isStudentAnswer || isCorrect) ? 'white' : 'black'
-                                                                                }}
                                                                             >
-                                                                                <span className="text-sm">
+                                                                                <div className="w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0">
+                                                                                    {isStudentAnswer && (
+                                                                                        <div className="w-2.5 h-2.5 rounded-full bg-white" />
+                                                                                    )}
+                                                                                </div>
+                                                                                <span className="font-medium text-sm">
                                                                                     {value === 'true' ? 'True' : 'False'}
-                                                                                    {isStudentAnswer && ' (Your answer)'}
-                                                                                    {isCorrect && !isStudentAnswer && ' (Correct)'}
-                                                                                    {isStudentAnswer && isCorrect && ' ✓'}
                                                                                 </span>
+                                                                                {isStudentAnswer && !isCorrectAnswer && (
+                                                                                    <span className="ml-auto text-xs font-medium">
+                                                                                        Your answer
+                                                                                    </span>
+                                                                                )}
+                                                                                {isCorrectAnswer && !isStudentAnswer && (
+                                                                                    <span className="ml-auto text-xs font-medium">
+                                                                                        Correct answer
+                                                                                    </span>
+                                                                                )}
+                                                                                {isStudentAnswer && isCorrectAnswer && (
+                                                                                    <span className="ml-auto text-xs font-medium flex items-center gap-1">
+                                                                                        Correct
+                                                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                        </svg>
+                                                                                    </span>
+                                                                                )}
                                                                             </div>
                                                                         );
-                                                                    })}
-                                                                </div>
-                                                            ) : (
-                                                                <div className="space-y-2 ml-4">
-                                                                    {question.answers.map((answer) => {
+                                                                    })
+                                                                ) : (
+                                                                    question.answers.map((answer) => {
                                                                         const isStudentAnswer = detail?.submitted_answer_id === answer.id;
-                                                                        const isCorrect = detail?.correct_answer_id === answer.id;
-                                                                        console.log('MC Answer:', answer.answer_text, 'isStudentAnswer:', isStudentAnswer, 'isCorrect:', isCorrect, 'detail:', detail);
+                                                                        const isCorrectAnswer = detail?.correct_answer_id === answer.id;
                                                                         return (
                                                                             <div
                                                                                 key={answer.id}
-                                                                                className={`p-2 rounded border-2 ${
-                                                                                    isStudentAnswer && isCorrect
-                                                                                        ? 'bg-green-500 border-green-600 text-white'
+                                                                                className={`flex items-center gap-3 p-3 rounded-lg border-2 transition-all ${
+                                                                                    isStudentAnswer && isCorrectAnswer
+                                                                                        ? 'bg-green-500 border-green-600 text-white shadow-md'
                                                                                         : isStudentAnswer
-                                                                                        ? 'bg-red-500 border-red-600 text-white'
-                                                                                        : isCorrect
-                                                                                        ? 'bg-green-400 border-green-500 text-white'
-                                                                                        : 'bg-transparent border-gray-300'
+                                                                                        ? 'bg-red-500 border-red-600 text-white shadow-md'
+                                                                                        : isCorrectAnswer
+                                                                                        ? 'bg-green-100 border-green-300 text-green-800'
+                                                                                        : 'bg-gray-50 border-gray-200 text-gray-600'
                                                                                 }`}
-                                                                                style={{
-                                                                                    backgroundColor: isStudentAnswer && isCorrect ? '#22c55e' : isStudentAnswer ? '#ef4444' : isCorrect ? '#4ade80' : 'transparent',
-                                                                                    borderColor: isStudentAnswer && isCorrect ? '#16a34a' : isStudentAnswer ? '#dc2626' : isCorrect ? '#22c55e' : '#d1d5db',
-                                                                                    color: (isStudentAnswer || isCorrect) ? 'white' : 'black'
-                                                                                }}
                                                                             >
-                                                                                <span className="text-sm">
+                                                                                <div className="w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0">
+                                                                                    {isStudentAnswer && (
+                                                                                        <div className="w-2.5 h-2.5 rounded-full bg-white" />
+                                                                                    )}
+                                                                                </div>
+                                                                                <span className="font-medium text-sm">
                                                                                     {answer.answer_text}
-                                                                                    {isStudentAnswer && ' (Your answer)'}
-                                                                                    {isCorrect && !isStudentAnswer && ' (Correct)'}
-                                                                                    {isStudentAnswer && isCorrect && ' ✓'}
                                                                                 </span>
+                                                                                {isStudentAnswer && !isCorrectAnswer && (
+                                                                                    <span className="ml-auto text-xs font-medium">
+                                                                                        Your answer
+                                                                                    </span>
+                                                                                )}
+                                                                                {isCorrectAnswer && !isStudentAnswer && (
+                                                                                    <span className="ml-auto text-xs font-medium">
+                                                                                        Correct answer
+                                                                                    </span>
+                                                                                )}
+                                                                                {isStudentAnswer && isCorrectAnswer && (
+                                                                                    <span className="ml-auto text-xs font-medium flex items-center gap-1">
+                                                                                        Correct
+                                                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                        </svg>
+                                                                                    </span>
+                                                                                )}
                                                                             </div>
                                                                         );
-                                                                    })}
-                                                                </div>
-                                                            )}
+                                                                    })
+                                                                )}
+                                                            </div>
                                                         </div>
                                                     );
                                                 })}
@@ -455,18 +561,19 @@ export default function LessonViewer() {
                                     )}
                                 </>
                             ) : (
-                                <div className="text-center py-8">
-                                    <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div className="text-center py-12 bg-gradient-to-br from-indigo-50 to-purple-50/30 rounded-2xl border border-indigo-100">
+                                    <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                                        <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                                         </svg>
                                     </div>
-                                    <p className="text-gray-600 mb-4">
-                                        This lesson has a quiz. Complete it to mark the lesson as done.
+                                    <h3 className="text-xl font-semibold text-gray-900 mb-3">Ready to Test Your Knowledge?</h3>
+                                    <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                                        Complete this quiz to mark the lesson as done and track your progress.
                                     </p>
                                     <Link
                                         to={`/lessons/${lessonId}/quiz`}
-                                        className="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+                                        className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-3 rounded-xl hover:from-indigo-700 hover:to-purple-700 hover:shadow-lg transition-all duration-200 font-medium"
                                     >
                                         Start Quiz
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -481,7 +588,7 @@ export default function LessonViewer() {
 
                 {/* Mark complete button (students only, not for quiz lessons) */}
                 {user?.role === 'student' && state.lesson.content_type !== 'quiz' && (
-                    <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex items-center justify-between">
+                    <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                                 state.completed
@@ -514,17 +621,31 @@ export default function LessonViewer() {
                         <button
                             onClick={toggleComplete}
                             disabled={marking}
-                            className={`px-5 py-2.5 rounded-lg text-white text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
+                            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-white text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 cursor-pointer ${
                                 state.completed
-                                    ? 'bg-gray-400 hover:bg-gray-500'
-                                    : 'bg-green-600 hover:bg-green-700'
+                                    ? 'bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600'
+                                    : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 hover:shadow-md'
                             }`}
                         >
                             {marking
                                 ? 'Saving...'
                                 : state.completed
-                                    ? 'Mark as Incomplete'
-                                    : 'Mark as Complete'}
+                                    ? (
+                                        <>
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                            Mark as Incomplete
+                                        </>
+                                    )
+                                    : (
+                                        <>
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                            </svg>
+                                            Mark as Complete
+                                        </>
+                                    )}
                         </button>
                     </div>
                 )}

@@ -7,28 +7,58 @@ import Badge from '../components/ui/Badge';
 import { CircularProgress } from '../components/ui/Progress';
 import EmptyState from '../components/ui/EmptyState';
 
+const LEVEL_COLORS = {
+  beginner: { bar: '#639922', badge: 'bg-green-50 text-green-700' },
+  intermediate: { bar: '#BA7517', badge: 'bg-amber-50 text-amber-700' },
+  advanced: { bar: '#E24B4A', badge: 'bg-red-50 text-red-700' },
+};
+
 function CourseProgressBar({ courseId }) {
     const [progress, setProgress] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        setLoading(true);
         api.get(`/courses/${courseId}/progress`)
-            .then((res) => setProgress(res.data))
-            .catch(() => { });
+            .then((res) => {
+                setProgress(res.data);
+                setLoading(false);
+            })
+            .catch(() => {
+                setLoading(false);
+            });
     }, [courseId]);
 
-    if (!progress) return null;
+    if (loading) {
+        return (
+            <div className="mt-4">
+                <div className="w-full bg-gray-200 rounded-full h-1.5 animate-pulse" />
+            </div>
+        );
+    }
+
+    if (!progress) {
+        return (
+            <div className="mt-4">
+                <div className="w-full bg-gray-200 rounded-full h-1.5">
+                    <div className="bg-indigo-600 h-1.5 rounded-full" style={{ width: '0%' }} />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Not started</p>
+            </div>
+        );
+    }
 
     return (
         <div className="mt-4">
             <ProgressBar 
-                value={progress.percentage} 
+                value={progress.percentage || 0} 
                 max={100} 
                 showLabel={true}
                 color="indigo"
                 size="sm"
             />
             <p className="text-xs text-gray-500 mt-1">
-                {progress.completed_lessons} of {progress.total_lessons} lessons completed
+                {progress.completed_lessons || 0} of {progress.total_lessons || 0} lessons completed
             </p>
         </div>
     );
@@ -63,7 +93,7 @@ export default function Dashboard() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
                 {/* Header */}
@@ -78,7 +108,7 @@ export default function Dashboard() {
                         <div className="flex gap-3">
                             <Link
                                 to="/courses"
-                                className="inline-flex items-center gap-2 bg-white text-indigo-600 px-5 py-2.5 rounded-lg hover:bg-indigo-50 transition-colors font-medium"
+                                className="inline-flex items-center gap-2 bg-white text-indigo-600 px-5 py-2.5 rounded-lg hover:bg-indigo-50 hover:shadow-md transition-all duration-200 font-medium"
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -87,7 +117,7 @@ export default function Dashboard() {
                             </Link>
                             <Link
                                 to="/my-certificates"
-                                className="inline-flex items-center gap-2 bg-indigo-500 text-white px-5 py-2.5 rounded-lg hover:bg-indigo-400 transition-colors font-medium"
+                                className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white px-5 py-2.5 rounded-lg hover:from-amber-600 hover:to-orange-700 hover:shadow-md transition-all duration-200 font-medium"
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
@@ -131,25 +161,50 @@ export default function Dashboard() {
                                 onAction={() => window.location.href = '/courses'}
                             />
                         ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {myCourses.map((course) => (
-                                    <Link
-                                        key={course.id}
-                                        to={`/courses/${course.id}`}
-                                        className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden group"
-                                    >
-                                        <div className="h-32 bg-gradient-to-br from-indigo-400 to-purple-500 relative">
-                                            <div className="absolute top-3 left-3">
-                                                <Badge variant="primary" className="bg-white/90 backdrop-blur-sm">{course.level}</Badge>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {myCourses.map((course) => {
+                                    const colors = LEVEL_COLORS[course.level] || LEVEL_COLORS.beginner;
+                                    return (
+                                        <Link
+                                            key={course.id}
+                                            to={`/courses/${course.id}`}
+                                            className="bg-white border border-gray-100 rounded-xl overflow-hidden hover:border-indigo-200 transition-colors group block"
+                                        >
+                                            {/* Color bar top */}
+                                            <div className="h-2 w-full" style={{ background: colors.bar }} />
+
+                                            <div className="p-5">
+                                                {/* Level badge */}
+                                                <span className={`text-xs font-medium px-3 py-1.5 rounded-full inline-block mb-4 uppercase ${colors.badge}`}>
+                                                    {course.level}
+                                                </span>
+
+                                                {/* Title */}
+                                                <h2 className="text-base font-semibold text-gray-900 mb-2 leading-snug line-clamp-2 group-hover:text-indigo-600 transition-colors">
+                                                    {course.title}
+                                                </h2>
+
+                                                {/* Description */}
+                                                <p className="text-sm text-gray-400 leading-relaxed line-clamp-2 mb-4">
+                                                    {course.description || 'No description provided.'}
+                                                </p>
+
+                                                {/* Progress */}
+                                                <CourseProgressBar courseId={course.id} />
+
+                                                {/* Footer */}
+                                                <div className="flex items-center justify-between border-t border-gray-100 pt-4 mt-4">
+                                                    <span className="text-sm text-gray-500 truncate max-w-[140px]">
+                                                        {course.instructor?.name}
+                                                    </span>
+                                                    <span className="text-sm text-indigo-600 font-medium group-hover:underline">
+                                                        View →
+                                                    </span>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="p-5">
-                                            <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors">{course.title}</h3>
-                                            <p className="text-gray-500 text-sm mb-3">By {course.instructor?.name}</p>
-                                            <CourseProgressBar courseId={course.id} />
-                                        </div>
-                                    </Link>
-                                ))}
+                                        </Link>
+                                    );
+                                })}
                             </div>
                         )}
                     </div>
@@ -169,7 +224,7 @@ export default function Dashboard() {
                         </p>
                         <Link
                             to="/instructor/dashboard"
-                            className="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+                            className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-indigo-700 hover:to-purple-700 hover:shadow-md transition-all duration-200 font-medium"
                         >
                             Go to Instructor Dashboard
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

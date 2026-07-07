@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
 import Badge from '../../components/ui/Badge';
+import ConfirmModal from '../../components/ui/ConfirmModal';
 
 export default function AssignmentDetail() {
   const { courseId, assignmentId } = useParams();
@@ -17,6 +18,12 @@ export default function AssignmentDetail() {
   const [message, setMessage] = useState(null);
   const [messageType, setMessageType] = useState(null);
   const [gradingData, setGradingData] = useState({});
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: null,
+  });
 
   useEffect(() => {
     const isInstructor = user?.role === 'instructor';
@@ -84,14 +91,22 @@ export default function AssignmentDetail() {
     }
   }
 
-  async function handleDelete() {
-    if (!confirm('Delete this assignment?')) return;
-    try {
-      await api.delete(`/courses/${courseId}/assignments/${assignmentId}`);
-      navigate(`/courses/${courseId}?tab=assignments`);
-    } catch (err) {
-      alert(err.response?.data?.message || 'Delete failed.');
-    }
+  function handleDelete() {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete Assignment',
+      message: 'Are you sure you want to delete this assignment? This action cannot be undone.',
+      onConfirm: async () => {
+        setConfirmModal({ ...confirmModal, isOpen: false });
+        try {
+          await api.delete(`/courses/${courseId}/assignments/${assignmentId}`);
+          navigate(`/courses/${courseId}?tab=assignments`);
+        } catch (err) {
+          setMessage(err.response?.data?.message || 'Delete failed.');
+          setMessageType('error');
+        }
+      },
+    });
   }
 
   async function handleDownloadAttachment() {
@@ -249,7 +264,7 @@ export default function AssignmentDetail() {
               <div className="flex gap-3">
                 <button
                   onClick={handleViewAttachment}
-                  className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-medium transition-colors"
+                  className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-medium transition-colors cursor-pointer"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -259,7 +274,7 @@ export default function AssignmentDetail() {
                 </button>
                 <button
                   onClick={handleDownloadAttachment}
-                  className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-medium transition-colors"
+                  className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-medium transition-colors cursor-pointer"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -274,7 +289,7 @@ export default function AssignmentDetail() {
             <div className="flex gap-3 mt-6 pt-6 border-t border-gray-200">
               <button
                 onClick={handleDelete}
-                className="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2.5 rounded-lg hover:bg-red-700 transition-colors font-medium"
+                className="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2.5 rounded-lg hover:bg-red-700 transition-colors font-medium cursor-pointer"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -330,7 +345,7 @@ export default function AssignmentDetail() {
                             <div className="flex gap-2">
                               <button
                                 onClick={() => handleViewSubmissionFile(submission.file_url)}
-                                className="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-700 text-sm font-medium transition-colors"
+                                className="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-700 text-sm font-medium transition-colors cursor-pointer"
                               >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -340,7 +355,7 @@ export default function AssignmentDetail() {
                               </button>
                               <button
                                 onClick={() => handleDownloadSubmissionFile(submission.id, submission.file_name)}
-                                className="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-700 text-sm font-medium transition-colors"
+                                className="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-700 text-sm font-medium transition-colors cursor-pointer"
                               >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -396,7 +411,7 @@ export default function AssignmentDetail() {
                         {submission.marks === null && (
                           <button
                             onClick={() => handleSaveGrade(submission.id)}
-                            className="bg-indigo-600 text-white px-4 py-2.5 rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+                            className="bg-indigo-600 text-white px-4 py-2.5 rounded-lg hover:bg-indigo-700 transition-colors font-medium cursor-pointer"
                           >
                             Save Grade
                           </button>
@@ -521,6 +536,18 @@ export default function AssignmentDetail() {
           )}
         </div>
       </div>
+
+      {/* Confirm Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal({ ...confirmModal, isOpen: false })}
+        onConfirm={confirmModal.onConfirm}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        confirmText="Confirm"
+        cancelText="Cancel"
+        variant="danger"
+      />
     </div>
   );
 }

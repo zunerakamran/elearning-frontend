@@ -91,7 +91,7 @@ export default function Navbar() {
                     onClick={() => setMenuOpen(!menuOpen)}
                     className="flex items-center gap-2 bg-gray-50 hover:bg-gray-100 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border border-gray-200 hover:border-gray-300"
                   >
-                    <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-indigo-600 text-white rounded-full flex items-center justify-center text-sm font-semibold shadow-sm">
+                    <div className="w-8 h-8 bg-gradient-to-br from-indigo-600 to-indigo-700 text-white rounded-full flex items-center justify-center text-sm font-semibold shadow-sm">
                       {user.name.charAt(0).toUpperCase()}
                     </div>
                     <span className="text-gray-700">{user.name.split(' ')[0]}</span>
@@ -205,7 +205,7 @@ export default function Navbar() {
                 </Link>
                 <div className="px-4 py-3 border-t border-gray-100 mt-2">
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-600 text-white rounded-full flex items-center justify-center text-sm font-semibold">
+                    <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-indigo-700 text-white rounded-full flex items-center justify-center text-sm font-semibold">
                       {user.name.charAt(0).toUpperCase()}
                     </div>
                     <div>

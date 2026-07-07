@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import api from '../../../api/axios';
+import ConfirmModal from '../../../components/ui/ConfirmModal';
 
 export default function AnnouncementsTab({ courseId, isOwner }) {
   const [announcements, setAnnouncements] = useState([]);
@@ -7,6 +8,12 @@ export default function AnnouncementsTab({ courseId, isOwner }) {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ title: '', body: '' });
   const [submitting, setSubmitting] = useState(false);
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: null,
+  });
 
   useEffect(() => {
     api.get(`/courses/${courseId}/announcements`)
@@ -29,10 +36,17 @@ export default function AnnouncementsTab({ courseId, isOwner }) {
     }
   }
 
-  async function handleDelete(id) {
-    if (!confirm('Delete this announcement?')) return;
-    await api.delete(`/courses/${courseId}/announcements/${id}`);
-    setAnnouncements(announcements.filter((a) => a.id !== id));
+  function handleDelete(id) {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete Announcement',
+      message: 'Are you sure you want to delete this announcement? This action cannot be undone.',
+      onConfirm: async () => {
+        setConfirmModal({ ...confirmModal, isOpen: false });
+        await api.delete(`/courses/${courseId}/announcements/${id}`);
+        setAnnouncements(announcements.filter((a) => a.id !== id));
+      },
+    });
   }
 
   if (loading) return (
@@ -42,6 +56,7 @@ export default function AnnouncementsTab({ courseId, isOwner }) {
   );
 
   return (
+    <>
     <div>
       {/* Post announcement form (instructor only) */}
       {isOwner && (
@@ -49,7 +64,7 @@ export default function AnnouncementsTab({ courseId, isOwner }) {
           {!showForm ? (
             <button
               onClick={() => setShowForm(true)}
-              className="w-full border-2 border-dashed border-indigo-300 text-indigo-600 py-4 rounded-xl hover:bg-indigo-50 transition-colors text-sm font-medium inline-flex items-center justify-center gap-2"
+              className="w-full border-2 border-dashed border-indigo-300 text-indigo-600 py-4 rounded-xl hover:bg-indigo-50 transition-colors text-sm font-medium inline-flex items-center justify-center gap-2 cursor-pointer"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -79,7 +94,7 @@ export default function AnnouncementsTab({ courseId, isOwner }) {
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -121,7 +136,7 @@ export default function AnnouncementsTab({ courseId, isOwner }) {
                 {isOwner && (
                   <button
                     onClick={() => handleDelete(announcement.id)}
-                    className="text-red-500 hover:text-red-600 text-sm font-medium transition-colors inline-flex items-center gap-1"
+                    className="text-red-500 hover:text-red-600 text-sm font-medium transition-colors inline-flex items-center gap-1 cursor-pointer"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -136,5 +151,18 @@ export default function AnnouncementsTab({ courseId, isOwner }) {
         </div>
       )}
     </div>
+
+    {/* Confirm Modal */}
+    <ConfirmModal
+      isOpen={confirmModal.isOpen}
+      onClose={() => setConfirmModal({ ...confirmModal, isOpen: false })}
+      onConfirm={confirmModal.onConfirm}
+      title={confirmModal.title}
+      message={confirmModal.message}
+      confirmText="Confirm"
+      cancelText="Cancel"
+      variant="danger"
+    />
+  </>
   );
 }

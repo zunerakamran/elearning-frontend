@@ -42,7 +42,7 @@ export default function InstructorDashboard() {
             <div className="flex gap-3">
               <Link
                 to="/courses/create"
-                className="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 hover:shadow-lg transition-all duration-200 font-medium"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl hover:from-indigo-700 hover:to-purple-700 hover:shadow-lg transition-all duration-200 font-medium"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -51,7 +51,7 @@ export default function InstructorDashboard() {
               </Link>
               <button
                 onClick={handleLogout}
-                className="inline-flex items-center gap-2 bg-white text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-50 hover:shadow-md transition-all duration-200 font-medium border border-gray-200"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 px-6 py-3 rounded-xl hover:from-gray-200 hover:to-gray-300 hover:shadow-md transition-all duration-200 font-medium border border-gray-300"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -118,7 +118,7 @@ export default function InstructorDashboard() {
             {!loading && courses.length > 0 && (
               <Link
                 to="/courses/create"
-                className="inline-flex items-center gap-2 text-indigo-600 font-medium hover:text-indigo-700 transition-colors"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-indigo-700 hover:to-purple-700 hover:shadow-md transition-all duration-200 font-medium text-sm"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -188,7 +188,7 @@ export default function InstructorDashboard() {
                   <div className="grid grid-cols-2 gap-2">
                     <Link
                       to={`/courses/${course.id}/edit`}
-                      className="inline-flex items-center justify-center gap-1.5 bg-indigo-50 text-indigo-600 px-3 py-2.5 rounded-lg hover:bg-indigo-100 transition-colors text-sm font-medium"
+                      className="inline-flex items-center justify-center gap-1.5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-3 py-2.5 rounded-lg hover:from-indigo-700 hover:to-indigo-800 hover:shadow-md transition-all duration-200 text-sm font-medium"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -196,8 +196,17 @@ export default function InstructorDashboard() {
                       Edit
                     </Link>
                     <Link
+                      to={`/courses/${course.id}/lessons`}
+                      className="inline-flex items-center justify-center gap-1.5 bg-gradient-to-r from-purple-600 to-purple-700 text-white px-3 py-2.5 rounded-lg hover:from-purple-700 hover:to-purple-800 hover:shadow-md transition-all duration-200 text-sm font-medium"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      </svg>
+                      Lessons
+                    </Link>
+                    <Link
                       to={`/courses/${course.id}/students`}
-                      className="inline-flex items-center justify-center gap-1.5 bg-gray-50 text-gray-700 px-3 py-2.5 rounded-lg hover:bg-gray-100 transition-colors text-sm font-medium"
+                      className="inline-flex items-center justify-center gap-1.5 bg-gradient-to-r from-gray-600 to-gray-700 text-white px-3 py-2.5 rounded-lg hover:from-gray-700 hover:to-gray-800 hover:shadow-md transition-all duration-200 text-sm font-medium"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -206,7 +215,7 @@ export default function InstructorDashboard() {
                     </Link>
                     <Link
                       to={`/courses/${course.id}/report`}
-                      className="inline-flex items-center justify-center gap-1.5 bg-green-50 text-green-700 px-3 py-2.5 rounded-lg hover:bg-green-100 transition-colors text-sm font-medium"
+                      className="inline-flex items-center justify-center gap-1.5 bg-gradient-to-r from-green-600 to-green-700 text-white px-3 py-2.5 rounded-lg hover:from-green-700 hover:to-green-800 hover:shadow-md transition-all duration-200 text-sm font-medium"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -215,7 +224,7 @@ export default function InstructorDashboard() {
                     </Link>
                     <Link
                       to={`/courses/${course.id}/certificates`}
-                      className="inline-flex items-center justify-center gap-1.5 bg-amber-50 text-amber-700 px-3 py-2.5 rounded-lg hover:bg-amber-100 transition-colors text-sm font-medium"
+                      className="col-span-2 inline-flex items-center justify-center gap-1.5 bg-gradient-to-r from-amber-500 to-orange-600 text-white px-3 py-2.5 rounded-lg hover:from-amber-600 hover:to-orange-700 hover:shadow-md transition-all duration-200 text-sm font-medium"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 003.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />

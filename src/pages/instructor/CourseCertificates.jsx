@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../../api/axios';
 import Certificate from '../../components/Certificate';
+import ConfirmModal from '../../components/ui/ConfirmModal';
 
 export default function CourseCertificates() {
     const { id } = useParams();
@@ -12,6 +13,12 @@ export default function CourseCertificates() {
     const [issuing, setIssuing] = useState(null);
     const [viewing, setViewing] = useState(null);
     const [search, setSearch] = useState('');
+    const [confirmModal, setConfirmModal] = useState({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: null,
+    });
 
     useEffect(() => {
         Promise.all([
@@ -43,15 +50,22 @@ export default function CourseCertificates() {
         }
     }
 
-    async function handleRevoke(certificate) {
-        if (!confirm(`Revoke certificate for ${certificate.student?.name}?`)) return;
-        try {
-            await api.delete(`/courses/${id}/certificates/${certificate.id}`);
-            setCertificates(certificates.filter((c) => c.id !== certificate.id));
-            if (viewing?.id === certificate.id) setViewing(null);
-        } catch (err) {
-            alert('Failed to revoke certificate.');
-        }
+    function handleRevoke(certificate) {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Revoke Certificate',
+            message: `Are you sure you want to revoke the certificate for ${certificate.student?.name}? This action cannot be undone.`,
+            onConfirm: async () => {
+                setConfirmModal({ ...confirmModal, isOpen: false });
+                try {
+                    await api.delete(`/courses/${id}/certificates/${certificate.id}`);
+                    setCertificates(certificates.filter((c) => c.id !== certificate.id));
+                    if (viewing?.id === certificate.id) setViewing(null);
+                } catch (err) {
+                    alert('Failed to revoke certificate.');
+                }
+            },
+        });
     }
 
     function handlePrint(cert) {
@@ -181,7 +195,7 @@ export default function CourseCertificates() {
                                                         <>
                                                             <button
                                                                 onClick={() => setViewing(viewing?.id === cert.id ? null : cert)}
-                                                                className="inline-flex items-center gap-1 bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg hover:bg-indigo-100 text-xs font-medium transition-colors"
+                                                                className="inline-flex items-center gap-1 bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg hover:bg-indigo-100 text-xs font-medium transition-colors cursor-pointer"
                                                             >
                                                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -191,7 +205,7 @@ export default function CourseCertificates() {
                                                             </button>
                                                             <button
                                                                 onClick={() => handlePrint(cert)}
-                                                                className="inline-flex items-center gap-1 bg-green-50 text-green-600 px-3 py-1.5 rounded-lg hover:bg-green-100 text-xs font-medium transition-colors"
+                                                                className="inline-flex items-center gap-1 bg-green-50 text-green-600 px-3 py-1.5 rounded-lg hover:bg-green-100 text-xs font-medium transition-colors cursor-pointer"
                                                             >
                                                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
@@ -200,7 +214,7 @@ export default function CourseCertificates() {
                                                             </button>
                                                             <button
                                                                 onClick={() => handleRevoke(cert)}
-                                                                className="inline-flex items-center gap-1 bg-red-50 text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-100 text-xs font-medium transition-colors"
+                                                                className="inline-flex items-center gap-1 bg-red-50 text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-100 text-xs font-medium transition-colors cursor-pointer"
                                                             >
                                                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -212,7 +226,7 @@ export default function CourseCertificates() {
                                                         <button
                                                             onClick={() => handleIssue(student.id)}
                                                             disabled={issuing === student.id}
-                                                            className="inline-flex items-center gap-1 bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                                            className="inline-flex items-center gap-1 bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
                                                         >
                                                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 003.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
@@ -237,7 +251,7 @@ export default function CourseCertificates() {
                             <h2 className="font-bold text-gray-900">Certificate Preview</h2>
                             <button
                                 onClick={() => setViewing(null)}
-                                className="inline-flex items-center gap-1 text-gray-400 hover:text-gray-600 text-sm font-medium transition-colors"
+                                className="inline-flex items-center gap-1 text-gray-400 hover:text-gray-600 text-sm font-medium transition-colors cursor-pointer"
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -258,6 +272,18 @@ export default function CourseCertificates() {
                     <Certificate certificate={viewing} />
                 </div>
             )}
+
+            {/* Confirm Modal */}
+            <ConfirmModal
+                isOpen={confirmModal.isOpen}
+                onClose={() => setConfirmModal({ ...confirmModal, isOpen: false })}
+                onConfirm={confirmModal.onConfirm}
+                title={confirmModal.title}
+                message={confirmModal.message}
+                confirmText="Confirm"
+                cancelText="Cancel"
+                variant="danger"
+            />
         </div>
     );
 }

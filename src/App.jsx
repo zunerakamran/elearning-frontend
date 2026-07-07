@@ -14,6 +14,7 @@ import QuizForm from './pages/quizzes/QuizForm';
 import QuizViewer from './pages/quizzes/QuizViewer';
 import InstructorDashboard from './pages/instructor/InstructorDashboard';
 import CourseStudents from './pages/instructor/CourseStudents';
+import CourseLessons from './pages/instructor/CourseLessons';
 import AssignmentForm from './pages/assignments/AssignmentForm';
 import AssignmentDetail from './pages/assignments/AssignmentDetail';
 import CourseReport from './pages/instructor/CourseReport';
@@ -46,6 +47,7 @@ function App() {
         <Route path="/courses/:courseId/lessons/:lessonId/quiz/create" element={<ProtectedRoute role="instructor"><QuizForm /></ProtectedRoute>} />
         <Route path="/lessons/:lessonId/quiz" element={<ProtectedRoute><QuizViewer /></ProtectedRoute>} />
         <Route path="/instructor/dashboard" element={<ProtectedRoute role="instructor"><InstructorDashboard /></ProtectedRoute>} />
+        <Route path="/courses/:id/lessons" element={<ProtectedRoute role="instructor"><CourseLessons /></ProtectedRoute>} />
         <Route path="/courses/:id/students" element={<ProtectedRoute role="instructor"><CourseStudents /></ProtectedRoute>} />
         <Route path="/" element={<Navigate to="/courses" />} />
         <Route
