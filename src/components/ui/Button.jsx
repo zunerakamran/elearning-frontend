@@ -12,11 +12,11 @@ const Button = ({
   const baseStyles = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
   
   const variants = {
-    primary: 'bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-lg hover:scale-[1.02] focus:ring-indigo-500',
-    secondary: 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400 focus:ring-gray-500',
-    danger: 'bg-red-600 text-white hover:bg-red-700 hover:shadow-lg focus:ring-red-500',
-    ghost: 'bg-transparent text-gray-600 hover:bg-gray-100 focus:ring-gray-500',
-    success: 'bg-green-600 text-white hover:bg-green-700 hover:shadow-lg focus:ring-green-500',
+    primary: 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white hover:from-indigo-700 hover:to-indigo-800 hover:shadow-lg hover:scale-[1.02] cursor-pointer focus:ring-indigo-500',
+    secondary: 'bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 border border-gray-300 hover:from-gray-100 hover:to-gray-200 hover:border-gray-400 cursor-pointer focus:ring-gray-500',
+    danger: 'bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 hover:shadow-lg cursor-pointer focus:ring-red-500',
+    ghost: 'bg-transparent text-gray-600 hover:bg-gray-100 cursor-pointer focus:ring-gray-500',
+    success: 'bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 hover:shadow-lg cursor-pointer focus:ring-green-500',
   };
   
   const sizes = {

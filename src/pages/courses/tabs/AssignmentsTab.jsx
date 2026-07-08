@@ -106,14 +106,14 @@ export default function AssignmentsTab({ courseId, isOwner }) {
                   <div className="flex gap-2 ml-4">
                     <Link
                       to={`/courses/${courseId}/assignments/${assignment.id}`}
-                      className="inline-flex items-center gap-1 bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-100 transition-colors text-sm font-medium cursor-pointer"
+                      className="inline-flex items-center gap-1 bg-gradient-to-r from-indigo-50 to-indigo-100 text-indigo-600 px-4 py-2 rounded-lg hover:from-indigo-100 hover:to-indigo-200 hover:shadow-md text-sm font-medium cursor-pointer transition-all duration-200"
                     >
                       {isOwner ? 'View Submissions' : 'View & Submit'}
                     </Link>
                     {isOwner && (
                       <button
                         onClick={() => handleDelete(assignment.id)}
-                        className="inline-flex items-center gap-1 bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 transition-colors text-sm font-medium cursor-pointer"
+                        className="inline-flex items-center gap-1 bg-gradient-to-r from-red-50 to-red-100 text-red-600 px-4 py-2 rounded-lg hover:from-red-100 hover:to-red-200 hover:shadow-md text-sm font-medium cursor-pointer transition-all duration-200"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />

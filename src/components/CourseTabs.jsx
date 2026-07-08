@@ -3,6 +3,7 @@ export default function CourseTabs({ activeTab, setActiveTab, isOwner, enrolled 
     { key: 'overview', label: 'Overview' },
     { key: 'announcements', label: 'Announcements' },
     ...(enrolled || isOwner ? [{ key: 'assignments', label: 'Assignments' }] : []),
+    { key: 'reviews', label: 'Reviews' },
   ];
 
   return (

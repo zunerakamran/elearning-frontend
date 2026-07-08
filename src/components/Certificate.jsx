@@ -1,110 +1,178 @@
-export default function Certificate({ certificate }) {
+export default function Certificate({ certificate, fullWidth = false }) {
     const issuedDate = new Date(certificate.issued_at).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
     });
 
+    const instructorName = certificate.issued_by?.name
+        || certificate.issuedBy?.name
+        || 'Instructor';
+
+    const certStyle = fullWidth ? {
+        width: '100%',
+        boxSizing: 'border-box',
+    } : {
+        width: '680px',
+        boxSizing: 'border-box',
+    };
+
     return (
         <div
             id="certificate-content"
-            className="relative bg-white"
             style={{
-                width: '842px',
-                minHeight: '595px',
-                padding: '60px',
-                fontFamily: 'Georgia, serif',
-                border: '20px solid #4f46e5',
-                boxShadow: '0 0 0 4px #a5b4fc, 0 0 0 8px #4f46e5',
-                boxSizing: 'border-box',
+                ...certStyle,
+                background: '#fff',
+                position: 'relative',
+                padding: '50px 60px 44px',
+                fontFamily: "Georgia, 'Times New Roman', serif",
+                border: '8px solid #4f46e5',
             }}
         >
-            {/* Corner decorations */}
-            {['top-4 left-4', 'top-4 right-4', 'bottom-4 left-4', 'bottom-4 right-4'].map((pos, i) => (
-                <div
-                    key={i}
-                    className={`absolute ${pos} w-10 h-10 border-4 border-indigo-900`}
-                    style={{
-                        borderRadius: i === 0 ? '0 0 8px 0' : i === 1 ? '0 0 0 8px' : i === 2 ? '0 8px 0 0' : '8px 0 0 0'
-                    }}
-                />
-            ))}
+            {/* Gradient top accent bar */}
+            <div style={{
+                position: 'absolute',
+                top: 0, left: 0, right: 0,
+                height: '4px',
+                background: 'linear-gradient(to right, #4f46e5, #818cf8)',
+            }} />
+
+            {/* Inner decorative border */}
+            <div style={{
+                position: 'absolute',
+                inset: '14px',
+                border: '1px solid #c7d2fe',
+                pointerEvents: 'none',
+            }} />
 
             {/* Header */}
-            <div className="text-center mb-8">
-                <div className="w-20 h-20 mx-auto mb-3 flex items-center justify-center">
-                    <svg className="w-16 h-16 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 14l9-5-9-5-9 5 9 5z" />
-                        <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
-                    </svg>
+            <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '24px',
+                paddingBottom: '18px',
+                borderBottom: '1px solid #e0e7ff',
+            }}>
+                <div style={{ fontSize: '17px', fontWeight: '500', color: '#1e1b4b', letterSpacing: '1.5px' }}>
+                    E<span style={{ color: '#4f46e5' }}>Learn</span> Academy
                 </div>
-                <h1 className="text-indigo-900 font-bold tracking-widest uppercase text-sm mb-1">
-                    ELearn Academy
-                </h1>
-                <div className="w-32 h-0.5 bg-indigo-300 mx-auto" />
-            </div>
-
-            {/* Certificate title */}
-            <div className="text-center mb-8">
-                <h2
-                    className="text-gray-500 uppercase tracking-widest text-xs mb-2"
-                    style={{ letterSpacing: '6px' }}
-                >
-                    Certificate of Completion
-                </h2>
-                <div className="flex items-center justify-center gap-4">
-                    <div className="h-px bg-gray-300 flex-1" />
-                    <span className="text-3xl text-indigo-200">✦</span>
-                    <div className="h-px bg-gray-300 flex-1" />
+                <div style={{ fontFamily: "'Courier New', monospace", fontSize: '10px', color: '#a5b4fc', letterSpacing: '1px' }}>
+                    {certificate.certificate_number}
                 </div>
             </div>
 
             {/* Body */}
-            <div className="text-center mb-8">
-                <p className="text-gray-500 text-sm mb-4">This is to certify that</p>
-                <h2
-                    className="text-indigo-900 mb-4"
-                    style={{ fontSize: '36px', fontWeight: 'bold', borderBottom: '2px solid #c7d2fe', paddingBottom: '8px', display: 'inline-block', minWidth: '300px' }}
-                >
-                    {certificate.student?.name}
-                </h2>
-                <p className="text-gray-500 text-sm mt-4 mb-2">has successfully completed the course</p>
-                <h3
-                    className="text-gray-800 font-bold mb-2"
-                    style={{ fontSize: '22px' }}
-                >
-                    {certificate.course?.title}
-                </h3>
-                <p className="text-gray-400 text-xs uppercase tracking-widest">
-                    {certificate.course?.level} level
+            <div style={{ textAlign: 'center' }}>
+                <p style={{ fontSize: '10px', letterSpacing: '4px', color: '#6366f1', textTransform: 'uppercase', margin: '0 0 12px' }}>
+                    Certificate of Completion
                 </p>
+
+                {/* Divider */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '22px' }}>
+                    <div style={{ flex: 1, height: '1px', background: '#e0e7ff' }} />
+                    <div style={{ width: '5px', height: '5px', background: '#6366f1', transform: 'rotate(45deg)', flexShrink: 0 }} />
+                    <div style={{ flex: 1, height: '1px', background: '#e0e7ff' }} />
+                </div>
+
+                <p style={{ fontSize: '12px', color: '#9ca3af', fontStyle: 'italic', margin: '0 0 10px' }}>
+                    This is to certify that
+                </p>
+
+                {/* Student name */}
+                <div style={{
+                    fontSize: '36px',
+                    fontWeight: '400',
+                    color: '#1e1b4b',
+                    letterSpacing: '0.5px',
+                    borderBottom: '1.5px solid #c7d2fe',
+                    paddingBottom: '10px',
+                    display: 'inline-block',
+                    minWidth: '260px',
+                    margin: '0 0 10px',
+                }}>
+                    {certificate.student?.name}
+                </div>
+
+                <p style={{ fontSize: '12px', color: '#9ca3af', fontStyle: 'italic', margin: '0 0 6px' }}>
+                    has successfully completed the course
+                </p>
+
+                <div style={{ fontSize: '22px', fontWeight: '500', color: '#1e1b4b', margin: '0 0 10px' }}>
+                    {certificate.course?.title}
+                </div>
+
+                {/* Level pill — only render if level exists */}
+                {certificate.course?.level && (
+                    <span style={{
+                        display: 'inline-block',
+                        fontSize: '10px',
+                        color: '#6366f1',
+                        letterSpacing: '2px',
+                        textTransform: 'uppercase',
+                        fontFamily: 'Arial, sans-serif',
+                        border: '1px solid #c7d2fe',
+                        padding: '3px 14px',
+                        borderRadius: '20px',
+                    }}>
+                        {certificate.course.level} level
+                    </span>
+                )}
             </div>
 
             {/* Footer */}
-            <div className="flex justify-between items-end mt-12">
-                {/* Issued by */}
-                <div className="text-center">
-                    <div className="w-40 border-t-2 border-gray-400 pt-2">
-                        <p className="text-gray-800 font-semibold text-sm">{certificate.issuedBy?.name}</p>
-                        <p className="text-gray-400 text-xs">Instructor</p>
-                    </div>
+            <div style={{
+                display: 'flex',
+                alignItems: 'flex-end',
+                justifyContent: 'space-between',
+                marginTop: '40px',
+                paddingTop: '18px',
+                borderTop: '1px solid #e0e7ff',
+            }}>
+                {/* Instructor */}
+                <div>
+                    <p style={{ fontSize: '15px', color: '#1e1b4b', fontStyle: 'italic', margin: '0 0 5px' }}>
+                        {instructorName}
+                    </p>
+                    <div style={{ width: '140px', height: '1px', background: '#c7d2fe', marginBottom: '4px' }} />
+                    <p style={{ fontSize: '9px', color: '#a5b4fc', letterSpacing: '2px', textTransform: 'uppercase', fontFamily: 'Arial, sans-serif', margin: 0 }}>
+                        Instructor
+                    </p>
                 </div>
 
-                {/* Certificate number */}
-                <div className="text-center">
-                    <div className="bg-indigo-50 border border-indigo-100 rounded-lg px-4 py-2">
-                        <p className="text-indigo-400 text-xs uppercase tracking-widest mb-1">Certificate No.</p>
-                        <p className="text-indigo-700 font-mono font-bold text-sm">{certificate.certificate_number}</p>
+                {/* Seal */}
+                <div style={{
+                    width: '64px',
+                    height: '64px',
+                    borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #4f46e5, #818cf8)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}>
+                    <div style={{
+                        fontSize: '8px',
+                        color: '#fff',
+                        letterSpacing: '0.5px',
+                        textTransform: 'uppercase',
+                        textAlign: 'center',
+                        lineHeight: '1.7',
+                        fontFamily: 'Arial, sans-serif',
+                        fontWeight: '500',
+                    }}>
+                        ELearn<br />Academy<br />✦
                     </div>
                 </div>
 
                 {/* Date */}
-                <div className="text-center">
-                    <div className="w-40 border-t-2 border-gray-400 pt-2">
-                        <p className="text-gray-800 font-semibold text-sm">{issuedDate}</p>
-                        <p className="text-gray-400 text-xs">Date Issued</p>
-                    </div>
+                <div style={{ textAlign: 'right' }}>
+                    <p style={{ fontSize: '14px', color: '#1e1b4b', margin: '0 0 5px' }}>
+                        {issuedDate}
+                    </p>
+                    <div style={{ width: '140px', height: '1px', background: '#c7d2fe', marginBottom: '4px', marginLeft: 'auto' }} />
+                    <p style={{ fontSize: '9px', color: '#a5b4fc', letterSpacing: '2px', textTransform: 'uppercase', fontFamily: 'Arial, sans-serif', margin: 0 }}>
+                        Date Issued
+                    </p>
                 </div>
             </div>
         </div>

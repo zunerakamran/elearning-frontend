@@ -24,7 +24,7 @@ const EmptyState = ({
       {actionText && onAction && (
         <button
           onClick={onAction}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+          className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-lg hover:from-indigo-700 hover:to-indigo-800 hover:shadow-md hover:scale-[1.02] transition-all duration-200 font-medium cursor-pointer"
         >
           {actionText}
         </button>

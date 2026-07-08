@@ -195,7 +195,7 @@ export default function CourseCertificates() {
                                                         <>
                                                             <button
                                                                 onClick={() => setViewing(viewing?.id === cert.id ? null : cert)}
-                                                                className="inline-flex items-center gap-1 bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg hover:bg-indigo-100 text-xs font-medium transition-colors cursor-pointer"
+                                                                className="inline-flex items-center gap-1 bg-gradient-to-r from-indigo-50 to-indigo-100 text-indigo-600 px-3 py-1.5 rounded-lg hover:from-indigo-100 hover:to-indigo-200 hover:shadow-md text-xs font-medium cursor-pointer transition-all duration-200"
                                                             >
                                                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -205,7 +205,7 @@ export default function CourseCertificates() {
                                                             </button>
                                                             <button
                                                                 onClick={() => handlePrint(cert)}
-                                                                className="inline-flex items-center gap-1 bg-green-50 text-green-600 px-3 py-1.5 rounded-lg hover:bg-green-100 text-xs font-medium transition-colors cursor-pointer"
+                                                                className="inline-flex items-center gap-1 bg-gradient-to-r from-green-50 to-green-100 text-green-600 px-3 py-1.5 rounded-lg hover:from-green-100 hover:to-green-200 hover:shadow-md text-xs font-medium cursor-pointer transition-all duration-200"
                                                             >
                                                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
@@ -214,7 +214,7 @@ export default function CourseCertificates() {
                                                             </button>
                                                             <button
                                                                 onClick={() => handleRevoke(cert)}
-                                                                className="inline-flex items-center gap-1 bg-red-50 text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-100 text-xs font-medium transition-colors cursor-pointer"
+                                                                className="inline-flex items-center gap-1 bg-gradient-to-r from-red-50 to-red-100 text-red-600 px-3 py-1.5 rounded-lg hover:from-red-100 hover:to-red-200 hover:shadow-md text-xs font-medium cursor-pointer transition-all duration-200"
                                                             >
                                                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -226,7 +226,7 @@ export default function CourseCertificates() {
                                                         <button
                                                             onClick={() => handleIssue(student.id)}
                                                             disabled={issuing === student.id}
-                                                            className="inline-flex items-center gap-1 bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                                                            className="inline-flex items-center gap-1 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-3 py-1.5 rounded-lg hover:from-indigo-700 hover:to-indigo-800 hover:shadow-md text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 cursor-pointer"
                                                         >
                                                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 003.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
@@ -245,22 +245,20 @@ export default function CourseCertificates() {
                 </div>
 
                 {/* Inline certificate preview */}
+                {/* Full width certificate preview */}
                 {viewing && (
-                    <div className="mt-6 bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                    <div className="mt-6 bg-white rounded-xl shadow p-6">
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="font-bold text-gray-900">Certificate Preview</h2>
+                            <h2 className="font-bold text-gray-700">Certificate Preview</h2>
                             <button
                                 onClick={() => setViewing(null)}
-                                className="inline-flex items-center gap-1 text-gray-400 hover:text-gray-600 text-sm font-medium transition-colors cursor-pointer"
+                                className="text-gray-400 hover:text-gray-600 text-sm"
                             >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                                Close
+                                Close ✕
                             </button>
                         </div>
-                        <div className="overflow-x-auto">
-                            <Certificate certificate={viewing} />
+                        <div style={{ width: '100%' }}>
+                            <Certificate certificate={viewing} fullWidth />
                         </div>
                     </div>
                 )}

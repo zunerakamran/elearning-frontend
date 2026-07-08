@@ -19,7 +19,9 @@ import AssignmentForm from './pages/assignments/AssignmentForm';
 import AssignmentDetail from './pages/assignments/AssignmentDetail';
 import CourseReport from './pages/instructor/CourseReport';
 import MyCertificates from './pages/student/MyCertificates';
+import CertificateView from './pages/student/CertificateView';
 import CourseCertificates from './pages/instructor/CourseCertificates';
+import CourseReviews from './pages/instructor/CourseReviews';
 
 function ProtectedRoute({ children, role }) {
   const { user, loading } = useAuth();
@@ -79,8 +81,16 @@ function App() {
           element={<ProtectedRoute><MyCertificates /></ProtectedRoute>}
         />
         <Route
+          path="/my-certificates/:id"
+          element={<ProtectedRoute><CertificateView /></ProtectedRoute>}
+        />
+        <Route
           path="/courses/:id/certificates"
           element={<ProtectedRoute role="instructor"><CourseCertificates /></ProtectedRoute>}
+        />
+        <Route
+          path="/courses/:id/reviews"
+          element={<ProtectedRoute role="instructor"><CourseReviews /></ProtectedRoute>}
         />
       </Routes>
     </div>

@@ -101,7 +101,7 @@ export default function AnnouncementsTab({ courseId, isOwner }) {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="px-4 py-2 text-sm bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-lg hover:from-indigo-700 hover:to-indigo-800 hover:shadow-md hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 cursor-pointer"
                 >
                   {submitting ? 'Posting...' : 'Post'}
                 </button>

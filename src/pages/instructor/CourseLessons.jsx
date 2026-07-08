@@ -108,7 +108,7 @@ export default function CourseLessons() {
             </div>
             <Link
               to={`/courses/${id}/modules/create`}
-              className="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 hover:shadow-lg transition-all duration-200 font-medium"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-6 py-3 rounded-xl hover:from-indigo-700 hover:to-indigo-800 hover:shadow-lg hover:scale-[1.02] transition-all duration-200 cursor-pointer font-medium"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -157,7 +157,7 @@ export default function CourseLessons() {
                     <div className="flex items-center gap-2">
                       <Link
                         to={`/courses/${id}/modules/${module.id}/lessons/create`}
-                        className="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-600 px-3 py-2 rounded-lg hover:bg-indigo-100 transition-colors text-sm font-medium"
+                        className="inline-flex items-center gap-1.5 bg-gradient-to-r from-indigo-50 to-indigo-100 text-indigo-600 px-3 py-2 rounded-lg hover:from-indigo-100 hover:to-indigo-200 hover:shadow-md text-sm font-medium cursor-pointer transition-all duration-200"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -167,7 +167,7 @@ export default function CourseLessons() {
                       {isOwner && (
                         <button
                           onClick={() => handleDeleteModule(module.id)}
-                          className="inline-flex items-center gap-1.5 bg-red-50 text-red-600 px-3 py-2 rounded-lg hover:bg-red-100 transition-colors text-sm font-medium cursor-pointer"
+                          className="inline-flex items-center gap-1.5 bg-gradient-to-r from-red-50 to-red-100 text-red-600 px-3 py-2 rounded-lg hover:from-red-100 hover:to-red-200 hover:shadow-md text-sm font-medium cursor-pointer transition-all duration-200"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -232,7 +232,7 @@ export default function CourseLessons() {
                             {isOwner && (
                               <button
                                 onClick={() => handleDeleteLesson(module.id, lesson.id)}
-                                className="inline-flex items-center gap-1.5 bg-red-50 text-red-600 px-3 py-2 rounded-lg hover:bg-red-100 transition-colors text-sm font-medium cursor-pointer"
+                                className="inline-flex items-center gap-1.5 bg-gradient-to-r from-red-50 to-red-100 text-red-600 px-3 py-2 rounded-lg hover:from-red-100 hover:to-red-200 hover:shadow-md text-sm font-medium cursor-pointer transition-all duration-200"
                               >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />

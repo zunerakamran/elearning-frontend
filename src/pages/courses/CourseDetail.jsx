@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import CourseTabs from '../../components/CourseTabs';
 import AnnouncementsTab from './tabs/AnnouncementsTab';
 import AssignmentsTab from './tabs/AssignmentsTab';
+import ReviewsTab from './tabs/ReviewsTab';
 import { ProgressBar } from '../../components/ui/Progress';
 import Badge from '../../components/ui/Badge';
 import ConfirmModal from '../../components/ui/ConfirmModal';
@@ -432,6 +433,11 @@ export default function CourseDetail() {
           {/* Assignments Tab */}
           {activeTab === 'assignments' && (
             <AssignmentsTab courseId={id} isOwner={isOwner} />
+          )}
+
+          {/* Reviews Tab */}
+          {activeTab === 'reviews' && (
+            <ReviewsTab courseId={id} enrolled={enrolled} isOwner={isOwner} />
           )}
         </div>
       </div>

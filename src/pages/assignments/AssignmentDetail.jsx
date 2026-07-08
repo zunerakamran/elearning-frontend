@@ -289,7 +289,7 @@ export default function AssignmentDetail() {
             <div className="flex gap-3 mt-6 pt-6 border-t border-gray-200">
               <button
                 onClick={handleDelete}
-                className="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2.5 rounded-lg hover:bg-red-700 transition-colors font-medium cursor-pointer"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-2.5 rounded-lg hover:from-red-700 hover:to-red-800 hover:shadow-md hover:scale-[1.02] transition-all duration-200 font-medium cursor-pointer"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -411,7 +411,7 @@ export default function AssignmentDetail() {
                         {submission.marks === null && (
                           <button
                             onClick={() => handleSaveGrade(submission.id)}
-                            className="bg-indigo-600 text-white px-4 py-2.5 rounded-lg hover:bg-indigo-700 transition-colors font-medium cursor-pointer"
+                            className="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-4 py-2.5 rounded-lg hover:from-indigo-700 hover:to-indigo-800 hover:shadow-md hover:scale-[1.02] transition-all duration-200 font-medium cursor-pointer"
                           >
                             Save Grade
                           </button>
@@ -526,7 +526,7 @@ export default function AssignmentDetail() {
                   <button
                     type="submit"
                     disabled={!file || submitting}
-                    className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                    className="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-6 py-3 rounded-lg hover:from-indigo-700 hover:to-indigo-800 hover:shadow-lg hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium cursor-pointer"
                   >
                     {submitting ? 'Submitting...' : 'Submit Assignment'}
                   </button>

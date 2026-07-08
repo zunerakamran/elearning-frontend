@@ -1,25 +1,18 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../api/axios';
-import Certificate from '../../components/Certificate';
 import Badge from '../../components/ui/Badge';
 import EmptyState from '../../components/ui/EmptyState';
 
 export default function MyCertificates() {
     const [certificates, setCertificates] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [viewing, setViewing] = useState(null);
 
     useEffect(() => {
         api.get('/my-certificates')
             .then((res) => setCertificates(res.data))
             .finally(() => setLoading(false));
     }, []);
-
-    function handlePrint(certificate) {
-        setViewing(certificate);
-        setTimeout(() => window.print(), 300);
-    }
 
     if (loading) return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -85,47 +78,22 @@ export default function MyCertificates() {
                                             })}
                                         </p>
                                     </div>
-                                    <div className="flex gap-2">
-                                        <button
-                                            onClick={() => setViewing(viewing?.id === cert.id ? null : cert)}
-                                            className="flex-1 inline-flex items-center justify-center gap-2 bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-100 transition-colors text-sm font-medium"
-                                        >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                            </svg>
-                                            {viewing?.id === cert.id ? 'Hide' : 'View'}
-                                        </button>
-                                        <button
-                                            onClick={() => handlePrint(cert)}
-                                            className="flex-1 inline-flex items-center justify-center gap-2 bg-amber-50 text-amber-600 px-4 py-2 rounded-lg hover:bg-amber-100 transition-colors text-sm font-medium"
-                                        >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                                            </svg>
-                                            Print
-                                        </button>
-                                    </div>
+                                    <Link
+                                        to={`/my-certificates/${cert.id}`}
+                                        className="flex-1 inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-50 to-indigo-100 text-indigo-600 px-4 py-2 rounded-lg hover:from-indigo-100 hover:to-indigo-200 hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer text-sm font-medium"
+                                    >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                        View
+                                    </Link>
                                 </div>
-
-                                {/* Inline certificate preview */}
-                                {viewing?.id === cert.id && (
-                                    <div className="border-t border-gray-200 p-6 bg-gray-50">
-                                        <Certificate certificate={cert} />
-                                    </div>
-                                )}
                             </div>
                         ))}
                     </div>
                 )}
             </div>
-
-            {/* Print-only certificate (hidden on screen, shown when printing) */}
-            {viewing && (
-                <div className="print-only">
-                    <Certificate certificate={viewing} />
-                </div>
-            )}
         </div>
     );
 }
