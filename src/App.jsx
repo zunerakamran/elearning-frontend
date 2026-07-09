@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
+import EditProfile from './pages/EditProfile';
 import { useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Login from './pages/Login';
@@ -91,6 +92,10 @@ function App() {
         <Route
           path="/courses/:id/reviews"
           element={<ProtectedRoute role="instructor"><CourseReviews /></ProtectedRoute>}
+        />
+        <Route
+          path="/profile/edit"
+          element={<ProtectedRoute><EditProfile /></ProtectedRoute>}
         />
       </Routes>
     </div>

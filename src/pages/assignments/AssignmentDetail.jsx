@@ -29,7 +29,7 @@ export default function AssignmentDetail() {
     const isInstructor = user?.role === 'instructor';
     Promise.all([
       api.get(`/courses/${courseId}/assignments/${assignmentId}`),
-      user ? api.get(`/courses/${courseId}/assignments/${assignmentId}/submission`).catch(() => null) : Promise.resolve(null),
+      user ? api.get(`/assignments/${assignmentId}/my-submission`).catch(() => null) : Promise.resolve(null),
       isInstructor ? api.get(`/assignments/${assignmentId}/submissions`).catch((err) => {
         console.error('Error fetching submissions:', err);
         return { data: [] };
@@ -79,7 +79,7 @@ export default function AssignmentDetail() {
       setFile(null);
 
       // Reload submission data from backend
-      const submissionRes = await api.get(`/courses/${courseId}/assignments/${assignmentId}/submission`);
+      const submissionRes = await api.get(`/assignments/${assignmentId}/my-submission`);
       if (submissionRes.data) {
         setSubmission(submissionRes.data);
       }

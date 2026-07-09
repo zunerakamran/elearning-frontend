@@ -296,11 +296,10 @@ export default function QuizViewer() {
                   >
                     {/* Question Header */}
                     <div className="px-6 py-4 flex items-start gap-4 bg-gray-50">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                        isCorrect 
-                          ? 'bg-gradient-to-br from-green-500 to-emerald-600' 
-                          : 'bg-gradient-to-br from-red-500 to-orange-500'
-                      }`}>
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${isCorrect
+                        ? 'bg-gradient-to-br from-green-500 to-emerald-600'
+                        : 'bg-gradient-to-br from-red-500 to-orange-500'
+                        }`}>
                         {isCorrect ? (
                           <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -314,11 +313,10 @@ export default function QuizViewer() {
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-1">
                           <span className="text-sm font-semibold text-gray-500">Question {index + 1}</span>
-                          <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                            isCorrect 
-                              ? 'bg-green-500 text-white' 
-                              : 'bg-red-500 text-white'
-                          }`}>
+                          <span className={`px-3 py-1 rounded-full text-xs font-bold ${isCorrect
+                            ? 'bg-green-500 text-white'
+                            : 'bg-red-500 text-white'
+                            }`}>
                             {isCorrect ? 'CORRECT' : 'INCORRECT'}
                           </span>
                           <span className="text-xs text-gray-400 capitalize bg-gray-100 px-2 py-1 rounded">
@@ -339,17 +337,15 @@ export default function QuizViewer() {
                           return (
                             <div
                               key={value}
-                              className={`flex items-center gap-3 p-3 rounded border ${
-                                isCorrectAnswer
-                                  ? 'border-green-500 bg-green-50'
-                                  : isStudentAnswer
+                              className={`flex items-center gap-3 p-3 rounded border ${isCorrectAnswer
+                                ? 'border-green-500 bg-green-50'
+                                : isStudentAnswer
                                   ? 'bg-red-500 border-red-600 text-white'
                                   : 'border-gray-200'
-                              }`}
+                                }`}
                             >
-                              <span className={`w-4 h-4 flex items-center justify-center ${
-                                isCorrectAnswer ? 'text-green-600' : isStudentAnswer ? 'text-white' : 'text-gray-400'
-                              }`}>
+                              <span className={`w-4 h-4 flex items-center justify-center ${isCorrectAnswer ? 'text-green-600' : isStudentAnswer ? 'text-white' : 'text-gray-400'
+                                }`}>
                                 {isCorrectAnswer || isStudentAnswer ? '✓' : '○'}
                               </span>
                               <span className={isCorrectAnswer ? 'font-medium' : ''}>
@@ -371,17 +367,15 @@ export default function QuizViewer() {
                           return (
                             <div
                               key={answer.id}
-                              className={`flex items-center gap-3 p-3 rounded border ${
-                                isCorrectAnswer
-                                  ? 'border-green-500 bg-green-50'
-                                  : isStudentAnswer
+                              className={`flex items-center gap-3 p-3 rounded border ${isCorrectAnswer
+                                ? 'border-green-500 bg-green-50'
+                                : isStudentAnswer
                                   ? 'bg-red-500 border-red-600 text-white'
                                   : 'border-gray-200'
-                              }`}
+                                }`}
                             >
-                              <span className={`w-4 h-4 flex items-center justify-center ${
-                                isCorrectAnswer ? 'text-green-600' : isStudentAnswer ? 'text-white' : 'text-gray-400'
-                              }`}>
+                              <span className={`w-4 h-4 flex items-center justify-center ${isCorrectAnswer ? 'text-green-600' : isStudentAnswer ? 'text-white' : 'text-gray-400'
+                                }`}>
                                 {isCorrectAnswer || isStudentAnswer ? '✓' : '○'}
                               </span>
                               <span className={isCorrectAnswer ? 'font-medium' : ''}>
@@ -405,7 +399,7 @@ export default function QuizViewer() {
           </div>
 
           {/* Back Button */}
-          <div className="flex justify-center mt-8">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex justify-center mt-7">
             <button
               onClick={() => navigate(-1)}
               className="inline-flex items-center gap-2 bg-gray-100 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors font-medium"
@@ -477,20 +471,18 @@ export default function QuizViewer() {
                   {['true', 'false'].map((value) => (
                     <div
                       key={value}
-                      className={`flex items-center gap-3 p-3 rounded border ${
-                        user?.role === 'instructor' && question.correct_answer === value
-                          ? 'border-green-500 bg-green-50'
-                          : user?.role === 'instructor'
+                      className={`flex items-center gap-3 p-3 rounded border ${user?.role === 'instructor' && question.correct_answer === value
+                        ? 'border-green-500 bg-green-50'
+                        : user?.role === 'instructor'
                           ? 'border-gray-200'
                           : selectedAnswers[question.id] === value
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:bg-gray-50 cursor-pointer'
-                      }`}
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-gray-200 hover:bg-gray-50 cursor-pointer'
+                        }`}
                     >
                       {user?.role === 'instructor' ? (
-                        <span className={`w-4 h-4 flex items-center justify-center ${
-                          question.correct_answer === value ? 'text-green-600' : 'text-gray-400'
-                        }`}>
+                        <span className={`w-4 h-4 flex items-center justify-center ${question.correct_answer === value ? 'text-green-600' : 'text-gray-400'
+                          }`}>
                           {question.correct_answer === value ? '✓' : '○'}
                         </span>
                       ) : (
@@ -516,20 +508,18 @@ export default function QuizViewer() {
                   {question.answers.map((answer) => (
                     <div
                       key={answer.id}
-                      className={`flex items-center gap-3 p-3 rounded border ${
-                        user?.role === 'instructor' && answer.is_correct
-                          ? 'border-green-500 bg-green-50'
-                          : user?.role === 'instructor'
+                      className={`flex items-center gap-3 p-3 rounded border ${user?.role === 'instructor' && answer.is_correct
+                        ? 'border-green-500 bg-green-50'
+                        : user?.role === 'instructor'
                           ? 'border-gray-200'
                           : selectedAnswers[question.id] === answer.id
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:bg-gray-50 cursor-pointer'
-                      }`}
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-gray-200 hover:bg-gray-50 cursor-pointer'
+                        }`}
                     >
                       {user?.role === 'instructor' ? (
-                        <span className={`w-4 h-4 flex items-center justify-center ${
-                          answer.is_correct ? 'text-green-600' : 'text-gray-400'
-                        }`}>
+                        <span className={`w-4 h-4 flex items-center justify-center ${answer.is_correct ? 'text-green-600' : 'text-gray-400'
+                          }`}>
                           {answer.is_correct ? '✓' : '○'}
                         </span>
                       ) : (

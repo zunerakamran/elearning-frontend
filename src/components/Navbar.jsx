@@ -91,8 +91,14 @@ export default function Navbar() {
                     onClick={() => setMenuOpen(!menuOpen)}
                     className="flex items-center gap-2 bg-gray-50 hover:bg-gray-100 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border border-gray-200 hover:border-gray-300"
                   >
-                    <div className="w-8 h-8 bg-gradient-to-br from-indigo-600 to-indigo-700 text-white rounded-full flex items-center justify-center text-sm font-semibold shadow-sm">
-                      {user.name.charAt(0).toUpperCase()}
+                    <div className="w-8 h-8 rounded-full overflow-hidden shadow-sm flex-shrink-0">
+                      {user.profile_picture_url ? (
+                        <img src={user.profile_picture_url} alt={user.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-indigo-600 to-indigo-700 text-white flex items-center justify-center text-sm font-semibold">
+                          {user.name.charAt(0).toUpperCase()}
+                        </div>
+                      )}
                     </div>
                     <span className="text-gray-700">{user.name.split(' ')[0]}</span>
                     <svg 
@@ -107,10 +113,31 @@ export default function Navbar() {
 
                   {menuOpen && (
                     <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                      <div className="px-4 py-3 border-b border-gray-100">
-                        <p className="text-sm font-semibold text-gray-900">{user.name}</p>
-                        <p className="text-xs text-gray-500 capitalize mt-0.5">{user.role}</p>
+                      <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0">
+                          {user.profile_picture_url ? (
+                            <img src={user.profile_picture_url} alt={user.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-indigo-600 to-indigo-700 text-white flex items-center justify-center text-sm font-semibold">
+                              {user.name.charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-gray-900">{user.name}</p>
+                          <p className="text-xs text-gray-500 capitalize mt-0.5">{user.role}</p>
+                        </div>
                       </div>
+                      <Link
+                        to="/profile/edit"
+                        onClick={() => setMenuOpen(false)}
+                        className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
+                      >
+                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Edit Profile
+                      </Link>
                       <button
                         onClick={handleLogout}
                         className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
@@ -205,14 +232,30 @@ export default function Navbar() {
                 </Link>
                 <div className="px-4 py-3 border-t border-gray-100 mt-2">
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-indigo-700 text-white rounded-full flex items-center justify-center text-sm font-semibold">
-                      {user.name.charAt(0).toUpperCase()}
+                    <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
+                      {user.profile_picture_url ? (
+                        <img src={user.profile_picture_url} alt={user.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-indigo-600 to-indigo-700 text-white flex items-center justify-center text-sm font-semibold">
+                          {user.name.charAt(0).toUpperCase()}
+                        </div>
+                      )}
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-900">{user.name}</p>
                       <p className="text-xs text-gray-500 capitalize">{user.role}</p>
                     </div>
                   </div>
+                  <Link
+                    to="/profile/edit"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-2 w-full px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors mb-1"
+                  >
+                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Edit Profile
+                  </Link>
                   <button
                     onClick={handleLogout}
                     className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-2"
