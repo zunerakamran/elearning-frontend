@@ -195,8 +195,8 @@ export default function InstructorDashboard() {
                   <button
                     onClick={() => setStatusFilter('all')}
                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${statusFilter === 'all'
-                        ? 'bg-white text-gray-900 shadow-sm'
-                        : 'text-gray-500 hover:text-gray-900'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-900'
                       }`}
                   >
                     All
@@ -204,8 +204,8 @@ export default function InstructorDashboard() {
                   <button
                     onClick={() => setStatusFilter('published')}
                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${statusFilter === 'published'
-                        ? 'bg-white text-gray-900 shadow-sm'
-                        : 'text-gray-500 hover:text-gray-900'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-900'
                       }`}
                   >
                     Published
@@ -213,8 +213,8 @@ export default function InstructorDashboard() {
                   <button
                     onClick={() => setStatusFilter('draft')}
                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${statusFilter === 'draft'
-                        ? 'bg-white text-gray-900 shadow-sm'
-                        : 'text-gray-500 hover:text-gray-900'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-900'
                       }`}
                   >
                     Drafts
@@ -242,7 +242,6 @@ export default function InstructorDashboard() {
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
               <div className="w-10 h-10 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mb-4" />
-              <p className="text-gray-500 text-sm">Loading your courses...</p>
             </div>
           ) : courses.length === 0 ? (
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center max-w-2xl mx-auto my-8">
@@ -298,17 +297,17 @@ export default function InstructorDashboard() {
 
                     <div className="absolute top-3 left-3 right-3 flex justify-between items-center z-10">
                       <span className={`text-[10px] uppercase font-extrabold tracking-wider px-2 py-1 rounded-md backdrop-blur-md shadow-sm border ${course.published
-                          ? 'bg-emerald-500/90 text-white border-emerald-400/35'
-                          : 'bg-amber-500/90 text-white border-amber-400/35'
+                        ? 'bg-emerald-500/90 text-white border-emerald-400/35'
+                        : 'bg-amber-500/90 text-white border-amber-400/35'
                         }`}>
                         {course.published ? 'Published' : 'Draft'}
                       </span>
 
                       <span className={`text-[10px] uppercase font-extrabold tracking-wider px-2 py-1 rounded-md backdrop-blur-md shadow-sm border ${course.level === 'beginner'
-                          ? 'bg-white/95 text-emerald-700 border-white/30'
-                          : course.level === 'intermediate'
-                            ? 'bg-white/95 text-amber-700 border-white/30'
-                            : 'bg-white/95 text-rose-700 border-white/30'
+                        ? 'bg-white/95 text-emerald-700 border-white/30'
+                        : course.level === 'intermediate'
+                          ? 'bg-white/95 text-amber-700 border-white/30'
+                          : 'bg-white/95 text-rose-700 border-white/30'
                         }`}>
                         {course.level}
                       </span>

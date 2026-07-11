@@ -23,6 +23,7 @@ import MyCertificates from './pages/student/MyCertificates';
 import CertificateView from './pages/student/CertificateView';
 import CourseCertificates from './pages/instructor/CourseCertificates';
 import CourseReviews from './pages/instructor/CourseReviews';
+import ChatPage from './pages/chat/ChatPage';
 
 function ProtectedRoute({ children, role }) {
   const { user, loading } = useAuth();
@@ -96,6 +97,10 @@ function App() {
         <Route
           path="/profile/edit"
           element={<ProtectedRoute><EditProfile /></ProtectedRoute>}
+        />
+        <Route
+          path="/chat"
+          element={<ProtectedRoute><ChatPage /></ProtectedRoute>}
         />
       </Routes>
     </div>

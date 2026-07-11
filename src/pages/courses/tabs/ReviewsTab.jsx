@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../../../api/axios';
 import { useAuth } from '../../../context/AuthContext';
+import Loader from '../../../components/Loader';
 import StarRating from '../../../components/StarRating';
 
 function RatingBar({ star, count, percent }) {
@@ -83,7 +84,7 @@ export default function ReviewsTab({ courseId, enrolled, isOwner }) {
         }
     }
 
-    if (loading) return <p className="text-gray-400 text-sm py-4">Loading reviews...</p>;
+    if (loading) return <Loader text="Loading reviews..." />;
 
     const canReview = enrolled && !isOwner && user?.role === 'student';
 

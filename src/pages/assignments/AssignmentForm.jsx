@@ -32,9 +32,27 @@ export default function AssignmentForm() {
       if (form.due_date) formData.append('due_date', form.due_date);
       if (file) formData.append('file', file);
 
-      await api.post(`/courses/${courseId}/assignments`, formData, {
+      const response = await api.post(`/courses/${courseId}/assignments`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
+
+      const assignment = response.data;
+      const assignmentLink = assignment?.id ? `/courses/${courseId}/assignments/${assignment.id}` : `/courses/${courseId}?tab=assignments`;
+
+      try {
+        await api.post('/notifications', {
+          type: 'assignment',
+          title: `New assignment posted: ${form.title}`,
+          body: `A new assignment has been added to your course. View it now.`,
+          link: assignmentLink,
+          course_id: courseId,
+          assignment_id: assignment?.id,
+          target_role: 'student',
+        });
+      } catch (notifErr) {
+        // Ignore notification creation failures to avoid blocking assignment creation.
+        console.error('Failed to send assignment notification', notifErr);
+      }
 
       navigate(`/courses/${courseId}?tab=assignments`);
     } catch (err) {

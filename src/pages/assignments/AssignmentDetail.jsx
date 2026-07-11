@@ -78,6 +78,21 @@ export default function AssignmentDetail() {
       setMessageType('success');
       setFile(null);
 
+      // Send notification to instructor
+      try {
+        await api.post('/notifications', {
+          type: 'submission',
+          title: `New assignment submission: ${assignment?.title}`,
+          body: `${user?.name || 'A student'} has submitted the assignment. View and grade it now.`,
+          link: `/courses/${courseId}/assignments/${assignmentId}`,
+          course_id: courseId,
+          assignment_id: assignmentId,
+          target_role: 'instructor',
+        });
+      } catch (notifErr) {
+        console.error('Failed to send submission notification', notifErr);
+      }
+
       // Reload submission data from backend
       const submissionRes = await api.get(`/assignments/${assignmentId}/my-submission`);
       if (submissionRes.data) {
@@ -193,7 +208,7 @@ export default function AssignmentDetail() {
     if (!data) return;
 
     try {
-      await api.put(`/submissions/${submissionId}/grade`, {
+      await api.post(`/assignments/${assignmentId}/submissions/${submissionId}/grade`, {
         marks: data.marks,
         feedback: data.feedback
       });

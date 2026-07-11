@@ -9,6 +9,29 @@ import ReviewsTab from './tabs/ReviewsTab';
 import { ProgressBar } from '../../components/ui/Progress';
 import Badge from '../../components/ui/Badge';
 import ConfirmModal from '../../components/ui/ConfirmModal';
+import ChatWindow from '../../components/ChatWindow';
+import Loader from '../../components/Loader';
+
+function InlineCourseChat({ courseId }) {
+  const [conversation, setConversation] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api.post(`/courses/${courseId}/conversation`)
+      .then((res) => setConversation(res.data))
+      .catch(() => { })
+      .finally(() => setLoading(false));
+  }, [courseId]);
+
+  if (loading) return <Loader text="Loading course details..." />;
+  if (!conversation) return <p className="text-sm text-red-400 py-4">Could not load chat.</p>;
+
+  return (
+    <div className="border border-gray-100 rounded-xl overflow-hidden" style={{ height: '500px' }}>
+      <ChatWindow conversation={conversation} />
+    </div>
+  );
+}
 
 export default function CourseDetail() {
   const { id } = useParams();
@@ -45,7 +68,7 @@ export default function CourseDetail() {
           if (enrollRes.data.enrolled && user?.role === 'student') {
             api.get(`/courses/${id}/progress`)
               .then((res) => setProgress(res.data))
-              .catch(() => {});
+              .catch(() => { });
           }
         }
       })
@@ -130,8 +153,8 @@ export default function CourseDetail() {
         setConfirmModal({ ...confirmModal, isOpen: false });
         try {
           await api.delete(`/modules/${moduleId}/lessons/${lessonId}`);
-          setModules(modules.map(m => 
-            m.id === moduleId 
+          setModules(modules.map(m =>
+            m.id === moduleId
               ? { ...m, lessons: m.lessons?.filter(l => l.id !== lessonId) || [] }
               : m
           ));
@@ -200,71 +223,71 @@ export default function CourseDetail() {
           </div>
         </div>
 
-          {/* Action Bar */}
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-4 mb-6">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              {isStudent && !isOwner && (
-                <div className="flex-1">
-                  {enrolled ? (
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-2 text-green-600 font-medium">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        Enrolled
-                      </div>
-                      {progress && (
-                        <div className="flex items-center gap-3">
-                          <ProgressBar 
-                            value={progress.percentage} 
-                            max={100} 
-                            showLabel={false}
-                            color="green"
-                            className="w-32"
-                          />
-                          <span className="text-sm text-gray-600">{progress.percentage}%</span>
-                        </div>
-                      )}
-                      <button
-                        onClick={handleUnenroll}
-                        disabled={enrolling}
-                        className="text-sm text-red-600 hover:text-red-700 font-medium"
-                      >
-                        {enrolling ? 'Processing...' : 'Unenroll'}
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={handleEnroll}
-                      disabled={enrolling}
-                      className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-2.5 rounded-lg hover:from-indigo-700 hover:to-purple-700 hover:shadow-md transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
+        {/* Action Bar */}
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-4 mb-6">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            {isStudent && !isOwner && (
+              <div className="flex-1">
+                {enrolled ? (
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 text-green-600 font-medium">
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
-                      {enrolling ? 'Enrolling...' : 'Enroll'}
+                      Enrolled
+                    </div>
+                    {progress && (
+                      <div className="flex items-center gap-3">
+                        <ProgressBar
+                          value={progress.percentage}
+                          max={100}
+                          showLabel={false}
+                          color="green"
+                          className="w-32"
+                        />
+                        <span className="text-sm text-gray-600">{progress.percentage}%</span>
+                      </div>
+                    )}
+                    <button
+                      onClick={handleUnenroll}
+                      disabled={enrolling}
+                      className="text-sm text-red-600 hover:text-red-700 font-medium"
+                    >
+                      {enrolling ? 'Processing...' : 'Unenroll'}
                     </button>
-                  )}
-                </div>
-              )}
-              {isOwner && (
-                <div className="flex gap-2">
-                  <Link to={`/courses/${id}/edit`} className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white px-4 py-2 rounded-lg hover:from-amber-600 hover:to-orange-700 hover:shadow-md transition-all duration-200 text-sm font-medium">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleEnroll}
+                    disabled={enrolling}
+                    className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-2.5 rounded-lg hover:from-indigo-700 hover:to-purple-700 hover:shadow-md transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                     </svg>
-                    Edit
-                  </Link>
-                  <button onClick={handleDeleteCourse} className="inline-flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg hover:from-red-600 hover:to-red-700 hover:shadow-md transition-all duration-200 text-sm font-medium">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    Delete
+                    {enrolling ? 'Enrolling...' : 'Enroll'}
                   </button>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
+            {isOwner && (
+              <div className="flex gap-2">
+                <Link to={`/courses/${id}/edit`} className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white px-4 py-2 rounded-lg hover:from-amber-600 hover:to-orange-700 hover:shadow-md transition-all duration-200 text-sm font-medium">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Edit
+                </Link>
+                <button onClick={handleDeleteCourse} className="inline-flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg hover:from-red-600 hover:to-red-700 hover:shadow-md transition-all duration-200 text-sm font-medium">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  Delete
+                </button>
+              </div>
+            )}
           </div>
+        </div>
 
         {/* Tabs */}
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden p-6">
@@ -316,7 +339,7 @@ export default function CourseDetail() {
                   {modules.map((module, moduleIndex) => (
                     <div key={module.id} className="border border-gray-200 rounded-lg overflow-hidden hover:border-indigo-300 transition-all duration-200">
                       <button
-                        onClick={() => {/* Add expand/collapse logic */}}
+                        onClick={() => {/* Add expand/collapse logic */ }}
                         className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-indigo-50/30 hover:from-indigo-50 hover:to-purple-50 transition-all duration-200 cursor-pointer"
                       >
                         <div className="flex items-center gap-3">
@@ -380,7 +403,7 @@ export default function CourseDetail() {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                                           </svg>
                                         )}
-                                        {lesson.content_type === 'files' && (
+                                        {(lesson.content_type === 'files' || lesson.content_type === 'file') && (
                                           <svg className="w-3 h-3 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                           </svg>
@@ -438,6 +461,28 @@ export default function CourseDetail() {
           {/* Reviews Tab */}
           {activeTab === 'reviews' && (
             <ReviewsTab courseId={id} enrolled={enrolled} isOwner={isOwner} />
+          )}
+
+          {activeTab === 'chat' && (
+            <div className="mt-4">
+              {isOwner ? (
+                // Instructor sees a link to their messages inbox
+                <div className="text-center py-8">
+                  <p className="text-sm text-gray-500 mb-3">
+                    View all student messages for this course from your inbox.
+                  </p>
+                  <a
+                    href="/chat"
+                    className="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-blue-700"
+                  >
+                    Go to Messages
+                  </a>
+                </div>
+              ) : enrolled ? (
+                // Student sees inline chat
+                <InlineCourseChat courseId={id} />
+              ) : null}
+            </div>
           )}
         </div>
       </div>
