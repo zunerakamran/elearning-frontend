@@ -18,6 +18,7 @@ export default function AssignmentDetail() {
   const [message, setMessage] = useState(null);
   const [messageType, setMessageType] = useState(null);
   const [gradingData, setGradingData] = useState({});
+  const [savingGrade, setSavingGrade] = useState(null);
   const [confirmModal, setConfirmModal] = useState({
     isOpen: false,
     title: '',
@@ -207,6 +208,7 @@ export default function AssignmentDetail() {
     const data = gradingData[submissionId];
     if (!data) return;
 
+    setSavingGrade(submissionId);
     try {
       await api.post(`/assignments/${assignmentId}/submissions/${submissionId}/grade`, {
         marks: data.marks,
@@ -224,6 +226,8 @@ export default function AssignmentDetail() {
     } catch (err) {
       setMessage(err.response?.data?.message || 'Failed to save grade.');
       setMessageType('error');
+    } finally {
+      setSavingGrade(null);
     }
   }
 
@@ -426,9 +430,10 @@ export default function AssignmentDetail() {
                         {submission.marks === null && (
                           <button
                             onClick={() => handleSaveGrade(submission.id)}
-                            className="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-4 py-2.5 rounded-lg hover:from-indigo-700 hover:to-indigo-800 hover:shadow-md hover:scale-[1.02] transition-all duration-200 font-medium cursor-pointer"
+                            disabled={savingGrade === submission.id}
+                            className="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-4 py-2.5 rounded-lg hover:from-indigo-700 hover:to-indigo-800 hover:shadow-md hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none transition-all duration-200 font-medium cursor-pointer"
                           >
-                            Save Grade
+                            {savingGrade === submission.id ? 'Saving...' : 'Save Grade'}
                           </button>
                         )}
                       </div>
@@ -469,7 +474,28 @@ export default function AssignmentDetail() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                           </svg>
                         </div>
-                        <span className="text-gray-700">{submission.file_name || 'Submitted file'}</span>
+                        <span className="text-gray-700 flex-1">{submission.file_name || 'Submitted file'}</span>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleViewSubmissionFile(submission.file_url)}
+                            className="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-700 text-sm font-medium transition-colors cursor-pointer"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            View
+                          </button>
+                          <button
+                            onClick={() => handleDownloadSubmissionFile(submission.id, submission.file_name)}
+                            className="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-700 text-sm font-medium transition-colors cursor-pointer"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            Download
+                          </button>
+                        </div>
                       </div>
                     </div>
                   )}

@@ -24,6 +24,9 @@ import CertificateView from './pages/student/CertificateView';
 import CourseCertificates from './pages/instructor/CourseCertificates';
 import CourseReviews from './pages/instructor/CourseReviews';
 import ChatPage from './pages/chat/ChatPage';
+import OTPVerification from './pages/OTPVerification';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 function ProtectedRoute({ children, role }) {
   const { user, loading } = useAuth();
@@ -40,6 +43,9 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/verify-otp" element={<OTPVerification />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/courses" element={<CourseList />} />
         <Route path="/courses/create" element={<ProtectedRoute role="instructor"><CourseForm /></ProtectedRoute>} />

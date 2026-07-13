@@ -14,7 +14,8 @@ export default function QuizViewer() {
     loading: true,
     error: null,
     attemptCheckComplete: false,
-    showQuiz: false
+    showQuiz: false,
+    showStartScreen: true
   });
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [submitting, setSubmitting] = useState(false);
@@ -62,7 +63,8 @@ export default function QuizViewer() {
             loading: false,
             error: null,
             attemptCheckComplete: true,
-            showQuiz: true
+            showQuiz: false,
+            showStartScreen: true
           });
         } else {
           // For instructors, just fetch quiz
@@ -74,7 +76,8 @@ export default function QuizViewer() {
             loading: false,
             error: null,
             attemptCheckComplete: true,
-            showQuiz: true
+            showQuiz: false,
+            showStartScreen: true
           });
         }
       } catch (err) {
@@ -100,6 +103,10 @@ export default function QuizViewer() {
 
   function selectTrueFalseAnswer(questionId, value) {
     setSelectedAnswers({ ...selectedAnswers, [questionId]: value });
+  }
+
+  function startQuiz() {
+    setQuizState(prev => ({ ...prev, showStartScreen: false, showQuiz: true }));
   }
 
   async function handleSubmit() {
@@ -422,6 +429,36 @@ export default function QuizViewer() {
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4" />
           <p className="text-gray-500">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show start quiz screen
+  if (quizState.showStartScreen && quizState.quiz && !quizState.hasAttempted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="text-center py-12 bg-gradient-to-br from-indigo-50 to-purple-50/30 rounded-2xl border border-indigo-100">
+            <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">Ready to Test Your Knowledge?</h3>
+            <p className="text-gray-600 mb-6 max-w-md mx-auto">
+              Complete this quiz to mark the lesson as done and track your progress.
+            </p>
+            <button
+              onClick={startQuiz}
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-3 rounded-xl hover:from-indigo-700 hover:to-purple-700 hover:shadow-lg transition-all duration-200 font-medium"
+            >
+              Start Quiz
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     );

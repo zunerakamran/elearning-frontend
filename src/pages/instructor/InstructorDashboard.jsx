@@ -76,7 +76,7 @@ export default function InstructorDashboard() {
                 Instructor Console
               </span>
               <h1 className="text-3xl md:text-4xl font-bold mt-3 tracking-tight">
-                Welcome back, {user?.name?.split(' ')[0]}!
+                Welcome, {user?.name?.split(' ')[0]}!
               </h1>
               <p className="text-indigo-100/90 text-sm md:text-base mt-2 max-w-xl">
                 Manage your curriculum, track student engagement, and review course certificates from one central hub.
@@ -372,6 +372,17 @@ export default function InstructorDashboard() {
 
                         {openDropdownId === course.id && (
                           <div className="dropdown-menu absolute right-0 bottom-full mb-2 w-52 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 z-20 animate-in fade-in slide-in-from-bottom-2 duration-150 origin-bottom-right">
+                            <Link
+                              to={`/courses/${course.id}`}
+                              className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors rounded-t-xl"
+                            >
+                              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                              </svg>
+                              View Course
+                            </Link>
+
                             <Link
                               to={`/courses/${course.id}/edit`}
                               className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"

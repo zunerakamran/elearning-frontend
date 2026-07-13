@@ -1,60 +1,128 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import api from '../api/axios';
 
-export default function Register() {
-  const [form, setForm] = useState({
-    name: '',
-    email: '',
-    password: '',
-    password_confirmation: '',
-    role: 'student',
-  });
-  const [error, setError] = useState(null);
+export default function ResetPassword() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const navigate = useNavigate();
+  const [resending, setResending] = useState(false);
+  const [countdown, setCountdown] = useState(60);
+  const inputRefs = useRef([]);
 
-  function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const email = location.state?.email || '';
+
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [countdown]);
+
+  useEffect(() => {
+    inputRefs.current[0]?.focus();
+  }, []);
+
+  function handleOtpChange(index, value) {
+    if (value.length > 1) {
+      value = value.slice(0, 1);
+    }
+    
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+
+    if (value && index < 5) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  }
+
+  function handleOtpKeyDown(index, e) {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  }
+
+  function handleOtpPaste(e) {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').slice(0, 6);
+    const newOtp = [...otp];
+    pastedData.split('').forEach((char, index) => {
+      if (index < 6) {
+        newOtp[index] = char;
+      }
+    });
+    setOtp(newOtp);
+    const nextEmptyIndex = newOtp.findIndex(val => val === '');
+    if (nextEmptyIndex !== -1) {
+      inputRefs.current[nextEmptyIndex]?.focus();
+    } else {
+      inputRefs.current[5]?.focus();
+    }
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError(null);
-    
-    if (form.password !== form.password_confirmation) {
-      setError('Passwords do not match');
-      return;
-    }
-    
-    if (form.password.length < 6) {
-      setError('Password must be at least 6 characters');
-      return;
-    }
-    
     setLoading(true);
+
+    const otpCode = otp.join('');
+    if (otpCode.length !== 6) {
+      setError('Please enter the complete 6-digit code');
+      setLoading(false);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
+      setLoading(false);
+      return;
+    }
+
     try {
-      await api.post('/register-initiate', form);
-      navigate('/verify-otp', { state: { ...form } });
+      await api.post('/reset-password', { email, otp: otpCode, password });
+      navigate('/login');
     } catch (err) {
-      const message = err.response?.data?.message || 'Registration failed. Please try again.';
-      setError(message);
+      setError(err.response?.data?.message || 'Failed to reset password. Please try again.');
     } finally {
       setLoading(false);
     }
   }
 
+  async function handleResend() {
+    setResending(true);
+    setError(null);
+    try {
+      await api.post('/forgot-password', { email });
+      setCountdown(60);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to resend code. Please try again.');
+    } finally {
+      setResending(false);
+    }
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4 pb-8 pt-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4 py-8">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
             <span className="text-white text-3xl font-bold">E</span>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Create your account</h1>
-          <p className="text-gray-500 mt-1">Start your learning journey today</p>
+          <h1 className="text-2xl font-bold text-gray-900">Reset Password</h1>
+          <p className="text-gray-500 mt-1">Enter the code and your new password</p>
         </div>
 
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
@@ -67,40 +135,49 @@ export default function Register() {
             </div>
           )}
 
-          <div className="mb-5">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-            <input
-              type="text"
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              required
-              placeholder="John Doe"
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-            />
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-3">Enter 6-digit code</label>
+            <div className="flex justify-center gap-2">
+              {otp.map((digit, index) => (
+                <input
+                  key={index}
+                  ref={(el) => (inputRefs.current[index] = el)}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={1}
+                  value={digit}
+                  onChange={(e) => handleOtpChange(index, e.target.value)}
+                  onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                  onPaste={handleOtpPaste}
+                  className="w-12 h-12 text-center text-xl font-semibold border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                />
+              ))}
+            </div>
+            <div className="mt-3 text-center">
+              {countdown > 0 ? (
+                <p className="text-gray-500 text-sm">
+                  Resend in <span className="font-semibold text-indigo-600">{countdown}s</span>
+                </p>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleResend}
+                  disabled={resending}
+                  className="text-indigo-600 text-sm font-medium hover:text-indigo-700 hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {resending ? 'Sending...' : 'Resend Code'}
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="mb-5">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              required
-              placeholder="you@example.com"
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-            />
-          </div>
-
-          <div className="mb-5">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
-                name="password"
-                value={form.password}
-                onChange={handleChange}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="••••••••"
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 pr-12"
@@ -124,14 +201,13 @@ export default function Register() {
             </div>
           </div>
 
-          <div className="mb-5">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
             <div className="relative">
               <input
                 type={showConfirmPassword ? 'text' : 'password'}
-                name="password_confirmation"
-                value={form.password_confirmation}
-                onChange={handleChange}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 placeholder="••••••••"
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 pr-12"
@@ -155,36 +231,22 @@ export default function Register() {
             </div>
           </div>
 
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">I want to</label>
-            <select
-              name="role"
-              value={form.role}
-              onChange={handleChange}
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-            >
-              <option value="student">Learn as a Student</option>
-              <option value="instructor">Teach as an Instructor</option>
-            </select>
-          </div>
-
           <button
             type="submit"
             disabled={loading}
             className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-xl hover:from-indigo-700 hover:to-purple-700 hover:shadow-lg transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-            </svg>
-            {loading ? 'Creating account...' : 'Create account'}
+            {loading ? 'Resetting...' : 'Reset Password'}
           </button>
 
-          <p className="text-sm text-center mt-6 text-gray-600">
-            Already have an account?{' '}
-            <Link to="/login" className="text-indigo-600 font-medium hover:text-indigo-700 hover:underline">
-              Sign in instead
+          <div className="mt-6 text-center">
+            <Link
+              to="/login"
+              className="text-sm text-gray-600 hover:text-gray-700 hover:underline"
+            >
+              Back to Login
             </Link>
-          </p>
+          </div>
         </form>
       </div>
     </div>
