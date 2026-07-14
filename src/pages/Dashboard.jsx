@@ -69,6 +69,18 @@ export default function Dashboard() {
     const navigate = useNavigate();
     const [myCourses, setMyCourses] = useState([]);
     const [loadingCourses, setLoadingCourses] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [levelFilter, setLevelFilter] = useState('all');
+
+    const filteredMyCourses = myCourses.filter((course) => {
+        const searchLower = searchQuery.toLowerCase();
+        const matchesSearch = searchQuery === '' || 
+            course.title.toLowerCase().includes(searchLower) ||
+            course.description?.toLowerCase().includes(searchLower) ||
+            course.instructor?.name?.toLowerCase().includes(searchLower);
+        const matchesLevel = levelFilter === 'all' || course.level === levelFilter;
+        return matchesSearch && matchesLevel;
+    });
 
     // Redirect instructors to their own dashboard
     useEffect(() => {
@@ -131,8 +143,36 @@ export default function Dashboard() {
                 {/* My Enrolled Courses (students only) */}
                 {user?.role === 'student' && (
                     <div>
-                        <div className="flex items-center justify-between mb-6">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                             <h2 className="text-2xl font-bold text-gray-900">My Learning</h2>
+                            {!loadingCourses && myCourses.length > 0 && (
+                                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                                    <div className="relative w-full sm:w-auto">
+                                        <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                            </svg>
+                                        </span>
+                                        <input
+                                            type="text"
+                                            placeholder="Search by title, description, or instructor..."
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            className="block w-full sm:w-72 pl-10 pr-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white shadow-sm"
+                                        />
+                                    </div>
+                                    <select
+                                        value={levelFilter}
+                                        onChange={(e) => setLevelFilter(e.target.value)}
+                                        className="px-3 py-2 border border-gray-200 bg-white rounded-xl text-sm font-medium text-gray-700 focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-sm focus:outline-none w-full sm:w-auto"
+                                    >
+                                        <option value="all">All Levels</option>
+                                        <option value="beginner">Beginner</option>
+                                        <option value="intermediate">Intermediate</option>
+                                        <option value="advanced">Advanced</option>
+                                    </select>
+                                </div>
+                            )}
                         </div>
 
                         {loadingCourses ? (
@@ -160,9 +200,13 @@ export default function Dashboard() {
                                 actionText="Browse Courses"
                                 onAction={() => window.location.href = '/courses'}
                             />
+                        ) : filteredMyCourses.length === 0 ? (
+                            <div className="text-center py-10 bg-white rounded-xl border border-gray-200">
+                                <p className="text-gray-500 font-medium">No courses found matching your search.</p>
+                            </div>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {myCourses.map((course) => {
+                                {filteredMyCourses.map((course) => {
                                     const colors = LEVEL_COLORS[course.level] || LEVEL_COLORS.beginner;
                                     return (
                                         <Link

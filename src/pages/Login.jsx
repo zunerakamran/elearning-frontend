@@ -3,7 +3,13 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState(() => {
+    const savedEmail = localStorage.getItem('rememberedEmail');
+    return { email: savedEmail || '', password: '' };
+  });
+  const [rememberMe, setRememberMe] = useState(() => {
+    return !!localStorage.getItem('rememberedEmail');
+  });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -19,7 +25,12 @@ export default function Login() {
     setError(null);
     setLoading(true);
     try {
-      const user = await login(form);
+      const user = await login({ ...form, rememberMe });
+      if (rememberMe) {
+        localStorage.setItem('rememberedEmail', form.email);
+      } else {
+        localStorage.removeItem('rememberedEmail');
+      }
       if (user.role === 'instructor') {
         navigate('/instructor/dashboard');
       } else {
@@ -62,6 +73,7 @@ export default function Login() {
               value={form.email}
               onChange={handleChange}
               required
+              autoComplete="email"
               placeholder="you@example.com"
               className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
             />
@@ -76,6 +88,7 @@ export default function Login() {
                 value={form.password}
                 onChange={handleChange}
                 required
+                autoComplete="current-password"
                 placeholder="••••••••"
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 pr-12"
               />
@@ -98,6 +111,25 @@ export default function Login() {
             </div>
           </div>
 
+          <div className="flex items-center justify-between mb-6">
+            <label className="flex items-center gap-2 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                name="rememberMe"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-4 h-4 rounded text-indigo-600 border-gray-300 focus:ring-indigo-500 transition-colors cursor-pointer"
+              />
+              <span className="text-sm text-gray-600 font-medium">Remember me</span>
+            </label>
+            <Link
+              to="/forgot-password"
+              className="text-sm text-indigo-600 font-medium hover:text-indigo-700 hover:underline"
+            >
+              Forgot password?
+            </Link>
+          </div>
+
           <button
             type="submit"
             disabled={loading}
@@ -109,17 +141,8 @@ export default function Login() {
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
 
-          <div className="mt-4 text-center">
-            <Link
-              to="/forgot-password"
-              className="text-sm text-indigo-600 font-medium hover:text-indigo-700 hover:underline"
-            >
-              Forgot password?
-            </Link>
-          </div>
-
           <p className="text-sm text-center mt-6 text-gray-600">
-            Don't have an account?{' '}
+            {"Don't have an account?"}{' '}
             <Link to="/register" className="text-indigo-600 font-medium hover:text-indigo-700 hover:underline">
               Sign up for free
             </Link>

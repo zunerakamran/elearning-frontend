@@ -8,12 +8,13 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     if (token) {
       api.get('/me')
         .then((res) => setUser(res.data))
         .catch(() => {
           localStorage.removeItem('token');
+          sessionStorage.removeItem('token');
         })
         .finally(() => setLoading(false));
     } else {
@@ -23,13 +24,21 @@ export function AuthProvider({ children }) {
 
   async function register(data) {
     const res = await api.post('/register', data);
+    sessionStorage.removeItem('token');
     localStorage.setItem('token', res.data.token);
     setUser(res.data.user);
   }
 
   async function login(data) {
-    const res = await api.post('/login', data);
-    localStorage.setItem('token', res.data.token);
+    const { rememberMe, ...loginData } = data;
+    const res = await api.post('/login', loginData);
+    if (rememberMe) {
+      sessionStorage.removeItem('token');
+      localStorage.setItem('token', res.data.token);
+    } else {
+      localStorage.removeItem('token');
+      sessionStorage.setItem('token', res.data.token);
+    }
     setUser(res.data.user);
     return res.data.user;
   }
@@ -37,6 +46,7 @@ export function AuthProvider({ children }) {
   async function logout() {
     await api.post('/logout');
     localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
     setUser(null);
   }
 

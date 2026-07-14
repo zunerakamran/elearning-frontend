@@ -60,9 +60,11 @@ export default function CourseList() {
 
   const filtered = courses.filter((c) => {
     const matchesFilter = filter === 'all' || c.level === filter;
+    const searchLower = searchQuery.toLowerCase();
     const matchesSearch = searchQuery === '' ||
-      c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.description?.toLowerCase().includes(searchQuery.toLowerCase());
+      c.title.toLowerCase().includes(searchLower) ||
+      c.description?.toLowerCase().includes(searchLower) ||
+      c.instructor?.name?.toLowerCase().includes(searchLower);
     return matchesFilter && matchesSearch;
   });
 
@@ -112,9 +114,9 @@ export default function CourseList() {
             <h1 className="text-xl font-semibold text-gray-900 mb-1">Explore courses</h1>
             <p className="text-sm text-gray-400">Discover and learn from expert instructors</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
             {/* Search input */}
-            <div className="relative">
+            <div className="relative w-full sm:w-auto">
               <svg
                 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
                 fill="none"
@@ -125,10 +127,10 @@ export default function CourseList() {
               </svg>
               <input
                 type="text"
-                placeholder="Search courses..."
+                placeholder="Search by title, description, or instructor..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent w-64"
+                className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent w-full sm:w-72"
               />
             </div>
             {user?.role === 'instructor' && (

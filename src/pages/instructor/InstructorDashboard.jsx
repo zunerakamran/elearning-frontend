@@ -51,7 +51,10 @@ export default function InstructorDashboard() {
   }
 
   const filteredCourses = courses.filter((course) => {
-    const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const searchLower = searchQuery.toLowerCase();
+    const matchesSearch = searchQuery === '' || 
+      course.title.toLowerCase().includes(searchLower) ||
+      course.description?.toLowerCase().includes(searchLower);
     const matchesStatus =
       statusFilter === 'all' ||
       (statusFilter === 'published' && course.published) ||
@@ -175,7 +178,7 @@ export default function InstructorDashboard() {
 
               <div className="flex flex-col sm:flex-row gap-3 flex-wrap items-stretch sm:items-center">
                 {/* Search Input */}
-                <div className="relative min-w-[240px]">
+                <div className="relative w-full sm:w-auto">
                   <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -183,10 +186,10 @@ export default function InstructorDashboard() {
                   </span>
                   <input
                     type="text"
-                    placeholder="Search courses..."
+                    placeholder="Search by title or description..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50/50"
+                    className="block w-full sm:w-72 pl-10 pr-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50/50"
                   />
                 </div>
 
