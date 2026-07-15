@@ -80,7 +80,7 @@ export default function OTPVerification() {
 
     try {
       // Complete registration with OTP verification
-      await api.post('/register-complete', {
+      const res = await api.post('/register-complete', {
         email,
         otp: otpCode,
         name,
@@ -88,8 +88,14 @@ export default function OTPVerification() {
         password_confirmation: registrationData.password_confirmation,
         role,
       });
-      
-      // Auto-login after successful registration
+
+      // If backend signals instructor is pending approval, redirect without auto-login
+      if (res.data?.instructor_pending) {
+        navigate('/instructor/pending');
+        return;
+      }
+
+      // Auto-login for students after successful registration
       const user = await login({ email, password });
       if (user.role === 'instructor') {
         navigate('/instructor/dashboard');

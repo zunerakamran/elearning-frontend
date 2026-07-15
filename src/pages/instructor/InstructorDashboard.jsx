@@ -50,15 +50,23 @@ export default function InstructorDashboard() {
     setOpenDropdownId(prevId => prevId === courseId ? null : courseId);
   }
 
+  // Derive a single display status for a course
+  function getCourseStatus(course) {
+    if (course.approval_status === 'pending') return 'pending';
+    if (course.approval_status === 'rejected') return 'rejected';
+    if (course.published) return 'published';
+    return 'draft';
+  }
+
   const filteredCourses = courses.filter((course) => {
     const searchLower = searchQuery.toLowerCase();
-    const matchesSearch = searchQuery === '' || 
+    const matchesSearch = searchQuery === '' ||
       course.title.toLowerCase().includes(searchLower) ||
       course.description?.toLowerCase().includes(searchLower);
+    const status = getCourseStatus(course);
     const matchesStatus =
       statusFilter === 'all' ||
-      (statusFilter === 'published' && course.published) ||
-      (statusFilter === 'draft' && !course.published);
+      statusFilter === status;
     const matchesLevel = levelFilter === 'all' || course.level === levelFilter;
     return matchesSearch && matchesStatus && matchesLevel;
   });
@@ -141,26 +149,32 @@ export default function InstructorDashboard() {
               <div>
                 <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider">Published</p>
                 <p className="text-3xl font-extrabold text-gray-900 mt-2">
-                  {courses.filter(c => c.published).length}
+                  {courses.filter(c => c.published && c.approval_status === 'approved').length}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center shadow-inner">
+              <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center shadow-inner">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex items-center justify-between hover:shadow-md transition-all duration-300">
+            {/* Pending approval stat card */}
+            <div
+              onClick={() => setStatusFilter('pending')}
+              className="bg-white rounded-2xl border border-amber-100 p-6 shadow-sm flex items-center justify-between hover:shadow-md hover:border-amber-300 transition-all duration-300 cursor-pointer group"
+              title="Click to filter pending courses"
+            >
               <div>
-                <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider">Total Reviews</p>
+                <p className="text-amber-500 text-xs font-semibold uppercase tracking-wider">Pending Review</p>
                 <p className="text-3xl font-extrabold text-gray-900 mt-2">
-                  {courses.reduce((sum, c) => sum + (c.reviews_count || 0), 0)}
+                  {courses.filter(c => c.approval_status === 'pending').length}
                 </p>
+                <p className="text-gray-400 text-[11px] mt-1">Awaiting admin approval</p>
               </div>
-              <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center shadow-inner">
+              <div className="w-12 h-12 bg-amber-50 text-amber-500 rounded-xl flex items-center justify-center shadow-inner group-hover:bg-amber-100 transition-colors">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
             </div>
@@ -197,30 +211,38 @@ export default function InstructorDashboard() {
                 <div className="flex bg-gray-100 p-1 rounded-xl">
                   <button
                     onClick={() => setStatusFilter('all')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${statusFilter === 'all'
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-500 hover:text-gray-900'
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${statusFilter === 'all' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'
                       }`}
                   >
                     All
                   </button>
                   <button
                     onClick={() => setStatusFilter('published')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${statusFilter === 'published'
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-500 hover:text-gray-900'
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${statusFilter === 'published' ? 'bg-white text-emerald-700 shadow-sm' : 'text-gray-500 hover:text-gray-900'
                       }`}
                   >
                     Published
                   </button>
                   <button
+                    onClick={() => setStatusFilter('pending')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 ${statusFilter === 'pending' ? 'bg-white text-amber-600 shadow-sm' : 'text-gray-500 hover:text-gray-900'
+                      }`}
+                  >
+                    Pending
+                  </button>
+                  <button
                     onClick={() => setStatusFilter('draft')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${statusFilter === 'draft'
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-500 hover:text-gray-900'
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${statusFilter === 'draft' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'
                       }`}
                   >
                     Drafts
+                  </button>
+                  <button
+                    onClick={() => setStatusFilter('rejected')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 ${statusFilter === 'rejected' ? 'bg-white text-red-600 shadow-sm' : 'text-gray-500 hover:text-gray-900'
+                      }`}
+                  >
+                    Rejected
                   </button>
                 </div>
 
@@ -299,12 +321,33 @@ export default function InstructorDashboard() {
                     <div className="absolute -left-8 -bottom-8 w-28 h-28 rounded-full bg-purple-500/20 blur-xl"></div>
 
                     <div className="absolute top-3 left-3 right-3 flex justify-between items-center z-10">
-                      <span className={`text-[10px] uppercase font-extrabold tracking-wider px-2 py-1 rounded-md backdrop-blur-md shadow-sm border ${course.published
-                        ? 'bg-emerald-500/90 text-white border-emerald-400/35'
-                        : 'bg-amber-500/90 text-white border-amber-400/35'
-                        }`}>
-                        {course.published ? 'Published' : 'Draft'}
-                      </span>
+                      {/* Three-state status badge: Published / Pending Review / Draft */}
+                      {(() => {
+                        const status = getCourseStatus(course);
+                        if (status === 'published') return (
+                          <span className="text-[10px] uppercase font-extrabold tracking-wider px-2 py-1 rounded-md backdrop-blur-md shadow-sm border bg-emerald-500/90 text-white border-emerald-400/35 flex items-center gap-1">
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
+                            Published
+                          </span>
+                        );
+                        if (status === 'pending') return (
+                          <span className="text-[10px] uppercase font-extrabold tracking-wider px-2 py-1 rounded-md backdrop-blur-md shadow-sm border bg-amber-500/95 text-white border-amber-400/40 flex items-center gap-1">
+                            <svg className="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            Pending
+                          </span>
+                        );
+                        if (status === 'rejected') return (
+                          <span className="text-[10px] uppercase font-extrabold tracking-wider px-2 py-1 rounded-md backdrop-blur-md shadow-sm border bg-red-500/95 text-white border-red-400/40 flex items-center gap-1">
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
+                            Rejected
+                          </span>
+                        );
+                        return (
+                          <span className="text-[10px] uppercase font-extrabold tracking-wider px-2 py-1 rounded-md backdrop-blur-md shadow-sm border bg-gray-600/80 text-white border-gray-400/35">
+                            Draft
+                          </span>
+                        );
+                      })()}
 
                       <span className={`text-[10px] uppercase font-extrabold tracking-wider px-2 py-1 rounded-md backdrop-blur-md shadow-sm border ${course.level === 'beginner'
                         ? 'bg-white/95 text-emerald-700 border-white/30'
@@ -328,6 +371,32 @@ export default function InstructorDashboard() {
                       <h3 className="font-bold text-gray-900 text-base leading-snug line-clamp-2 min-h-[2.75rem]">
                         {course.title}
                       </h3>
+
+                      {/* Pending notice banner */}
+                      {course.approval_status === 'pending' && (
+                        <div className="mt-2 mb-1 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                          <svg className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <p className="text-amber-700 text-[11px] font-medium leading-snug">
+                            Awaiting admin approval before going live.
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Rejection reason banner */}
+                      {course.approval_status === 'rejected' && (
+                        <div className="mt-2 mb-1 flex items-start gap-2 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                          <svg className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <p className="text-red-700 text-[11px] font-medium leading-snug">
+                            {course.rejection_reason
+                              ? <>Rejected: <span className="font-normal">{course.rejection_reason}</span></>
+                              : 'This course was rejected by the admin.'}
+                          </p>
+                        </div>
+                      )}
 
                       {/* Course Info metrics row */}
                       <div className="flex items-center gap-4 mt-3 border-b border-gray-50 pb-4 mb-4">

@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import EditProfile from './pages/EditProfile';
 import { useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
@@ -27,6 +27,13 @@ import ChatPage from './pages/chat/ChatPage';
 import OTPVerification from './pages/OTPVerification';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import AdminLayout from './pages/admin/AdminLayout';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminUsers from './pages/admin/AdminUsers';
+import AdminInstructors from './pages/admin/AdminInstructors';
+import AdminCourses from './pages/admin/AdminCourses';
+import AdminCategories from './pages/admin/AdminCategories';
+import InstructorPending from './pages/InstructorPending';
 
 function ProtectedRoute({ children, role }) {
   const { user, loading } = useAuth();
@@ -36,10 +43,20 @@ function ProtectedRoute({ children, role }) {
   return children;
 }
 
+function AdminRoute({ children }) {
+  const { user, loading } = useAuth();
+  if (loading) return <div className="p-8">Loading...</div>;
+  if (!user) return <Navigate to="/login" />;
+  if (user.role !== 'admin') return <Navigate to="/courses" />;
+  return children;
+}
+
 function App() {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
   return (
     <div className="min-h-screen bg-gray-100">
-      <Navbar />
+      {!isAdminRoute && <Navbar />}
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -47,6 +64,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/instructor/pending" element={<InstructorPending />} />
         <Route path="/courses" element={<CourseList />} />
         <Route path="/courses/create" element={<ProtectedRoute role="instructor"><CourseForm /></ProtectedRoute>} />
         <Route path="/courses/:id" element={<CourseDetail />} />
@@ -108,6 +126,18 @@ function App() {
           path="/chat"
           element={<ProtectedRoute><ChatPage /></ProtectedRoute>}
         />
+        {/* Admin routes */}
+        <Route
+          path="/admin"
+          element={<AdminRoute><AdminLayout /></AdminRoute>}
+        >
+          <Route index element={<Navigate to="/admin/dashboard" />} />
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="instructors" element={<AdminInstructors />} />
+          <Route path="courses" element={<AdminCourses />} />
+          <Route path="categories" element={<AdminCategories />} />
+        </Route>
       </Routes>
     </div>
   );

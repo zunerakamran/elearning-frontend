@@ -31,18 +31,31 @@ export default function Login() {
       } else {
         localStorage.removeItem('rememberedEmail');
       }
-      if (user.role === 'instructor') {
+      if (user.role === 'admin') {
+        navigate('/admin/dashboard');
+      } else if (user.role === 'instructor') {
         navigate('/instructor/dashboard');
       } else {
         navigate('/dashboard');
       }
     } catch (err) {
-      const message = err.response?.data?.message || 'Login failed. Please check your credentials.';
+      // Handle pending/rejected instructor responses (HTTP 403)
+      const data = err.response?.data;
+      if (data?.instructor_pending) {
+        navigate('/instructor/pending');
+        return;
+      }
+      if (data?.instructor_rejected) {
+        setError('Your instructor application was rejected. Please contact support for more information.');
+        return;
+      }
+      const message = data?.message || 'Login failed. Please check your credentials.';
       setError(message);
     } finally {
       setLoading(false);
     }
   }
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4">

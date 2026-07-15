@@ -54,7 +54,16 @@ export default function Navbar() {
 
             {user ? (
               <>
-                {user.role === 'instructor' ? (
+                {user.role === 'admin' ? (
+                  <>
+                    <Link
+                      to="/admin/dashboard"
+                      className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200"
+                    >
+                      Admin Panel
+                    </Link>
+                  </>
+                ) : user.role === 'instructor' ? (
                   <>
                     <Link
                       to="/instructor/dashboard"
@@ -212,7 +221,15 @@ export default function Navbar() {
 
             {user ? (
               <>
-                {user.role === 'instructor' ? (
+                {user.role === 'admin' ? (
+                  <Link
+                    to="/admin/dashboard"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg transition-colors"
+                  >
+                    Admin Panel
+                  </Link>
+                ) : user.role === 'instructor' ? (
                   <>
                     <Link
                       to="/instructor/dashboard"
