@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import api from '../../api/axios';
+import ConfirmModal from '../../components/ui/ConfirmModal';
 
 const STATUS_COLORS = {
   pending:  'bg-amber-500/10 text-amber-400 border-amber-500/20',
@@ -17,6 +18,7 @@ export default function AdminCourses() {
   const [rejectModal, setRejectModal] = useState(null);
   const [rejectReason, setRejectReason] = useState('');
   const [toast, setToast]             = useState('');
+  const [deleteModal, setDeleteModal] = useState(null);
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
 
@@ -59,10 +61,14 @@ export default function AdminCourses() {
   }
 
   async function removeCourse(id) {
-    if (!confirm('Remove this course? This cannot be undone.')) return;
+    setDeleteModal(id);
+  }
+
+  async function confirmRemoveCourse() {
     try {
-      await api.delete(`/admin/courses/${id}`);
+      await api.delete(`/admin/courses/${deleteModal}`);
       showToast('Course removed.');
+      setDeleteModal(null);
       load();
     } catch { showToast('Action failed.'); }
   }
@@ -144,7 +150,14 @@ export default function AdminCourses() {
                   )}
                 </div>
                 <p className="text-gray-500 text-xs mt-1">
-                  By <span className="text-gray-400">{c.instructor?.name}</span> ·
+                  By <span className="text-gray-400 flex items-center gap-1">
+                    {c.instructor?.name}
+                    {!!c.instructor?.is_verified && (
+                      <svg className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                      </svg>
+                    )}
+                  </span> ·
                   <span className="ml-1 capitalize">{c.level}</span> ·
                   <span className="ml-1">{c.enrollments_count ?? 0} enrolled</span>
                   {c.category && <span className="ml-1">· {c.category.name}</span>}
@@ -189,6 +202,18 @@ export default function AdminCourses() {
           ))}
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteModal !== null}
+        onClose={() => setDeleteModal(null)}
+        onConfirm={confirmRemoveCourse}
+        title="Remove Course"
+        message="Are you sure you want to remove this course? This action cannot be undone."
+        confirmText="Remove Course"
+        cancelText="Cancel"
+        variant="danger"
+      />
 
       {meta.last_page > 1 && (
         <div className="flex items-center justify-between">

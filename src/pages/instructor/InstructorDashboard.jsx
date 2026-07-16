@@ -349,14 +349,21 @@ export default function InstructorDashboard() {
                         );
                       })()}
 
-                      <span className={`text-[10px] uppercase font-extrabold tracking-wider px-2 py-1 rounded-md backdrop-blur-md shadow-sm border ${course.level === 'beginner'
-                        ? 'bg-white/95 text-emerald-700 border-white/30'
-                        : course.level === 'intermediate'
-                          ? 'bg-white/95 text-amber-700 border-white/30'
-                          : 'bg-white/95 text-rose-700 border-white/30'
-                        }`}>
-                        {course.level}
-                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <span className={`text-[10px] uppercase font-extrabold tracking-wider px-2 py-1 rounded-md backdrop-blur-md shadow-sm border ${course.level === 'beginner'
+                          ? 'bg-white/95 text-emerald-700 border-white/30'
+                          : course.level === 'intermediate'
+                            ? 'bg-white/95 text-amber-700 border-white/30'
+                            : 'bg-white/95 text-rose-700 border-white/30'
+                          }`}>
+                          {course.level}
+                        </span>
+                        {course.featured && (
+                          <span className="text-[10px] uppercase font-extrabold tracking-wider px-2 py-1 rounded-md backdrop-blur-md shadow-sm border bg-amber-400/95 text-white border-amber-300/40 flex items-center gap-1">
+                            ⭐ Featured
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     {/* Decorative Course Name Initial */}

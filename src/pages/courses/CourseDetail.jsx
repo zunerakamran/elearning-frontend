@@ -182,6 +182,7 @@ export default function CourseDetail() {
 
   const isOwner = user?.id === course.instructor_id;
   const isStudent = user?.role === 'student';
+  const isAdmin = user?.role === 'admin';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-indigo-50/20 to-purple-50/20">
@@ -205,6 +206,11 @@ export default function CourseDetail() {
                     {course.instructor?.name?.charAt(0)?.toUpperCase() || 'I'}
                   </div>
                   <span className="text-sm">By {course.instructor?.name || 'Instructor'}</span>
+                  {!!course.instructor?.is_verified && (
+                    <svg className="w-4 h-4 text-blue-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                  )}
                 </div>
               </div>
               <div className="flex gap-3">
@@ -225,70 +231,72 @@ export default function CourseDetail() {
         </div>
 
         {/* Action Bar */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-4 mb-6">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            {isStudent && !isOwner && (
-              <div className="flex-1">
-                {enrolled ? (
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2 text-green-600 font-medium">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      Enrolled
-                    </div>
-                    {progress && (
-                      <div className="flex items-center gap-3">
-                        <ProgressBar
-                          value={progress.percentage}
-                          max={100}
-                          showLabel={false}
-                          color="green"
-                          className="w-32"
-                        />
-                        <span className="text-sm text-gray-600">{progress.percentage}%</span>
+        {!isAdmin && (
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-4 mb-6">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              {isStudent && !isOwner && (
+                <div className="flex-1">
+                  {enrolled ? (
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2 text-green-600 font-medium">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        Enrolled
                       </div>
-                    )}
+                      {progress && (
+                        <div className="flex items-center gap-3">
+                          <ProgressBar
+                            value={progress.percentage}
+                            max={100}
+                            showLabel={false}
+                            color="green"
+                            className="w-32"
+                          />
+                          <span className="text-sm text-gray-600">{progress.percentage}%</span>
+                        </div>
+                      )}
+                      <button
+                        onClick={handleUnenroll}
+                        disabled={enrolling}
+                        className="text-sm text-red-600 hover:text-red-700 font-medium"
+                      >
+                        {enrolling ? 'Processing...' : 'Unenroll'}
+                      </button>
+                    </div>
+                  ) : (
                     <button
-                      onClick={handleUnenroll}
+                      onClick={handleEnroll}
                       disabled={enrolling}
-                      className="text-sm text-red-600 hover:text-red-700 font-medium"
+                      className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-2.5 rounded-lg hover:from-indigo-700 hover:to-purple-700 hover:shadow-md transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {enrolling ? 'Processing...' : 'Unenroll'}
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                      {enrolling ? 'Enrolling...' : 'Enroll'}
                     </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={handleEnroll}
-                    disabled={enrolling}
-                    className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-2.5 rounded-lg hover:from-indigo-700 hover:to-purple-700 hover:shadow-md transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  )}
+                </div>
+              )}
+              {isOwner && (
+                <div className="flex gap-2">
+                  <Link to={`/courses/${id}/edit`} className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white px-4 py-2 rounded-lg hover:from-amber-600 hover:to-orange-700 hover:shadow-md transition-all duration-200 text-sm font-medium">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
-                    {enrolling ? 'Enrolling...' : 'Enroll'}
+                    Edit
+                  </Link>
+                  <button onClick={handleDeleteCourse} className="inline-flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg hover:from-red-600 hover:to-red-700 hover:shadow-md transition-all duration-200 text-sm font-medium">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Delete
                   </button>
-                )}
-              </div>
-            )}
-            {isOwner && (
-              <div className="flex gap-2">
-                <Link to={`/courses/${id}/edit`} className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white px-4 py-2 rounded-lg hover:from-amber-600 hover:to-orange-700 hover:shadow-md transition-all duration-200 text-sm font-medium">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                  Edit
-                </Link>
-                <button onClick={handleDeleteCourse} className="inline-flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg hover:from-red-600 hover:to-red-700 hover:shadow-md transition-all duration-200 text-sm font-medium">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                  Delete
-                </button>
-              </div>
-            )}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Tabs */}
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden p-6">
@@ -297,6 +305,7 @@ export default function CourseDetail() {
             setActiveTab={setActiveTab}
             isOwner={isOwner}
             enrolled={enrolled}
+            isAdmin={isAdmin}
           />
 
           {/* Overview Tab */}
@@ -382,7 +391,7 @@ export default function CourseDetail() {
                           <ul className="space-y-1">
                             {module.lessons?.map((lesson) => (
                               <li key={lesson.id}>
-                                {enrolled || isOwner ? (
+                                {enrolled || isOwner || isAdmin ? (
                                   <div className="flex items-center gap-2 p-2 rounded-md hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 transition-all duration-200 group">
                                     <Link
                                       to={`/modules/${module.id}/lessons/${lesson.id}`}
@@ -451,22 +460,22 @@ export default function CourseDetail() {
 
           {/* Announcements Tab */}
           {activeTab === 'announcements' && (
-            <AnnouncementsTab courseId={id} isOwner={isOwner} />
+            <AnnouncementsTab courseId={id} isOwner={isOwner} isAdmin={isAdmin} />
           )}
 
           {/* Assignments Tab */}
           {activeTab === 'assignments' && (
-            <AssignmentsTab courseId={id} isOwner={isOwner} />
+            <AssignmentsTab courseId={id} isOwner={isOwner} isAdmin={isAdmin} />
           )}
 
           {/* Discussions Tab */}
           {activeTab === 'discussions' && (
-            <DiscussionsTab courseId={id} isOwner={isOwner} />
+            <DiscussionsTab courseId={id} isOwner={isOwner} isAdmin={isAdmin} />
           )}
 
           {/* Reviews Tab */}
           {activeTab === 'reviews' && (
-            <ReviewsTab courseId={id} enrolled={enrolled} isOwner={isOwner} />
+            <ReviewsTab courseId={id} enrolled={enrolled} isOwner={isOwner} isAdmin={isAdmin} />
           )}
 
           {activeTab === 'chat' && (

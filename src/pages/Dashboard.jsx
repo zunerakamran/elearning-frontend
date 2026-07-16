@@ -219,9 +219,16 @@ export default function Dashboard() {
 
                                             <div className="p-5">
                                                 {/* Level badge */}
-                                                <span className={`text-xs font-medium px-3 py-1.5 rounded-full inline-block mb-4 uppercase ${colors.badge}`}>
-                                                    {course.level}
-                                                </span>
+                                                <div className="flex items-center gap-2 mb-4">
+                                                    <span className={`text-xs font-medium px-3 py-1.5 rounded-full inline-block uppercase ${colors.badge}`}>
+                                                        {course.level}
+                                                    </span>
+                                                    {course.featured && (
+                                                        <span className="text-xs font-medium px-3 py-1.5 rounded-full inline-block bg-amber-50 text-amber-700 border border-amber-200">
+                                                            Featured
+                                                        </span>
+                                                    )}
+                                                </div>
 
                                                 {/* Title */}
                                                 <h2 className="text-base font-semibold text-gray-900 mb-2 leading-snug line-clamp-2 group-hover:text-indigo-600 transition-colors">
@@ -238,9 +245,16 @@ export default function Dashboard() {
 
                                                 {/* Footer */}
                                                 <div className="flex items-center justify-between border-t border-gray-100 pt-4 mt-4">
-                                                    <span className="text-sm text-gray-500 truncate max-w-[140px]">
-                                                        {course.instructor?.name}
-                                                    </span>
+                                                    <div className="flex items-center gap-1.5">
+                                                        <span className="text-sm text-gray-500 truncate max-w-[140px]">
+                                                            {course.instructor?.name}
+                                                        </span>
+                                                        {!!course.instructor?.is_verified && (
+                                                            <svg className="w-4 h-4 text-blue-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                                                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                                            </svg>
+                                                        )}
+                                                    </div>
                                                     <span className="text-sm text-indigo-600 font-medium group-hover:underline">
                                                         View →
                                                     </span>

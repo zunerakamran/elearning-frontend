@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import api from '../../api/axios';
+import ConfirmModal from '../../components/ui/ConfirmModal';
 
 const STATUS_COLORS = {
   active: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
@@ -33,6 +34,7 @@ export default function AdminUsers() {
   const [saving, setSaving]     = useState(false);
   const [actionUser, setActionUser] = useState(null);
   const [toast, setToast]       = useState('');
+  const [deleteModal, setDeleteModal] = useState(null);
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
 
@@ -79,10 +81,14 @@ export default function AdminUsers() {
   }
 
   async function deleteUser(userId) {
-    if (!confirm('Are you sure you want to delete this user? This cannot be undone.')) return;
+    setDeleteModal(userId);
+  }
+
+  async function confirmDeleteUser() {
     try {
-      await api.delete(`/admin/users/${userId}`);
+      await api.delete(`/admin/users/${deleteModal}`);
       showToast('User deleted.');
+      setDeleteModal(null);
       load();
     } catch { showToast('Failed to delete user.'); }
   }
@@ -212,6 +218,18 @@ export default function AdminUsers() {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteModal !== null}
+        onClose={() => setDeleteModal(null)}
+        onConfirm={confirmDeleteUser}
+        title="Delete User"
+        message="Are you sure you want to delete this user? This action cannot be undone."
+        confirmText="Delete User"
+        cancelText="Cancel"
+        variant="danger"
+      />
 
       {/* Pagination */}
       {meta.last_page > 1 && (

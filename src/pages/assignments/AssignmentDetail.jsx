@@ -28,10 +28,11 @@ export default function AssignmentDetail() {
 
   useEffect(() => {
     const isInstructor = user?.role === 'instructor';
+    const isAdmin = user?.role === 'admin';
     Promise.all([
       api.get(`/courses/${courseId}/assignments/${assignmentId}`),
       user ? api.get(`/assignments/${assignmentId}/my-submission`).catch(() => null) : Promise.resolve(null),
-      isInstructor ? api.get(`/assignments/${assignmentId}/submissions`).catch((err) => {
+      (isInstructor || isAdmin) ? api.get(`/assignments/${assignmentId}/submissions`).catch((err) => {
         console.error('Error fetching submissions:', err);
         return { data: [] };
       }) : Promise.resolve({ data: [] }),
@@ -243,6 +244,7 @@ export default function AssignmentDetail() {
 
   const isInstructor = user?.role === 'instructor';
   const isStudent = user?.role === 'student';
+  const isAdmin = user?.role === 'admin';
   const isPastDue = assignment.due_date ? new Date(assignment.due_date) < new Date() : false;
 
   return (
@@ -304,7 +306,7 @@ export default function AssignmentDetail() {
             </div>
           )}
 
-          {isInstructor && (
+          {isInstructor && !isAdmin && (
             <div className="flex gap-3 mt-6 pt-6 border-t border-gray-200">
               <button
                 onClick={handleDelete}
@@ -318,9 +320,12 @@ export default function AssignmentDetail() {
             </div>
           )}
 
-          {isInstructor && (
+          {(isInstructor || isAdmin) && (
             <div className="mt-8 pt-8 border-t border-gray-200">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">Student Submissions ({submissions.length})</h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-6">
+                Student Submissions ({submissions.length})
+                {isAdmin && <span className="text-sm font-normal text-gray-500 ml-2">(Read-only)</span>}
+              </h2>
 
               {submissions.length === 0 ? (
                 <div className="text-center py-8 bg-gray-50 rounded-xl">
@@ -389,14 +394,14 @@ export default function AssignmentDetail() {
                       {/* Grading interface */}
                       <div className="bg-white rounded-xl p-5 border border-gray-200">
                         <h4 className="font-semibold text-gray-900 mb-4">
-                          {submission.marks !== null ? 'Grade (Read-only)' : 'Grade this submission'}
+                          {isAdmin || submission.marks !== null ? 'Grade (Read-only)' : 'Grade this submission'}
                         </h4>
                         <div className="grid grid-cols-2 gap-4 mb-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Marks (out of {assignment.total_marks})</label>
-                            {submission.marks !== null ? (
+                            {isAdmin || submission.marks !== null ? (
                               <div className="text-lg font-semibold text-green-600">
-                                {submission.marks}/{assignment.total_marks}
+                                {submission.marks || 'Not graded'}/{assignment.total_marks}
                               </div>
                             ) : (
                               <input
@@ -413,7 +418,7 @@ export default function AssignmentDetail() {
                         </div>
                         <div className="mb-4">
                           <label className="block text-sm font-medium text-gray-700 mb-2">Feedback (optional)</label>
-                          {submission.marks !== null ? (
+                          {isAdmin || submission.marks !== null ? (
                             <div className="text-gray-700 bg-gray-50 p-3 rounded-lg">
                               {submission.feedback || 'No feedback provided'}
                             </div>
@@ -427,7 +432,7 @@ export default function AssignmentDetail() {
                             />
                           )}
                         </div>
-                        {submission.marks === null && (
+                        {!isAdmin && submission.marks === null && (
                           <button
                             onClick={() => handleSaveGrade(submission.id)}
                             disabled={savingGrade === submission.id}

@@ -133,9 +133,16 @@ export default function ChatPage() {
                                                 )}
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className={`text-sm truncate ${hasUnread ? 'font-semibold text-gray-900' : 'text-gray-700'}`}>
-                                                    {otherPerson?.name}
-                                                </p>
+                                                <div className="flex items-center gap-1.5">
+                                                    <p className={`text-sm truncate ${hasUnread ? 'font-semibold text-gray-900' : 'text-gray-700'}`}>
+                                                        {otherPerson?.name}
+                                                    </p>
+                                                    {!!otherPerson?.is_verified && (
+                                                        <svg className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                                                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                                        </svg>
+                                                    )}
+                                                </div>
                                                 <p className="text-xs text-gray-400 truncate">
                                                     {conv.course?.title}
                                                 </p>

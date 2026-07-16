@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import api from '../../../api/axios';
 import ConfirmModal from '../../../components/ui/ConfirmModal';
 
-export default function AssignmentsTab({ courseId, isOwner }) {
+export default function AssignmentsTab({ courseId, isOwner, isAdmin }) {
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [confirmModal, setConfirmModal] = useState({
@@ -108,9 +108,9 @@ export default function AssignmentsTab({ courseId, isOwner }) {
                       to={`/courses/${courseId}/assignments/${assignment.id}`}
                       className="inline-flex items-center gap-1 bg-gradient-to-r from-indigo-50 to-indigo-100 text-indigo-600 px-4 py-2 rounded-lg hover:from-indigo-100 hover:to-indigo-200 hover:shadow-md text-sm font-medium cursor-pointer transition-all duration-200"
                     >
-                      {isOwner ? 'View Submissions' : 'View & Submit'}
+                      {isOwner || isAdmin ? 'View Submissions' : 'View & Submit'}
                     </Link>
-                    {isOwner && (
+                    {isOwner && !isAdmin && (
                       <button
                         onClick={() => handleDelete(assignment.id)}
                         className="inline-flex items-center gap-1 bg-gradient-to-r from-red-50 to-red-100 text-red-600 px-4 py-2 rounded-lg hover:from-red-100 hover:to-red-200 hover:shadow-md text-sm font-medium cursor-pointer transition-all duration-200"

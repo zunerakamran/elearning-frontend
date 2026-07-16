@@ -1,6 +1,7 @@
 import { NavLink, useNavigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useState } from 'react';
+import NotificationBell from '../../components/NotificationBell';
 
 const navItems = [
   {
@@ -150,8 +151,20 @@ export default function AdminLayout() {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-auto">
-        <Outlet />
+      <main className="flex-1 overflow-auto flex flex-col">
+        {/* Top Header */}
+        <header className="bg-[#151922] border-b border-white/5 h-16 flex items-center justify-between px-6 lg:px-8 flex-shrink-0">
+          <div className="flex items-center gap-3">
+            <h1 className="text-white font-bold text-xs uppercase tracking-widest text-gray-400">Admin Control Panel</h1>
+          </div>
+          <div className="flex items-center gap-4">
+            <NotificationBell theme="dark" />
+          </div>
+        </header>
+
+        <div className="flex-1">
+          <Outlet />
+        </div>
       </main>
     </div>
   );

@@ -49,6 +49,14 @@ export default function Login() {
         setError('Your instructor application was rejected. Please contact support for more information.');
         return;
       }
+      if (data?.account_suspended) {
+        setError('Your account has been suspended. Please contact support.');
+        return;
+      }
+      if (data?.account_banned) {
+        setError('Your account has been banned.');
+        return;
+      }
       const message = data?.message || 'Login failed. Please check your credentials.';
       setError(message);
     } finally {

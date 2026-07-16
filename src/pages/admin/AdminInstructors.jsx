@@ -100,7 +100,14 @@ export default function AdminInstructors() {
                           {u.name?.charAt(0).toUpperCase()}
                         </div>
                         <div>
-                          <p className="text-white text-sm font-medium">{u.name}</p>
+                          <div className="flex items-center gap-1.5">
+                            <p className="text-white text-sm font-medium">{u.name}</p>
+                            {!!u.is_verified && (
+                              <svg className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                              </svg>
+                            )}
+                          </div>
                           <p className="text-gray-500 text-xs">{u.email}</p>
                         </div>
                       </div>

@@ -19,6 +19,8 @@ export default function QuizViewer() {
   });
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [submitting, setSubmitting] = useState(false);
+  const [quizAttempts, setQuizAttempts] = useState([]);
+  const [loadingAttempts, setLoadingAttempts] = useState(false);
   const quizDataRef = useRef(null);
   const hasAttemptedRef = useRef(false);
 
@@ -67,7 +69,7 @@ export default function QuizViewer() {
             showStartScreen: true
           });
         } else {
-          // For instructors, just fetch quiz
+          // For instructors/admins, just fetch quiz
           const quizRes = await api.get(`/lessons/${lessonId}/quiz`);
           setQuizState({
             quiz: quizRes.data,
@@ -97,6 +99,25 @@ export default function QuizViewer() {
     fetchData();
   }, [lessonId, user]);
 
+  // Fetch quiz attempts for admins
+  useEffect(() => {
+    if (user?.role === 'admin' && quizState.quiz) {
+      setLoadingAttempts(true);
+      console.log('Fetching quiz attempts for quiz ID:', quizState.quiz.id);
+      api.get(`/quizzes/${quizState.quiz.id}/attempts`)
+        .then(res => {
+          console.log('Quiz attempts response:', res.data);
+          setQuizAttempts(res.data || []);
+        })
+        .catch(err => {
+          console.error('Error fetching quiz attempts:', err);
+          console.error('Error response:', err.response);
+          setQuizAttempts([]);
+        })
+        .finally(() => setLoadingAttempts(false));
+    }
+  }, [user?.role, quizState.quiz]);
+
   function selectAnswer(questionId, answerId) {
     setSelectedAnswers({ ...selectedAnswers, [questionId]: answerId });
   }
@@ -108,6 +129,13 @@ export default function QuizViewer() {
   function startQuiz() {
     setQuizState(prev => ({ ...prev, showStartScreen: false, showQuiz: true }));
   }
+
+  // Auto-start quiz for students (no start screen)
+  useEffect(() => {
+    if (quizState.quiz && !quizState.hasAttempted && user?.role === 'student' && quizState.showStartScreen) {
+      setQuizState(prev => ({ ...prev, showStartScreen: false, showQuiz: true }));
+    }
+  }, [quizState.quiz, quizState.hasAttempted, user?.role, quizState.showStartScreen]);
 
   async function handleSubmit() {
     if (Object.keys(selectedAnswers).length < quizState.quiz.questions.length) {
@@ -434,38 +462,9 @@ export default function QuizViewer() {
     );
   }
 
-  // Show start quiz screen
-  if (quizState.showStartScreen && quizState.quiz && !quizState.hasAttempted) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="text-center py-12 bg-gradient-to-br from-indigo-50 to-purple-50/30 rounded-2xl border border-indigo-100">
-            <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-              <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">Ready to Test Your Knowledge?</h3>
-            <p className="text-gray-600 mb-6 max-w-md mx-auto">
-              Complete this quiz to mark the lesson as done and track your progress.
-            </p>
-            <button
-              onClick={startQuiz}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-3 rounded-xl hover:from-indigo-700 hover:to-purple-700 hover:shadow-lg transition-all duration-200 font-medium"
-            >
-              Start Quiz
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Only show quiz questions if showQuiz flag is true
-  if (!quizState.showQuiz) {
+  // Only show quiz questions if showQuiz flag is true (for students)
+  // For instructors and admins, show quiz immediately
+  if (!quizState.showQuiz && user?.role === 'student') {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -594,6 +593,62 @@ export default function QuizViewer() {
               Back to Lesson
             </button>
           </div>
+        ) : user?.role === 'admin' ? (
+          <>
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex justify-center">
+              <button
+                onClick={() => navigate(-1)}
+                className="inline-flex items-center gap-2 bg-gray-100 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                Back to Lesson
+              </button>
+            </div>
+
+            {/* Quiz Attempts List for Admin */}
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mt-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Student Quiz Attempts ({quizAttempts.length})</h2>
+              {loadingAttempts ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="w-6 h-6 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
+                </div>
+              ) : quizAttempts.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">No quiz attempts</div>
+              ) : (
+                <div className="space-y-3">
+                  {quizAttempts.map(attempt => (
+                    <div key={attempt.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-white text-sm font-bold">
+                            {attempt.student?.name?.charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">{attempt.student?.name}</p>
+                            <p className="text-xs text-gray-500">{attempt.student?.email}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="text-right">
+                            <p className="text-lg font-bold text-gray-900">{attempt.score}%</p>
+                            <p className="text-xs text-gray-500">{attempt.correct}/{attempt.total} correct</p>
+                          </div>
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${attempt.passed ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                            {attempt.passed ? 'Passed' : 'Failed'}
+                          </span>
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-400 mt-2">
+                        Submitted: {new Date(attempt.created_at).toLocaleString()}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </>
         ) : (
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex items-center justify-between">
             <div className="flex items-center gap-2">

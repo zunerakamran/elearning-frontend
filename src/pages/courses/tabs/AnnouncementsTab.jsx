@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../../../api/axios';
 import ConfirmModal from '../../../components/ui/ConfirmModal';
 
-export default function AnnouncementsTab({ courseId, isOwner }) {
+export default function AnnouncementsTab({ courseId, isOwner, isAdmin }) {
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -59,7 +59,7 @@ export default function AnnouncementsTab({ courseId, isOwner }) {
     <>
     <div>
       {/* Post announcement form (instructor only) */}
-      {isOwner && (
+      {isOwner && !isAdmin && (
         <div className="mb-6">
           {!showForm ? (
             <button
@@ -127,13 +127,20 @@ export default function AnnouncementsTab({ courseId, isOwner }) {
                 <div>
                   <h3 className="font-semibold text-lg text-gray-900">{announcement.title}</h3>
                   <p className="text-xs text-gray-500 mt-1">
-                    By <span className="font-medium text-gray-700">{announcement.instructor?.name}</span> ·{' '}
+                    By <span className="font-medium text-gray-700 flex items-center gap-1">
+                      {announcement.instructor?.name}
+                      {!!announcement.instructor?.is_verified && (
+                        <svg className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                      )}
+                    </span> ·{' '}
                     {new Date(announcement.created_at).toLocaleDateString('en-US', {
                       year: 'numeric', month: 'short', day: 'numeric'
                     })}
                   </p>
                 </div>
-                {isOwner && (
+                {isOwner && !isAdmin && (
                   <button
                     onClick={() => handleDelete(announcement.id)}
                     className="text-red-500 hover:text-red-600 text-sm font-medium transition-colors inline-flex items-center gap-1 cursor-pointer"

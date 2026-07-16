@@ -3,7 +3,7 @@ import api from '../../../api/axios';
 import ConfirmModal from '../../../components/ui/ConfirmModal';
 import { useAuth } from '../../../context/AuthContext';
 
-export default function DiscussionsTab({ courseId, isOwner }) {
+export default function DiscussionsTab({ courseId, isOwner, isAdmin }) {
   const { user } = useAuth();
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -213,9 +213,14 @@ export default function DiscussionsTab({ courseId, isOwner }) {
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="font-semibold text-gray-900">{selectedQuestion.user?.name}</span>
+                          {!!selectedQuestion.user?.is_verified && (
+                            <svg className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                          )}
                           <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                            selectedQuestion.user?.role === 'instructor' 
-                              ? 'bg-purple-100 text-purple-700' 
+                            selectedQuestion.user?.role === 'instructor'
+                              ? 'bg-purple-100 text-purple-700'
                               : 'bg-gray-100 text-gray-600'
                           }`}>
                             {selectedQuestion.user?.role?.toUpperCase()}
@@ -228,7 +233,7 @@ export default function DiscussionsTab({ courseId, isOwner }) {
                         </p>
                       </div>
                     </div>
-                    {user && (selectedQuestion.user_id === user.id || isOwner) && (
+                    {user && (selectedQuestion.user_id === user.id || isOwner) && !isAdmin && (
                       <button
                         onClick={() => handleDeleteQuestion(selectedQuestion.id)}
                         className="text-red-500 hover:text-red-700 text-xs font-semibold p-1 hover:bg-red-50 rounded transition-colors cursor-pointer"
@@ -298,6 +303,11 @@ export default function DiscussionsTab({ courseId, isOwner }) {
                             <div className="flex-1">
                               <div className="flex items-center gap-2">
                                 <span className="font-semibold text-sm text-gray-900">{reply.user?.name}</span>
+                                {!!reply.user?.is_verified && (
+                                  <svg className="w-3 h-3 text-blue-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                  </svg>
+                                )}
                                 {isInstructorReply && (
                                   <span className="text-[9px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded-full font-bold">
                                     INSTRUCTOR
@@ -332,7 +342,7 @@ export default function DiscussionsTab({ courseId, isOwner }) {
                                 </button>
 
                                 {/* Instructor controls */}
-                                {isOwner && (
+                                {isOwner && !isAdmin && (
                                   <>
                                     <button
                                       onClick={() => handleTogglePin(reply.id)}
@@ -354,7 +364,7 @@ export default function DiscussionsTab({ courseId, isOwner }) {
                                 )}
 
                                 {/* Delete reply */}
-                                {user && (isReplyAuthor || isOwner) && (
+                                {user && (isReplyAuthor || isOwner) && !isAdmin && (
                                   <button
                                     onClick={() => handleDeleteReply(reply.id)}
                                     className="text-red-500 hover:text-red-700 text-xs font-medium ml-auto cursor-pointer"
@@ -371,8 +381,8 @@ export default function DiscussionsTab({ courseId, isOwner }) {
                   </div>
                 )}
 
-                {/* Reply Form — hidden if the current user is the question author (students can't answer their own questions) */}
-                {user && !(selectedQuestion?.user_id === user.id && !isOwner) ? (
+                {/* Reply Form — hidden if the current user is the question author (students can't answer their own questions) or admin */}
+                {user && !(selectedQuestion?.user_id === user.id && !isOwner) && !isAdmin ? (
                   <form onSubmit={handleCreateReply} className="border border-gray-200 rounded-xl p-5 bg-gray-50 shadow-inner">
                     <label className="block text-sm font-semibold text-gray-800 mb-2">Write a Reply</label>
                     <textarea
@@ -397,6 +407,10 @@ export default function DiscussionsTab({ courseId, isOwner }) {
                   <div className="border border-dashed border-gray-200 rounded-xl p-5 bg-gray-50 text-center text-sm text-gray-400">
                     You cannot reply to your own question.
                   </div>
+                ) : isAdmin ? (
+                  <div className="border border-dashed border-gray-200 rounded-xl p-5 bg-gray-50 text-center text-sm text-gray-400">
+                    Admin view - cannot post replies
+                  </div>
                 ) : null}
               </div>
             )}
@@ -405,61 +419,63 @@ export default function DiscussionsTab({ courseId, isOwner }) {
           /* Discussion Questions List View */
           <div>
             {/* Ask Question toggle / button */}
-            <div className="mb-6">
-              {!showQuestionForm ? (
-                <button
-                  onClick={() => setShowQuestionForm(true)}
-                  className="w-full border-2 border-dashed border-indigo-300 text-indigo-600 py-4 rounded-xl hover:bg-indigo-50 transition-all text-sm font-semibold inline-flex items-center justify-center gap-2 cursor-pointer hover:shadow-sm"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                  Ask a Question
-                </button>
-              ) : (
-                <form onSubmit={handleCreateQuestion} className="border border-indigo-200 rounded-2xl p-6 bg-indigo-50/50">
-                  <h3 className="font-bold text-gray-900 text-lg mb-4">New Discussion Question</h3>
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Question Title</label>
-                    <input
-                      type="text"
-                      placeholder="What is your question about? Be specific."
-                      value={questionForm.title}
-                      onChange={(e) => setQuestionForm({ ...questionForm, title: e.target.value })}
-                      required
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-all"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Question Details</label>
-                    <textarea
-                      placeholder="Describe what you are trying to solve or clarify..."
-                      value={questionForm.content}
-                      onChange={(e) => setQuestionForm({ ...questionForm, content: e.target.value })}
-                      required
-                      rows={5}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-all"
-                    />
-                  </div>
-                  <div className="flex gap-2 justify-end">
-                    <button
-                      type="button"
-                      onClick={() => setShowQuestionForm(false)}
-                      className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-150 rounded-lg transition-colors cursor-pointer"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={submittingQuestion}
-                      className="px-5 py-2 text-sm bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-lg hover:from-indigo-700 hover:to-indigo-800 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer font-medium"
-                    >
-                      {submittingQuestion ? 'Submitting...' : 'Post Question'}
-                    </button>
-                  </div>
-                </form>
-              )}
-            </div>
+            {!isAdmin && (
+              <div className="mb-6">
+                {!showQuestionForm ? (
+                  <button
+                    onClick={() => setShowQuestionForm(true)}
+                    className="w-full border-2 border-dashed border-indigo-300 text-indigo-600 py-4 rounded-xl hover:bg-indigo-50 transition-all text-sm font-semibold inline-flex items-center justify-center gap-2 cursor-pointer hover:shadow-sm"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    Ask a Question
+                  </button>
+                ) : (
+                  <form onSubmit={handleCreateQuestion} className="border border-indigo-200 rounded-2xl p-6 bg-indigo-50/50">
+                    <h3 className="font-bold text-gray-900 text-lg mb-4">New Discussion Question</h3>
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Question Title</label>
+                      <input
+                        type="text"
+                        placeholder="What is your question about? Be specific."
+                        value={questionForm.title}
+                        onChange={(e) => setQuestionForm({ ...questionForm, title: e.target.value })}
+                        required
+                        className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-all"
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Question Details</label>
+                      <textarea
+                        placeholder="Describe what you are trying to solve or clarify..."
+                        value={questionForm.content}
+                        onChange={(e) => setQuestionForm({ ...questionForm, content: e.target.value })}
+                        required
+                        rows={5}
+                        className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-all"
+                      />
+                    </div>
+                    <div className="flex gap-2 justify-end">
+                      <button
+                        type="button"
+                        onClick={() => setShowQuestionForm(false)}
+                        className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-150 rounded-lg transition-colors cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={submittingQuestion}
+                        className="px-5 py-2 text-sm bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-lg hover:from-indigo-700 hover:to-indigo-800 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer font-medium"
+                      >
+                        {submittingQuestion ? 'Submitting...' : 'Post Question'}
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </div>
+            )}
 
             {/* Questions List */}
             {questions.length === 0 ? (
@@ -496,7 +512,14 @@ export default function DiscussionsTab({ courseId, isOwner }) {
                         {q.content}
                       </p>
                       <p className="text-[10px] text-gray-400 mt-2">
-                        Posted by <span className="font-medium text-gray-600">{q.user?.name}</span> ·{' '}
+                        Posted by <span className="font-medium text-gray-600 flex items-center gap-1">
+                          {q.user?.name}
+                          {!!q.user?.is_verified && (
+                            <svg className="w-3 h-3 text-blue-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                          )}
+                        </span> ·{' '}
                         {new Date(q.created_at).toLocaleDateString('en-US', {
                           year: 'numeric', month: 'short', day: 'numeric'
                         })}
@@ -508,7 +531,7 @@ export default function DiscussionsTab({ courseId, isOwner }) {
                         <span className="block font-bold text-gray-800 text-sm group-hover:text-indigo-700">{q.replies_count || 0}</span>
                         <span className="block text-[9px] text-gray-400 font-semibold uppercase tracking-wider">Replies</span>
                       </div>
-                      {user && (q.user_id === user.id || isOwner) && (
+                      {user && (q.user_id === user.id || isOwner) && !isAdmin && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();

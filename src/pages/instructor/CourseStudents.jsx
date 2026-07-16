@@ -266,7 +266,14 @@ export default function CourseStudents() {
                       <tbody>
                         {attempts[quiz.id]?.map((attempt) => (
                           <tr key={attempt.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                            <td className="p-4 font-medium text-gray-900">{attempt.user?.name}</td>
+                            <td className="p-4 font-medium text-gray-900 flex items-center gap-1.5">
+                              {attempt.user?.name}
+                              {!!attempt.user?.is_verified && (
+                                <svg className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                </svg>
+                              )}
+                            </td>
                             <td className="p-4 text-gray-500 text-sm">{attempt.user?.email}</td>
                             <td className="p-4 font-semibold text-gray-900">{attempt.score}%</td>
                             <td className="p-4">

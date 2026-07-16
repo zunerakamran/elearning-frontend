@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import api from '../../api/axios';
+import ConfirmModal from '../../components/ui/ConfirmModal';
 
 export default function AdminCategories() {
   const [categories, setCategories] = useState([]);
@@ -9,6 +10,7 @@ export default function AdminCategories() {
   const [form, setForm]             = useState({ name: '', description: '' });
   const [saving, setSaving]         = useState(false);
   const [toast, setToast]           = useState('');
+  const [deleteModal, setDeleteModal] = useState(null);
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
 
@@ -55,10 +57,14 @@ export default function AdminCategories() {
   }
 
   async function deleteCategory(id) {
-    if (!confirm('Delete this category? Courses in this category will become uncategorized.')) return;
+    setDeleteModal(id);
+  }
+
+  async function confirmDeleteCategory() {
     try {
-      await api.delete(`/admin/categories/${id}`);
+      await api.delete(`/admin/categories/${deleteModal}`);
       showToast('Category deleted.');
+      setDeleteModal(null);
       load();
     } catch { showToast('Failed to delete.'); }
   }
@@ -149,6 +155,18 @@ export default function AdminCategories() {
           ))}
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteModal !== null}
+        onClose={() => setDeleteModal(null)}
+        onConfirm={confirmDeleteCategory}
+        title="Delete Category"
+        message="Delete this category? Courses in this category will become uncategorized."
+        confirmText="Delete Category"
+        cancelText="Cancel"
+        variant="danger"
+      />
 
       {/* Create/Edit Modal */}
       {showForm && (

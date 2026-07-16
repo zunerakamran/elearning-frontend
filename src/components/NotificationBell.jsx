@@ -77,7 +77,8 @@ const DefaultIcon = () => (
     </svg>
 );
 
-export default function NotificationBell() {
+export default function NotificationBell({ theme = 'light' }) {
+    const isDark = theme === 'dark';
     const [open, setOpen] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
@@ -170,9 +171,16 @@ export default function NotificationBell() {
             {/* Bell button */}
             <button
                 onClick={handleOpen}
-                className="relative w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+                className={`relative w-9 h-9 flex items-center justify-center rounded-full transition-colors ${
+                    isDark ? 'hover:bg-white/5' : 'hover:bg-gray-100'
+                }`}
             >
-                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                    className={`w-5 h-5 ${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600'}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                 </svg>
                 {unreadCount > 0 && (
@@ -184,14 +192,19 @@ export default function NotificationBell() {
 
             {/* Dropdown */}
             {open && (
-                <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-100 rounded-xl shadow-xl z-50 overflow-hidden">
-
+                <div
+                    className={`absolute right-0 mt-2 w-80 rounded-xl shadow-xl z-50 overflow-hidden border ${
+                        isDark ? 'bg-[#151922] border-white/5' : 'bg-white border-gray-100'
+                    }`}
+                >
                     {/* Header */}
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-                        <h3 className="text-sm font-semibold text-gray-800">
+                    <div className={`flex items-center justify-between px-4 py-3 border-b ${
+                        isDark ? 'border-white/5' : 'border-gray-100'
+                    }`}>
+                        <h3 className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-800'}`}>
                             Notifications
                             {unreadCount > 0 && (
-                                <span className="ml-2 text-xs font-medium text-blue-600">
+                                <span className={`ml-2 text-xs font-medium ${isDark ? 'text-violet-400' : 'text-blue-600'}`}>
                                     {unreadCount} new
                                 </span>
                             )}
@@ -199,7 +212,7 @@ export default function NotificationBell() {
                         {unreadCount > 0 && (
                             <button
                                 onClick={handleMarkAllRead}
-                                className="text-xs text-blue-600 hover:underline"
+                                className={`text-xs ${isDark ? 'text-violet-400' : 'text-blue-600'} hover:underline`}
                             >
                                 Mark all read
                             </button>
@@ -212,17 +225,21 @@ export default function NotificationBell() {
                             <div className="p-4 space-y-3">
                                 {[1, 2, 3].map((i) => (
                                     <div key={i} className="animate-pulse flex gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0" />
+                                        <div className={`w-8 h-8 rounded-full flex-shrink-0 ${
+                                            isDark ? 'bg-white/5' : 'bg-gray-200'
+                                        }`} />
                                         <div className="flex-1 space-y-1.5">
-                                            <div className="h-3 bg-gray-200 rounded w-3/4" />
-                                            <div className="h-3 bg-gray-100 rounded w-1/2" />
+                                            <div className={`h-3 rounded w-3/4 ${isDark ? 'bg-white/10' : 'bg-gray-200'}`} />
+                                            <div className={`h-3 rounded w-1/2 ${isDark ? 'bg-white/5' : 'bg-gray-100'}`} />
                                         </div>
                                     </div>
                                 ))}
                             </div>
                         ) : notifications.length === 0 ? (
                             <div className="px-4 py-10 text-center">
-                                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 ${
+                                    isDark ? 'bg-white/5' : 'bg-gray-100'
+                                }`}>
                                     <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                                     </svg>
@@ -234,23 +251,32 @@ export default function NotificationBell() {
                                 <div
                                     key={notification.id}
                                     onClick={() => handleClick(notification)}
-                                    className={`flex items-start gap-3 px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors border-b border-gray-50 group ${!notification.read ? 'bg-blue-50/50' : ''
-                                        }`}
+                                    className={`flex items-start gap-3 px-4 py-3 cursor-pointer transition-colors border-b group ${
+                                        isDark
+                                            ? 'hover:bg-white/5 border-white/5'
+                                            : 'hover:bg-gray-50 border-gray-50'
+                                    } ${!notification.read ? (isDark ? 'bg-violet-500/10' : 'bg-blue-50/50') : ''}`}
                                 >
                                     {/* Icon */}
-                                    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                                        isDark ? 'bg-white/5' : 'bg-gray-100'
+                                    }`}>
                                         {TYPE_ICONS[notification.type] || <DefaultIcon />}
                                     </div>
 
                                     {/* Content */}
                                     <div className="flex-1 min-w-0">
-                                        <p className={`text-xs leading-snug ${!notification.read ? 'font-semibold text-gray-800' : 'text-gray-600'}`}>
+                                        <p className={`text-xs leading-snug ${
+                                            !notification.read
+                                                ? (isDark ? 'font-semibold text-white' : 'font-semibold text-gray-800')
+                                                : (isDark ? 'text-gray-300' : 'text-gray-600')
+                                        }`}>
                                             {notification.title}
                                         </p>
-                                        <p className="text-xs text-gray-400 mt-0.5 leading-relaxed">
+                                        <p className={`text-xs mt-0.5 leading-relaxed ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                                             {notification.body}
                                         </p>
-                                        <p className="text-xs text-gray-300 mt-1">
+                                        <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-gray-300'}`}>
                                             {timeAgo(notification.created_at)}
                                         </p>
                                     </div>
@@ -258,11 +284,11 @@ export default function NotificationBell() {
                                     {/* Unread dot + delete */}
                                     <div className="flex flex-col items-end gap-2 flex-shrink-0">
                                         {!notification.read && (
-                                            <div className="w-2 h-2 rounded-full bg-blue-600 mt-1" />
+                                            <div className={`w-2 h-2 rounded-full mt-1 ${isDark ? 'bg-violet-500' : 'bg-blue-600'}`} />
                                         )}
                                         <button
                                             onClick={(e) => handleDelete(e, notification.id)}
-                                            className="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-400 transition-all text-xs"
+                                            className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-400 transition-all text-xs"
                                         >
                                             ✕
                                         </button>
@@ -274,7 +300,9 @@ export default function NotificationBell() {
 
                     {/* Footer */}
                     {notifications.length > 0 && (
-                        <div className="px-4 py-2.5 border-t border-gray-100 text-center">
+                        <div className={`px-4 py-2.5 border-t text-center ${
+                            isDark ? 'border-white/5' : 'border-gray-100'
+                        }`}>
                             <button
                                 onClick={async () => {
                                     await api.post('/notifications/mark-all-read');
@@ -282,7 +310,9 @@ export default function NotificationBell() {
                                     setUnreadCount(0);
                                     setOpen(false);
                                 }}
-                                className="text-xs text-gray-400 hover:text-red-400 transition-colors"
+                                className={`text-xs transition-colors ${
+                                    isDark ? 'text-gray-500 hover:text-red-400' : 'text-gray-400 hover:text-red-400'
+                                }`}
                             >
                                 Clear all notifications
                             </button>

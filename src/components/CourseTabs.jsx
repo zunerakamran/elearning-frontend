@@ -1,9 +1,9 @@
-export default function CourseTabs({ activeTab, setActiveTab, isOwner, enrolled }) {
+export default function CourseTabs({ activeTab, setActiveTab, isOwner, enrolled, isAdmin }) {
   const tabs = [
     { key: 'overview', label: 'Overview' },
     { key: 'announcements', label: 'Announcements' },
-    ...(enrolled || isOwner ? [{ key: 'assignments', label: 'Assignments' }] : []),
-    ...(enrolled || isOwner ? [{ key: 'discussions', label: 'Discussions' }] : []),
+    ...(enrolled || isOwner || isAdmin ? [{ key: 'assignments', label: 'Assignments' }] : []),
+    ...(enrolled || isOwner || isAdmin ? [{ key: 'discussions', label: 'Discussions' }] : []),
     { key: 'reviews', label: 'Reviews' }, ...(enrolled || isOwner ? [{ key: 'chat', label: 'Chat' }] : []),
   ];
 
