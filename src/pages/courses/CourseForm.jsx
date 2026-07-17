@@ -11,16 +11,22 @@ export default function CourseForm() {
     title: '',
     description: '',
     level: 'beginner',
+    category_id: '',
     published: false,
   });
+  const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    api.get('/categories').then((res) => setCategories(res.data)).catch(() => {});
+  }, []);
+
+  useEffect(() => {
     if (isEditing) {
       api.get(`/courses/${id}`).then((res) => {
-        const { title, description, level, published } = res.data;
-        setForm({ title, description, level, published });
+        const { title, description, level, published, category_id } = res.data;
+        setForm({ title, description: description || '', level: level || 'beginner', category_id: category_id || '', published: !!published });
       });
     }
   }, [id]);
@@ -35,11 +41,17 @@ export default function CourseForm() {
     setError(null);
     setLoading(true);
     try {
+      const payload = { ...form, category_id: form.category_id || null };
+      if (!payload.category_id) {
+        setError('Please select a category for this course.');
+        setLoading(false);
+        return;
+      }
       if (isEditing) {
-        await api.put(`/courses/${id}`, form);
+        await api.put(`/courses/${id}`, payload);
         navigate(`/courses/${id}`);
       } else {
-        const res = await api.post('/courses', form);
+        const res = await api.post('/courses', payload);
         navigate(`/courses/${res.data.id}`);
       }
     } catch (err) {
@@ -99,18 +111,38 @@ export default function CourseForm() {
             />
           </div>
 
-          <div className="mb-5">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Difficulty Level</label>
-            <select
-              name="level"
-              value={form.level}
-              onChange={handleChange}
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-            >
-              <option value="beginner">Beginner</option>
-              <option value="intermediate">Intermediate</option>
-              <option value="advanced">Advanced</option>
-            </select>
+          <div className="grid grid-cols-2 gap-4 mb-5">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Difficulty Level</label>
+              <select
+                name="level"
+                value={form.level}
+                onChange={handleChange}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+              >
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Category
+              </label>
+              <select
+                name="category_id"
+                value={form.category_id}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+              >
+                <option value="" disabled>Select a category</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="mb-6 flex items-center gap-3">

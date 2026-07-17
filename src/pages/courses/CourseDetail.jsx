@@ -357,7 +357,7 @@ export default function CourseDetail() {
                             {moduleIndex + 1}
                           </span>
                           <span className="font-medium text-gray-900">{module.title}</span>
-                          <span className="text-xs text-gray-500">({module.lessons?.length || 0} lessons)</span>
+
                         </div>
                         {isOwner && (
                           <div className="flex gap-2">

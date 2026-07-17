@@ -7,6 +7,7 @@ const EmptyState = ({
   actionText,
   onAction,
   className = '',
+  titleClassName = '',
 }) => {
   return (
     <div className={`flex flex-col items-center justify-center py-12 px-4 text-center ${className}`}>
@@ -15,7 +16,7 @@ const EmptyState = ({
           {icon}
         </div>
       )}
-      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+      <h3 className={`text-lg font-semibold mb-2 ${titleClassName || 'text-gray-900'}`}>
         {title}
       </h3>
       <p className="text-gray-500 mb-6 max-w-sm">

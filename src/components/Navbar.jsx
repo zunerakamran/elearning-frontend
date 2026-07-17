@@ -95,13 +95,15 @@ export default function Navbar() {
                   </>
                 )}
 
-                {/* Messages link */}
-                <Link
-                  to="/chat"
-                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200 flex items-center gap-1.5"
-                >
-                  Messages
-                </Link>
+                {/* Messages link - not for admin */}
+                {user.role !== 'admin' && (
+                  <Link
+                    to="/chat"
+                    className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200 flex items-center gap-1.5"
+                  >
+                    Messages
+                  </Link>
+                )}
 
                 {/* Notification Bell */}
                 <NotificationBell />
@@ -247,28 +249,33 @@ export default function Navbar() {
                     </Link>
                   </>
                 ) : (
+                  <>
+                    <Link
+                      to="/dashboard"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg transition-colors"
+                    >
+                      My Learning
+                    </Link>
+                    <Link
+                      to="/my-certificates"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg transition-colors"
+                    >
+                      My Certificates
+                    </Link>
+                  </>
+                )}
+                {/* Messages link - not for admin */}
+                {user.role !== 'admin' && (
                   <Link
-                    to="/dashboard"
+                    to="/chat"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg transition-colors"
+                    className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg transition-colors"
                   >
-                    My Learning
+                    Messages
                   </Link>
                 )}
-                <Link
-                  to="/my-certificates"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg transition-colors"
-                >
-                  My Certificates
-                </Link>
-                <Link
-                  to="/chat"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg transition-colors"
-                >
-                  Messages
-                </Link>
                 <div className="px-4 py-3 border-t border-gray-100 mt-2">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">

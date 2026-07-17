@@ -70,21 +70,21 @@ export default function AdminCategories() {
   }
 
   return (
-    <div className="p-6 lg:p-8 space-y-6" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6" style={{ fontFamily: "'Inter', sans-serif" }}>
       {toast && (
-        <div className="fixed top-5 right-5 z-50 bg-[#1e2534] border border-white/10 text-white px-5 py-3 rounded-xl shadow-2xl text-sm">
+        <div className="fixed top-5 right-5 z-50 bg-[#1e2534] border border-white/10 text-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl shadow-2xl text-xs sm:text-sm">
           {toast}
         </div>
       )}
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-white text-2xl font-bold">Categories</h1>
-          <p className="text-gray-400 text-sm mt-1">Organize courses into categories.</p>
+          <h1 className="text-white text-xl sm:text-2xl font-bold">Categories</h1>
+          <p className="text-gray-400 text-xs sm:text-sm mt-1">Organize courses into categories.</p>
         </div>
         <button
           onClick={openCreate}
-          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-sm font-medium rounded-xl hover:from-violet-700 hover:to-indigo-700 hover:shadow-lg hover:shadow-violet-500/20 transition-all duration-200"
+          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-xs sm:text-sm font-medium rounded-xl hover:from-violet-700 hover:to-indigo-700 hover:shadow-lg hover:shadow-violet-500/20 transition-all duration-200"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -94,32 +94,32 @@ export default function AdminCategories() {
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-20">
+        <div className="flex items-center justify-center py-16 sm:py-20">
           <div className="w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : categories.length === 0 ? (
-        <div className="py-20 text-center bg-[#151922] border border-white/5 rounded-2xl">
-          <div className="w-14 h-14 bg-violet-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <svg className="w-7 h-7 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="py-16 sm:py-20 text-center bg-[#151922] border border-white/5 rounded-2xl">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 bg-violet-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <svg className="w-6 h-6 sm:w-7 sm:h-7 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
             </svg>
           </div>
-          <p className="text-white font-medium mb-1">No categories yet</p>
-          <p className="text-gray-500 text-sm mb-4">Create your first category to organize courses.</p>
-          <button onClick={openCreate} className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-sm font-medium rounded-xl hover:from-violet-700 hover:to-indigo-700 transition-all">
+          <p className="text-white text-sm sm:text-base font-medium mb-1">No categories yet</p>
+          <p className="text-gray-500 text-xs sm:text-sm mb-4">Create your first category to organize courses.</p>
+          <button onClick={openCreate} className="px-4 sm:px-5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-xs sm:text-sm font-medium rounded-xl hover:from-violet-700 hover:to-indigo-700 transition-all">
             Create Category
-          </button>
+                   </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {categories.map((cat) => (
             <div
               key={cat.id}
-              className="bg-[#151922] border border-white/5 rounded-2xl p-5 hover:border-white/10 transition-all duration-200 group"
+              className="bg-[#151922] border border-white/5 rounded-2xl p-4 sm:p-5 hover:border-white/10 transition-all duration-200 group"
             >
               <div className="flex items-start justify-between gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-violet-500/20 to-indigo-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <svg className="w-5 h-5 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-violet-500/20 to-indigo-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <svg className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                   </svg>
                 </div>
@@ -141,14 +141,14 @@ export default function AdminCategories() {
                 </div>
               </div>
               <div className="mt-3">
-                <h3 className="text-white font-semibold text-sm">{cat.name}</h3>
+                <h3 className="text-white font-semibold text-xs sm:text-sm">{cat.name}</h3>
                 {cat.description && (
                   <p className="text-gray-500 text-xs mt-1 line-clamp-2">{cat.description}</p>
                 )}
                 <div className="flex items-center gap-2 mt-3">
                   <span className="text-xs text-gray-500">{cat.courses_count ?? 0} courses</span>
                   <span className="text-gray-700">·</span>
-                  <span className="text-xs text-gray-600 font-mono">{cat.slug}</span>
+                  <span className="text-xs text-gray-600 font-mono truncate max-w-[100px]">{cat.slug}</span>
                 </div>
               </div>
             </div>
@@ -171,8 +171,8 @@ export default function AdminCategories() {
       {/* Create/Edit Modal */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-[#151922] border border-white/10 rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-5">
-            <h2 className="text-white text-lg font-semibold">
+          <div className="bg-[#151922] border border-white/10 rounded-2xl shadow-2xl w-full max-w-md p-4 sm:p-6 space-y-4 sm:space-y-5">
+            <h2 className="text-white text-base sm:text-lg font-semibold">
               {editItem ? 'Edit Category' : 'New Category'}
             </h2>
             <div>
@@ -181,7 +181,7 @@ export default function AdminCategories() {
                 value={form.name}
                 onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                 placeholder="e.g. Web Development"
-                className="w-full bg-[#0f1117] border border-white/10 text-white text-sm rounded-xl px-4 py-2.5 outline-none focus:border-violet-500/50 transition-colors placeholder-gray-600"
+                className="w-full bg-[#0f1117] border border-white/10 text-white text-xs sm:text-sm rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 outline-none focus:border-violet-500/50 transition-colors placeholder-gray-600"
               />
             </div>
             <div>
@@ -191,15 +191,15 @@ export default function AdminCategories() {
                 onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                 rows={3}
                 placeholder="Optional description..."
-                className="w-full bg-[#0f1117] border border-white/10 text-white text-sm rounded-xl px-4 py-2.5 outline-none focus:border-violet-500/50 transition-colors resize-none placeholder-gray-600"
+                className="w-full bg-[#0f1117] border border-white/10 text-white text-xs sm:text-sm rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 outline-none focus:border-violet-500/50 transition-colors resize-none placeholder-gray-600"
               />
             </div>
-            <div className="flex gap-3 pt-2">
-              <button onClick={() => setShowForm(false)} className="flex-1 py-2.5 text-sm bg-white/5 text-gray-300 rounded-xl hover:bg-white/10 transition-colors border border-white/10">Cancel</button>
+            <div className="flex gap-2 sm:gap-3 pt-2">
+              <button onClick={() => setShowForm(false)} className="flex-1 py-2 sm:py-2.5 text-xs sm:text-sm bg-white/5 text-gray-300 rounded-xl hover:bg-white/10 transition-colors border border-white/10">Cancel</button>
               <button
                 onClick={save}
                 disabled={saving || !form.name.trim()}
-                className="flex-1 py-2.5 text-sm bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl hover:from-violet-700 hover:to-indigo-700 transition-all disabled:opacity-50"
+                className="flex-1 py-2 sm:py-2.5 text-xs sm:text-sm bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl hover:from-violet-700 hover:to-indigo-700 transition-all disabled:opacity-50"
               >
                 {saving ? 'Saving...' : (editItem ? 'Save Changes' : 'Create')}
               </button>

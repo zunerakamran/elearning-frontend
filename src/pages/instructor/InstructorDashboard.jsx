@@ -7,11 +7,17 @@ export default function InstructorDashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [levelFilter, setLevelFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
   const [openDropdownId, setOpenDropdownId] = useState(null);
+
+  useEffect(() => {
+    api.get('/categories').then((res) => setCategories(res.data)).catch(() => {});
+  }, []);
 
   useEffect(() => {
     api.get('/my-courses')
@@ -68,7 +74,8 @@ export default function InstructorDashboard() {
       statusFilter === 'all' ||
       statusFilter === status;
     const matchesLevel = levelFilter === 'all' || course.level === levelFilter;
-    return matchesSearch && matchesStatus && matchesLevel;
+    const matchesCategory = categoryFilter === 'all' || String(course.category_id) === String(categoryFilter);
+    return matchesSearch && matchesStatus && matchesLevel && matchesCategory;
   });
 
   return (
@@ -257,6 +264,20 @@ export default function InstructorDashboard() {
                   <option value="intermediate">Intermediate</option>
                   <option value="advanced">Advanced</option>
                 </select>
+
+                {/* Category Filters */}
+                {categories.length > 0 && (
+                  <select
+                    value={categoryFilter}
+                    onChange={(e) => setCategoryFilter(e.target.value)}
+                    className="px-3 py-2 bg-gray-100 border-none rounded-xl text-xs font-semibold text-gray-700 focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+                  >
+                    <option value="all">All Categories</option>
+                    {categories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    ))}
+                  </select>
+                )}
               </div>
             </div>
           </div>
@@ -301,6 +322,7 @@ export default function InstructorDashboard() {
                   setSearchQuery('');
                   setStatusFilter('all');
                   setLevelFilter('all');
+                  setCategoryFilter('all');
                 }}
                 className="text-indigo-600 font-semibold hover:underline text-sm cursor-pointer"
               >
@@ -358,11 +380,6 @@ export default function InstructorDashboard() {
                           }`}>
                           {course.level}
                         </span>
-                        {course.featured && (
-                          <span className="text-[10px] uppercase font-extrabold tracking-wider px-2 py-1 rounded-md backdrop-blur-md shadow-sm border bg-amber-400/95 text-white border-amber-300/40 flex items-center gap-1">
-                            ⭐ Featured
-                          </span>
-                        )}
                       </div>
                     </div>
 
@@ -375,9 +392,16 @@ export default function InstructorDashboard() {
                   {/* Card Body */}
                   <div className="p-5 flex-1 flex flex-col justify-between">
                     <div>
-                      <h3 className="font-bold text-gray-900 text-base leading-snug line-clamp-2 min-h-[2.75rem]">
-                        {course.title}
-                      </h3>
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-bold text-gray-900 text-base leading-snug line-clamp-2">
+                          {course.title}
+                        </h3>
+                        {course.featured && (
+                          <svg className="w-4 h-4 text-amber-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                          </svg>
+                        )}
+                      </div>
 
                       {/* Pending notice banner */}
                       {course.approval_status === 'pending' && (
@@ -406,6 +430,15 @@ export default function InstructorDashboard() {
                       )}
 
                       {/* Course Info metrics row */}
+                      {course.category && (
+                        <div className="mt-2 mb-1">
+                          <span className="inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-full bg-violet-50 text-violet-700 border border-violet-100">
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>
+                            {course.category.name}
+                          </span>
+                        </div>
+                      )}
+
                       <div className="flex items-center gap-4 mt-3 border-b border-gray-50 pb-4 mb-4">
                         <div className="flex items-center gap-1.5 text-gray-500 text-xs">
                           <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

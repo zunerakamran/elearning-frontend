@@ -9,7 +9,7 @@ const LEVEL_COLORS = {
   advanced: { bar: '#E24B4A', badge: 'bg-red-50 text-red-700' },
 };
 
-const FILTERS = ['all', 'beginner', 'intermediate', 'advanced'];
+const LEVEL_FILTERS = ['all', 'beginner', 'intermediate', 'advanced'];
 
 function MiniStars({ rating }) {
   return (
@@ -30,11 +30,17 @@ function MiniStars({ rating }) {
 
 export default function CourseList() {
   const [courses, setCourses] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filter, setFilter] = useState('all');
+  const [levelFilter, setLevelFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const { user } = useAuth();
+
+  useEffect(() => {
+    api.get('/categories').then((res) => setCategories(res.data)).catch(() => {});
+  }, []);
 
   useEffect(() => {
     api.get('/courses')
@@ -59,13 +65,14 @@ export default function CourseList() {
   }, []);
 
   const filtered = courses.filter((c) => {
-    const matchesFilter = filter === 'all' || c.level === filter;
+    const matchesLevel = levelFilter === 'all' || c.level === levelFilter;
+    const matchesCategory = categoryFilter === 'all' || String(c.category_id) === String(categoryFilter);
     const searchLower = searchQuery.toLowerCase();
     const matchesSearch = searchQuery === '' ||
       c.title.toLowerCase().includes(searchLower) ||
       c.description?.toLowerCase().includes(searchLower) ||
       c.instructor?.name?.toLowerCase().includes(searchLower);
-    return matchesFilter && matchesSearch;
+    return matchesLevel && matchesCategory && matchesSearch;
   });
 
   if (loading) return (
@@ -105,16 +112,16 @@ export default function CourseList() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
       <div className="max-w-6xl mx-auto">
 
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4 sm:mb-6">
           <div>
-            <h1 className="text-xl font-semibold text-gray-900 mb-1">Explore courses</h1>
-            <p className="text-sm text-gray-400">Discover and learn from expert instructors</p>
+            <h1 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1">Explore courses</h1>
+            <p className="text-xs sm:text-sm text-gray-400">Discover and learn from expert instructors</p>
           </div>
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full md:w-auto">
             {/* Search input */}
             <div className="relative w-full sm:w-auto">
               <svg
@@ -130,13 +137,13 @@ export default function CourseList() {
                 placeholder="Search by title, description, or instructor..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent w-full sm:w-72"
+                className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent w-full sm:w-64 lg:w-72"
               />
             </div>
             {user?.role === 'instructor' && (
               <Link
                 to="/courses/create"
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-indigo-700 hover:to-purple-700 hover:shadow-md transition-all duration-200"
+                className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-indigo-700 hover:to-purple-700 hover:shadow-md transition-all duration-200"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -147,42 +154,56 @@ export default function CourseList() {
           </div>
         </div>
 
-        {/* Filter pills */}
-        <div className="flex items-center gap-2 mb-5 flex-wrap">
-          {FILTERS.map((f) => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className={`text-xs px-4 py-1.5 rounded-full border transition-colors uppercase ${
-                filter === f
-                  ? 'bg-indigo-50 text-indigo-700 border-indigo-200 font-medium'
-                  : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'
-              }`}
+        {/* Level and Category filters */}
+        <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-5 flex-wrap">
+          <div className="flex items-center gap-2">
+            <select
+              value={levelFilter}
+              onChange={(e) => setLevelFilter(e.target.value)}
+              className="px-3 py-2 border border-gray-200 bg-white rounded-lg text-sm font-medium text-gray-700 focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-sm focus:outline-none w-full sm:w-auto"
             >
-              {f === 'all' ? 'All' : f}
-            </button>
-          ))}
-          {searchQuery && (
+              {LEVEL_FILTERS.map((f) => (
+                <option key={f} value={f}>
+                  {f === 'all' ? 'All Levels' : f.charAt(0).toUpperCase() + f.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
+          {categories.length > 0 && (
+            <div className="flex items-center gap-2">
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="px-3 py-2 border border-gray-200 bg-white rounded-lg text-sm font-medium text-gray-700 focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-sm focus:outline-none w-full sm:w-auto"
+              >
+                <option value="all">All Categories</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={String(cat.id)}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+          {(searchQuery || levelFilter !== 'all' || categoryFilter !== 'all') && (
             <button
-              onClick={() => setSearchQuery('')}
-              className="text-xs px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+              onClick={() => { setSearchQuery(''); setLevelFilter('all'); setCategoryFilter('all'); }}
+              className="text-xs px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors whitespace-nowrap"
             >
-              Clear search
+              Clear all
             </button>
           )}
-          <span className="ml-auto text-xs text-gray-400">
-            {filtered.length} course{filtered.length !== 1 ? 's' : ''}
-          </span>
         </div>
 
         {/* Grid */}
         {filtered.length === 0 ? (
-          <div className="text-center py-20">
+          <div className="text-center py-16 sm:py-20">
             <p className="text-gray-400 text-sm mb-1">No courses found</p>
-            {(filter !== 'all' || searchQuery) && (
+            {(levelFilter !== 'all' || categoryFilter !== 'all' || searchQuery) && (
               <button
                 onClick={() => {
-                  setFilter('all');
+                  setLevelFilter('all');
+                  setCategoryFilter('all');
                   setSearchQuery('');
                 }}
                 className="text-sm text-indigo-600 hover:underline"
@@ -192,7 +213,7 @@ export default function CourseList() {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {filtered.map((course) => {
               const colors = LEVEL_COLORS[course.level] || LEVEL_COLORS.beginner;
               return (
@@ -204,31 +225,38 @@ export default function CourseList() {
                   {/* Color bar top */}
                   <div className="h-1.5 w-full" style={{ background: colors.bar }} />
 
-                  <div className="p-5">
-                    {/* Level badge */}
-                    <div className="flex items-center gap-2 mb-4">
-                      <span className={`text-xs font-medium px-3 py-1.5 rounded-full inline-block uppercase ${colors.badge}`}>
+                  <div className="p-4 sm:p-5">
+                    {/* Level + Category badges */}
+                    <div className="flex items-center gap-2 mb-3 sm:mb-4 flex-wrap">
+                      <span className={`text-xs font-medium px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full inline-block uppercase ${colors.badge}`}>
                         {course.level}
                       </span>
-                      {course.featured && (
-                        <span className="text-xs font-medium px-3 py-1.5 rounded-full inline-block bg-amber-50 text-amber-700 border border-amber-200">
-                          Featured
+                      {course.category && (
+                        <span className="text-xs font-medium px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full inline-block bg-violet-50 text-violet-700 border border-violet-100">
+                          {course.category.name}
                         </span>
                       )}
                     </div>
 
                     {/* Title */}
-                    <h2 className="text-base font-semibold text-gray-900 mb-2 leading-snug line-clamp-2 group-hover:text-indigo-600 transition-colors">
-                      {course.title}
-                    </h2>
+                    <div className="flex items-center gap-2 mb-2">
+                      <h2 className="text-sm sm:text-base font-semibold text-gray-900 leading-snug line-clamp-2 group-hover:text-indigo-600 transition-colors">
+                        {course.title}
+                      </h2>
+                      {course.featured && (
+                        <svg className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-amber-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                        </svg>
+                      )}
+                    </div>
 
                     {/* Description */}
-                    <p className="text-sm text-gray-400 leading-relaxed line-clamp-2 mb-4">
+                    <p className="text-xs sm:text-sm text-gray-400 leading-relaxed line-clamp-2 mb-3 sm:mb-4">
                       {course.description || 'No description provided.'}
                     </p>
 
                     {/* Ratings row */}
-                    <div className="flex items-center gap-2 mb-4">
+                    <div className="flex items-center gap-2 mb-3 sm:mb-4">
                       {course.total_reviews > 0 ? (
                         <>
                           <MiniStars rating={course.avg_rating} />
@@ -248,18 +276,18 @@ export default function CourseList() {
                     </div>
 
                     {/* Footer */}
-                    <div className="flex items-center justify-between border-t border-gray-100 pt-4">
+                    <div className="flex items-center justify-between border-t border-gray-100 pt-3 sm:pt-4">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-sm text-gray-500 truncate max-w-[140px]">
+                        <span className="text-xs sm:text-sm text-gray-500 truncate max-w-[120px] sm:max-w-[140px]">
                           {course.instructor?.name}
                         </span>
                         {!!course.instructor?.is_verified && (
-                          <svg className="w-4 h-4 text-blue-500 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                          <svg className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-blue-500 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                           </svg>
                         )}
                       </div>
-                      <span className="text-sm text-indigo-600 font-medium group-hover:underline">
+                      <span className="text-xs sm:text-sm text-indigo-600 font-medium group-hover:underline">
                         View →
                       </span>
                     </div>

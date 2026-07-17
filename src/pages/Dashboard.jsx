@@ -71,6 +71,8 @@ export default function Dashboard() {
     const [loadingCourses, setLoadingCourses] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [levelFilter, setLevelFilter] = useState('all');
+    const [categoryFilter, setCategoryFilter] = useState('all');
+    const [categories, setCategories] = useState([]);
 
     const filteredMyCourses = myCourses.filter((course) => {
         const searchLower = searchQuery.toLowerCase();
@@ -79,7 +81,8 @@ export default function Dashboard() {
             course.description?.toLowerCase().includes(searchLower) ||
             course.instructor?.name?.toLowerCase().includes(searchLower);
         const matchesLevel = levelFilter === 'all' || course.level === levelFilter;
-        return matchesSearch && matchesLevel;
+        const matchesCategory = categoryFilter === 'all' || String(course.category_id) === String(categoryFilter);
+        return matchesSearch && matchesLevel && matchesCategory;
     });
 
     // Redirect instructors to their own dashboard
@@ -99,6 +102,12 @@ export default function Dashboard() {
         }
     }, [user]);
 
+    useEffect(() => {
+        api.get('/categories')
+            .then((res) => setCategories(res.data))
+            .catch(() => {});
+    }, []);
+
     async function handleLogout() {
         await logout();
         navigate('/login');
@@ -109,18 +118,18 @@ export default function Dashboard() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
                 {/* Header */}
-                <div className="bg-gradient-to-r from-indigo-600 to-indigo-700 rounded-2xl p-8 mb-8 text-white shadow-lg">
+                <div className="bg-gradient-to-r from-indigo-600 to-indigo-700 rounded-2xl p-6 sm:p-8 mb-6 sm:mb-8 text-white shadow-lg">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
-                            <h1 className="text-3xl font-bold mb-2">Welcome, {user?.name?.split(' ')[0]}!</h1>
-                            <p className="text-indigo-100">
+                            <h1 className="text-2xl sm:text-3xl font-bold mb-2">Welcome, {user?.name?.split(' ')[0]}!</h1>
+                            <p className="text-indigo-100 text-sm sm:text-base">
                                 {user?.email} · <span className="capitalize">{user?.role}</span>
                             </p>
                         </div>
-                        <div className="flex gap-3">
+                        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                             <Link
                                 to="/courses"
-                                className="inline-flex items-center gap-2 bg-white text-indigo-600 px-6 py-3 rounded-xl hover:bg-indigo-50 hover:shadow-lg transition-all duration-200 font-semibold text-sm cursor-pointer shadow-md"
+                                className="inline-flex items-center justify-center gap-2 bg-white text-indigo-600 px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl hover:bg-indigo-50 hover:shadow-lg transition-all duration-200 font-semibold text-sm cursor-pointer shadow-md"
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -129,7 +138,7 @@ export default function Dashboard() {
                             </Link>
                             <Link
                                 to="/my-certificates"
-                                className="inline-flex items-center gap-2 bg-indigo-800/40 text-indigo-50 px-5 py-3 rounded-xl hover:bg-indigo-800/60 transition-all duration-200 font-semibold text-sm cursor-pointer border border-indigo-500/30"
+                                className="inline-flex items-center justify-center gap-2 bg-indigo-800/40 text-indigo-50 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl hover:bg-indigo-800/60 transition-all duration-200 font-semibold text-sm cursor-pointer border border-indigo-500/30"
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
@@ -143,10 +152,10 @@ export default function Dashboard() {
                 {/* My Enrolled Courses (students only) */}
                 {user?.role === 'student' && (
                     <div>
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                            <h2 className="text-2xl font-bold text-gray-900">My Learning</h2>
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 sm:mb-6">
+                            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">My Learning</h2>
                             {!loadingCourses && myCourses.length > 0 && (
-                                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
                                     <div className="relative w-full sm:w-auto">
                                         <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -158,7 +167,7 @@ export default function Dashboard() {
                                             placeholder="Search by title, description, or instructor..."
                                             value={searchQuery}
                                             onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="block w-full sm:w-72 pl-10 pr-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white shadow-sm"
+                                            className="block w-full sm:w-64 lg:w-72 pl-10 pr-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white shadow-sm"
                                         />
                                     </div>
                                     <select
@@ -171,18 +180,41 @@ export default function Dashboard() {
                                         <option value="intermediate">Intermediate</option>
                                         <option value="advanced">Advanced</option>
                                     </select>
+                                    {categories.length > 0 && (
+                                        <select
+                                            value={categoryFilter}
+                                            onChange={(e) => setCategoryFilter(e.target.value)}
+                                            className="px-3 py-2 border border-gray-200 bg-white rounded-xl text-sm font-medium text-gray-700 focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-sm focus:outline-none w-full sm:w-auto"
+                                        >
+                                            <option value="all">All Categories</option>
+                                            {categories.map((cat) => (
+                                                <option key={cat.id} value={String(cat.id)}>
+                                                    {cat.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    )}
+                                    {(searchQuery || levelFilter !== 'all' || categoryFilter !== 'all') && (
+                                        <button
+                                            onClick={() => { setSearchQuery(''); setLevelFilter('all'); setCategoryFilter('all'); }}
+                                            className="text-xs px-3 py-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors font-medium whitespace-nowrap"
+                                        >
+                                            Clear all
+                                        </button>
+                                    )}
                                 </div>
                             )}
                         </div>
 
+
                         {loadingCourses ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                                <div className="bg-white rounded-xl border border-gray-200 p-5 sm:p-6 shadow-sm">
                                     <div className="h-4 w-3/4 bg-gray-200 rounded mb-4 animate-pulse" />
                                     <div className="h-3 w-1/2 bg-gray-200 rounded mb-4 animate-pulse" />
                                     <div className="h-2 w-full bg-gray-200 rounded animate-pulse" />
                                 </div>
-                                <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                                <div className="bg-white rounded-xl border border-gray-200 p-5 sm:p-6 shadow-sm">
                                     <div className="h-4 w-3/4 bg-gray-200 rounded mb-4 animate-pulse" />
                                     <div className="h-3 w-1/2 bg-gray-200 rounded mb-4 animate-pulse" />
                                     <div className="h-2 w-full bg-gray-200 rounded animate-pulse" />
@@ -205,7 +237,7 @@ export default function Dashboard() {
                                 <p className="text-gray-500 font-medium">No courses found matching your search.</p>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                                 {filteredMyCourses.map((course) => {
                                     const colors = LEVEL_COLORS[course.level] || LEVEL_COLORS.beginner;
                                     return (
@@ -217,26 +249,36 @@ export default function Dashboard() {
                                             {/* Color bar top */}
                                             <div className="h-2 w-full" style={{ background: colors.bar }} />
 
-                                            <div className="p-5">
+                                            <div className="p-4 sm:p-5">
                                                 {/* Level badge */}
-                                                <div className="flex items-center gap-2 mb-4">
-                                                    <span className={`text-xs font-medium px-3 py-1.5 rounded-full inline-block uppercase ${colors.badge}`}>
+                                                <div className="flex items-center gap-2 mb-3 sm:mb-4 flex-wrap">
+                                                    <span className={`text-xs font-medium px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full inline-block uppercase ${colors.badge}`}>
                                                         {course.level}
                                                     </span>
-                                                    {course.featured && (
-                                                        <span className="text-xs font-medium px-3 py-1.5 rounded-full inline-block bg-amber-50 text-amber-700 border border-amber-200">
-                                                            Featured
-                                                        </span>
-                                                    )}
+                                                    {course.category_id && (() => {
+                                                        const category = categories.find(cat => String(cat.id) === String(course.category_id));
+                                                        return category ? (
+                                                            <span className="text-xs font-medium px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full inline-block bg-violet-50 text-violet-700 border border-violet-100">
+                                                                {category.name}
+                                                            </span>
+                                                        ) : null;
+                                                    })()}
                                                 </div>
 
                                                 {/* Title */}
-                                                <h2 className="text-base font-semibold text-gray-900 mb-2 leading-snug line-clamp-2 group-hover:text-indigo-600 transition-colors">
-                                                    {course.title}
-                                                </h2>
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <h2 className="text-sm sm:text-base font-semibold text-gray-900 leading-snug line-clamp-2 group-hover:text-indigo-600 transition-colors">
+                                                        {course.title}
+                                                    </h2>
+                                                    {course.featured && (
+                                                        <svg className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-amber-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                                                            <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                                        </svg>
+                                                    )}
+                                                </div>
 
                                                 {/* Description */}
-                                                <p className="text-sm text-gray-400 leading-relaxed line-clamp-2 mb-4">
+                                                <p className="text-xs sm:text-sm text-gray-400 leading-relaxed line-clamp-2 mb-3 sm:mb-4">
                                                     {course.description || 'No description provided.'}
                                                 </p>
 
@@ -244,18 +286,18 @@ export default function Dashboard() {
                                                 <CourseProgressBar courseId={course.id} />
 
                                                 {/* Footer */}
-                                                <div className="flex items-center justify-between border-t border-gray-100 pt-4 mt-4">
+                                                <div className="flex items-center justify-between border-t border-gray-100 pt-3 sm:pt-4 mt-3 sm:mt-4">
                                                     <div className="flex items-center gap-1.5">
-                                                        <span className="text-sm text-gray-500 truncate max-w-[140px]">
+                                                        <span className="text-xs sm:text-sm text-gray-500 truncate max-w-[120px] sm:max-w-[140px]">
                                                             {course.instructor?.name}
                                                         </span>
                                                         {!!course.instructor?.is_verified && (
-                                                            <svg className="w-4 h-4 text-blue-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                                                            <svg className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-blue-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                                                                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                                                             </svg>
                                                         )}
                                                     </div>
-                                                    <span className="text-sm text-indigo-600 font-medium group-hover:underline">
+                                                    <span className="text-xs sm:text-sm text-indigo-600 font-medium group-hover:underline">
                                                         View →
                                                     </span>
                                                 </div>

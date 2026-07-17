@@ -45,25 +45,25 @@ export default function AdminInstructors() {
   ];
 
   return (
-    <div className="p-6 lg:p-8 space-y-6" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6" style={{ fontFamily: "'Inter', sans-serif" }}>
       {toast && (
-        <div className="fixed top-5 right-5 z-50 bg-[#1e2534] border border-white/10 text-white px-5 py-3 rounded-xl shadow-2xl text-sm">
+        <div className="fixed top-5 right-5 z-50 bg-[#1e2534] border border-white/10 text-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl shadow-2xl text-xs sm:text-sm">
           {toast}
         </div>
       )}
 
       <div>
-        <h1 className="text-white text-2xl font-bold">Instructor Management</h1>
-        <p className="text-gray-400 text-sm mt-1">Review and approve instructor applications.</p>
+        <h1 className="text-white text-xl sm:text-2xl font-bold">Instructor Management</h1>
+        <p className="text-gray-400 text-xs sm:text-sm mt-1">Review and approve instructor applications.</p>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-white/5 pb-0">
+      <div className="flex gap-2 border-b border-white/5 pb-0 overflow-x-auto">
         {tabs.map(t => (
           <button
             key={t.value}
             onClick={() => { setStatus(t.value); setPage(1); }}
-            className={`px-5 py-2.5 text-sm font-medium rounded-t-xl border border-b-0 transition-all duration-200 ${
+            className={`px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-medium rounded-t-xl border border-b-0 transition-all duration-200 whitespace-nowrap ${
               statusFilter === t.value
                 ? 'bg-[#151922] text-white border-white/10'
                 : 'text-gray-500 border-transparent hover:text-gray-300'
@@ -76,67 +76,67 @@ export default function AdminInstructors() {
 
       <div className="bg-[#151922] border border-white/5 rounded-2xl overflow-hidden">
         {loading ? (
-          <div className="flex items-center justify-center py-20">
+          <div className="flex items-center justify-center py-16 sm:py-20">
             <div className="w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : instructors.length === 0 ? (
-          <div className="py-20 text-center text-gray-500">No instructors found for this filter.</div>
+          <div className="py-16 sm:py-20 text-center text-gray-500 text-xs sm:text-sm">No instructors found for this filter.</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-white/5">
                   {['Instructor', 'Status', 'Verified', 'Courses', 'Joined', 'Actions'].map(h => (
-                    <th key={h} className="text-left text-gray-500 text-xs font-semibold uppercase tracking-wider px-5 py-4">{h}</th>
+                    <th key={h} className="text-left text-gray-500 text-xs font-semibold uppercase tracking-wider px-3 sm:px-5 py-3 sm:py-4">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
                 {instructors.map(u => (
                   <tr key={u.id} className="hover:bg-white/2 transition-colors">
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white font-bold flex-shrink-0">
+                    <td className="px-3 sm:px-5 py-3 sm:py-4">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white text-xs sm:text-sm font-bold flex-shrink-0">
                           {u.name?.charAt(0).toUpperCase()}
                         </div>
                         <div>
                           <div className="flex items-center gap-1.5">
-                            <p className="text-white text-sm font-medium">{u.name}</p>
+                            <p className="text-white text-xs sm:text-sm font-medium truncate max-w-[120px] sm:max-w-none">{u.name}</p>
                             {!!u.is_verified && (
-                              <svg className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                              <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                               </svg>
                             )}
                           </div>
-                          <p className="text-gray-500 text-xs">{u.email}</p>
+                          <p className="text-gray-500 text-xs truncate max-w-[150px] sm:max-w-none">{u.email}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-5 py-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-medium border capitalize ${STATUS_COLORS[u.instructor_status || 'pending']}`}>
+                    <td className="px-3 sm:px-5 py-3 sm:py-4">
+                      <span className={`inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-lg text-xs font-medium border capitalize ${STATUS_COLORS[u.instructor_status || 'pending']}`}>
                         {u.instructor_status || 'pending'}
                       </span>
                     </td>
-                    <td className="px-5 py-4">
+                    <td className="px-3 sm:px-5 py-3 sm:py-4">
                       {u.is_verified ? (
                         <span className="inline-flex items-center gap-1 text-xs text-emerald-400">
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                           </svg>
-                          Verified
+                          <span className="hidden sm:inline">Verified</span>
                         </span>
                       ) : (
                         <span className="text-xs text-gray-500">—</span>
                       )}
                     </td>
-                    <td className="px-5 py-4 text-gray-300 text-sm">{u.courses_count ?? 0}</td>
-                    <td className="px-5 py-4 text-gray-500 text-xs">{new Date(u.created_at).toLocaleDateString()}</td>
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-2">
+                    <td className="px-3 sm:px-5 py-3 sm:py-4 text-gray-300 text-xs sm:text-sm">{u.courses_count ?? 0}</td>
+                    <td className="px-3 sm:px-5 py-3 sm:py-4 text-gray-500 text-xs">{new Date(u.created_at).toLocaleDateString()}</td>
+                    <td className="px-3 sm:px-5 py-3 sm:py-4">
+                      <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                         {u.instructor_status !== 'approved' && (
                           <button
                             onClick={() => doAction(u.id, 'approve')}
-                            className="px-3 py-1.5 text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg hover:bg-emerald-500/20 transition-all"
+                            className="px-2.5 sm:px-3 py-1.5 text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg hover:bg-emerald-500/20 transition-all"
                           >
                             Approve
                           </button>
@@ -144,7 +144,7 @@ export default function AdminInstructors() {
                         {u.instructor_status !== 'rejected' && (
                           <button
                             onClick={() => doAction(u.id, 'reject')}
-                            className="px-3 py-1.5 text-xs bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg hover:bg-red-500/20 transition-all"
+                            className="px-2.5 sm:px-3 py-1.5 text-xs bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg hover:bg-red-500/20 transition-all"
                           >
                             Reject
                           </button>
@@ -152,7 +152,7 @@ export default function AdminInstructors() {
                         {!u.is_verified && u.instructor_status === 'approved' && (
                           <button
                             onClick={() => doAction(u.id, 'verify')}
-                            className="px-3 py-1.5 text-xs bg-violet-500/10 text-violet-400 border border-violet-500/20 rounded-lg hover:bg-violet-500/20 transition-all"
+                            className="px-2.5 sm:px-3 py-1.5 text-xs bg-violet-500/10 text-violet-400 border border-violet-500/20 rounded-lg hover:bg-violet-500/20 transition-all"
                           >
                             Verify
                           </button>
@@ -168,11 +168,11 @@ export default function AdminInstructors() {
       </div>
 
       {meta.last_page > 1 && (
-        <div className="flex items-center justify-between">
-          <p className="text-gray-500 text-sm">Page {meta.current_page} of {meta.last_page}</p>
-          <div className="flex gap-2">
-            <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="px-4 py-2 text-sm bg-[#151922] border border-white/10 text-gray-300 rounded-xl hover:bg-white/5 disabled:opacity-40 transition-all">Previous</button>
-            <button disabled={page >= meta.last_page} onClick={() => setPage(p => p + 1)} className="px-4 py-2 text-sm bg-[#151922] border border-white/10 text-gray-300 rounded-xl hover:bg-white/5 disabled:opacity-40 transition-all">Next</button>
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0">
+          <p className="text-gray-500 text-xs sm:text-sm">Page {meta.current_page} of {meta.last_page}</p>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="flex-1 sm:flex-none px-4 py-2 text-xs sm:text-sm bg-[#151922] border border-white/10 text-gray-300 rounded-xl hover:bg-white/5 disabled:opacity-40 transition-all">Previous</button>
+            <button disabled={page >= meta.last_page} onClick={() => setPage(p => p + 1)} className="flex-1 sm:flex-none px-4 py-2 text-xs sm:text-sm bg-[#151922] border border-white/10 text-gray-300 rounded-xl hover:bg-white/5 disabled:opacity-40 transition-all">Next</button>
           </div>
         </div>
       )}

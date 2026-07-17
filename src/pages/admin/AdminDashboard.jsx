@@ -3,13 +3,13 @@ import api from '../../api/axios';
 
 function StatCard({ label, value, icon, color, sub }) {
   return (
-    <div className={`bg-[#151922] border border-white/5 rounded-2xl p-5 flex items-start gap-4 hover:border-white/10 transition-all duration-200`}>
-      <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${color}`}>
+    <div className={`bg-[#151922] border border-white/5 rounded-2xl p-4 sm:p-5 flex items-start gap-3 sm:gap-4 hover:border-white/10 transition-all duration-200`}>
+      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${color}`}>
         {icon}
       </div>
       <div>
-        <p className="text-gray-400 text-sm font-medium">{label}</p>
-        <p className="text-white text-2xl font-bold mt-0.5">{value ?? '—'}</p>
+        <p className="text-gray-400 text-xs sm:text-sm font-medium">{label}</p>
+        <p className="text-white text-xl sm:text-2xl font-bold mt-0.5">{value ?? '—'}</p>
         {sub && <p className="text-gray-500 text-xs mt-1">{sub}</p>}
       </div>
     </div>
@@ -19,15 +19,15 @@ function StatCard({ label, value, icon, color, sub }) {
 function MiniBar({ label, value, max }) {
   const pct = max ? Math.round((value / max) * 100) : 0;
   return (
-    <div className="flex items-center gap-3">
-      <p className="text-gray-300 text-sm w-36 truncate flex-shrink-0">{label}</p>
+    <div className="flex items-center gap-2 sm:gap-3">
+      <p className="text-gray-300 text-xs sm:text-sm w-24 sm:w-36 truncate flex-shrink-0">{label}</p>
       <div className="flex-1 bg-white/5 rounded-full h-2">
         <div
           className="h-2 rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 transition-all duration-700"
           style={{ width: `${pct}%` }}
         />
       </div>
-      <p className="text-gray-400 text-sm w-8 text-right">{value}</p>
+      <p className="text-gray-400 text-xs sm:text-sm w-6 sm:w-8 text-right">{value}</p>
     </div>
   );
 }
@@ -36,10 +36,12 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 
 export default function AdminDashboard() {
   const [data, setData] = useState(null);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
+    api.get('/categories').then(r => setCategories(r.data)).catch(() => {});
     api.get('/admin/dashboard')
       .then(r => setData(r.data))
       .catch(() => setError('Failed to load dashboard data.'))
@@ -67,15 +69,15 @@ export default function AdminDashboard() {
   const maxTopCount   = top_courses?.[0]?.enrollments_count || 1;
 
   return (
-    <div className="p-6 lg:p-8 space-y-8" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8" style={{ fontFamily: "'Inter', sans-serif" }}>
       {/* Header */}
       <div>
-        <h1 className="text-white text-2xl font-bold">Dashboard</h1>
-        <p className="text-gray-400 text-sm mt-1">Welcome to the ELearn admin panel. Here's your platform overview.</p>
+        <h1 className="text-white text-xl sm:text-2xl font-bold">Dashboard</h1>
+        <p className="text-gray-400 text-xs sm:text-sm mt-1">Welcome to the ELearn admin panel. Here's your platform overview.</p>
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
         <StatCard
           label="Total Users"
           value={stats.total_users?.toLocaleString()}
@@ -104,7 +106,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Second row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         <StatCard
           label="Total Courses"
           value={stats.total_courses?.toLocaleString()}
@@ -122,13 +124,13 @@ export default function AdminDashboard() {
       </div>
 
       {/* Charts row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Enrollment trend */}
-        <div className="bg-[#151922] border border-white/5 rounded-2xl p-6">
-          <h2 className="text-white font-semibold mb-1">Enrollment Trend</h2>
-          <p className="text-gray-500 text-xs mb-6">Last 6 months</p>
+        <div className="bg-[#151922] border border-white/5 rounded-2xl p-4 sm:p-6 lg:col-span-1">
+          <h2 className="text-white text-sm sm:text-base font-semibold mb-1">Enrollment Trend</h2>
+          <p className="text-gray-500 text-xs mb-4 sm:mb-6">Last 6 months</p>
           {enrollments_by_month?.length > 0 ? (
-            <div className="flex items-end gap-2 h-32">
+            <div className="flex items-end gap-1 sm:gap-2 h-28 sm:h-32">
               {enrollments_by_month.map((row) => {
                 const pct = row.count / maxEnrollment;
                 return (
@@ -144,15 +146,15 @@ export default function AdminDashboard() {
               })}
             </div>
           ) : (
-            <div className="h-32 flex items-center justify-center text-gray-500 text-sm">No data available</div>
+            <div className="h-28 sm:h-32 flex items-center justify-center text-gray-500 text-xs sm:text-sm">No data available</div>
           )}
         </div>
 
         {/* Top courses */}
-        <div className="bg-[#151922] border border-white/5 rounded-2xl p-6">
-          <h2 className="text-white font-semibold mb-1">Top Courses</h2>
-          <p className="text-gray-500 text-xs mb-6">By enrollment count</p>
-          <div className="space-y-4">
+        <div className="bg-[#151922] border border-white/5 rounded-2xl p-4 sm:p-6 lg:col-span-1">
+          <h2 className="text-white text-sm sm:text-base font-semibold mb-1">Top Courses</h2>
+          <p className="text-gray-500 text-xs mb-4 sm:mb-6">By enrollment count</p>
+          <div className="space-y-3 sm:space-y-4">
             {top_courses?.length > 0 ? top_courses.map((c) => (
               <MiniBar key={c.id} label={c.title} value={c.enrollments_count} max={maxTopCount} />
             )) : (
@@ -160,12 +162,47 @@ export default function AdminDashboard() {
             )}
           </div>
         </div>
+
+        {/* Courses by Category */}
+        <div className="bg-[#151922] border border-white/5 rounded-2xl p-4 sm:p-6 lg:col-span-1">
+          <h2 className="text-white text-sm sm:text-base font-semibold mb-1">Courses by Category</h2>
+          <p className="text-gray-500 text-xs mb-4 sm:mb-6">Distribution across categories</p>
+          <div className="space-y-3 sm:space-y-4">
+            {categories.length > 0 ? (
+              categories
+                .filter(cat => (cat.courses_count ?? 0) > 0)
+                .sort((a, b) => (b.courses_count ?? 0) - (a.courses_count ?? 0))
+                .slice(0, 6)
+                .map((cat) => {
+                  const maxCat = Math.max(...categories.map(c => c.courses_count ?? 0), 1);
+                  return (
+                    <div key={cat.id} className="flex items-center gap-2 sm:gap-3">
+                      <p className="text-gray-300 text-xs sm:text-sm w-24 sm:w-36 truncate flex-shrink-0">{cat.name}</p>
+                      <div className="flex-1 bg-white/5 rounded-full h-2">
+                        <div
+                          className="h-2 rounded-full bg-gradient-to-r from-pink-500 to-violet-500 transition-all duration-700"
+                          style={{ width: `${Math.max(((cat.courses_count ?? 0) / maxCat) * 100, 4)}%` }}
+                        />
+                      </div>
+                      <p className="text-gray-400 text-xs sm:text-sm w-6 sm:w-8 text-right">{cat.courses_count ?? 0}</p>
+                    </div>
+                  );
+                })
+            ) : null}
+            {categories.length > 0 && categories.every(c => (c.courses_count ?? 0) === 0) && (
+              <p className="text-gray-500 text-xs sm:text-sm">No courses assigned to categories yet.</p>
+            )}
+            {categories.length === 0 && (
+              <p className="text-gray-500 text-xs sm:text-sm">No categories created yet.</p>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Quick actions */}
-      <div className="bg-[#151922] border border-white/5 rounded-2xl p-6">
-        <h2 className="text-white font-semibold mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="bg-[#151922] border border-white/5 rounded-2xl p-4 sm:p-6">
+        <h2 className="text-white text-sm sm:text-base font-semibold mb-3 sm:mb-4">Quick Actions</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
           {[
             { label: 'Pending Courses', count: stats.pending_courses, href: '/admin/courses', color: 'border-amber-500/30 text-amber-400 hover:bg-amber-500/5' },
             { label: 'Pending Instructors', count: stats.pending_instructors, href: '/admin/instructors', color: 'border-blue-500/30 text-blue-400 hover:bg-blue-500/5' },
@@ -173,9 +210,9 @@ export default function AdminDashboard() {
             <a
               key={a.label}
               href={a.href}
-              className={`border rounded-xl p-4 flex flex-col items-center gap-2 transition-all duration-200 cursor-pointer ${a.color}`}
+              className={`border rounded-xl p-3 sm:p-4 flex flex-col items-center gap-2 transition-all duration-200 cursor-pointer ${a.color}`}
             >
-              <span className="text-2xl font-bold">{a.count ?? '—'}</span>
+              <span className="text-xl sm:text-2xl font-bold">{a.count ?? '—'}</span>
               <span className="text-xs font-medium text-center">{a.label}</span>
             </a>
           ))}

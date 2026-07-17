@@ -33,6 +33,7 @@ import AdminUsers from './pages/admin/AdminUsers';
 import AdminInstructors from './pages/admin/AdminInstructors';
 import AdminCourses from './pages/admin/AdminCourses';
 import AdminCategories from './pages/admin/AdminCategories';
+import AdminCertificates from './pages/admin/AdminCertificates';
 import InstructorPending from './pages/InstructorPending';
 
 function ProtectedRoute({ children, role }) {
@@ -137,6 +138,7 @@ function App() {
           <Route path="instructors" element={<AdminInstructors />} />
           <Route path="courses" element={<AdminCourses />} />
           <Route path="categories" element={<AdminCategories />} />
+          <Route path="certificates" element={<AdminCertificates />} />
         </Route>
       </Routes>
     </div>

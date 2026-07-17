@@ -7,18 +7,22 @@ export default function CertificateView() {
     const { id } = useParams();
     const navigate = useNavigate();
     const [certificate, setCertificate] = useState(null);
+    const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        api.get('/my-certificates')
-            .then((res) => {
-                const cert = res.data.find(c => c.id === parseInt(id));
-                if (cert) {
-                    setCertificate(cert);
-                } else {
-                    navigate('/my-certificates');
-                }
-            })
+        Promise.all([
+            api.get('/my-certificates'),
+            api.get('/categories')
+        ]).then(([certsRes, catsRes]) => {
+            const cert = certsRes.data.find(c => c.id === parseInt(id));
+            if (cert) {
+                setCertificate(cert);
+                setCategories(catsRes.data);
+            } else {
+                navigate('/my-certificates');
+            }
+        })
             .catch(() => navigate('/my-certificates'))
             .finally(() => setLoading(false));
     }, [id, navigate]);
@@ -64,7 +68,7 @@ export default function CertificateView() {
 
                 {/* Full-width certificate */}
                 <div className="flex justify-center">
-                    <Certificate certificate={certificate} fullWidth={true} />
+                    <Certificate certificate={certificate} categories={categories} fullWidth={true} />
                 </div>
             </div>
         </div>
