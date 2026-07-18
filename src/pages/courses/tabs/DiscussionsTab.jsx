@@ -3,7 +3,7 @@ import api from '../../../api/axios';
 import ConfirmModal from '../../../components/ui/ConfirmModal';
 import { useAuth } from '../../../context/AuthContext';
 
-export default function DiscussionsTab({ courseId, isOwner, isAdmin }) {
+export default function DiscussionsTab({ courseId, isOwner, isAdmin, course }) {
   const { user } = useAuth();
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -175,6 +175,13 @@ export default function DiscussionsTab({ courseId, isOwner, isAdmin }) {
     return name?.charAt(0)?.toUpperCase() || 'U';
   }
 
+  function isUserVerified(discussionUser) {
+    if (!discussionUser) return false;
+    if (discussionUser.is_verified) return true;
+    if (course && course.instructor_id === discussionUser.id && course.instructor?.is_verified) return true;
+    return false;
+  }
+
   if (loading) return (
     <div className="flex items-center justify-center py-12">
       <div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
@@ -213,18 +220,11 @@ export default function DiscussionsTab({ courseId, isOwner, isAdmin }) {
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="font-semibold text-gray-900">{selectedQuestion.user?.name}</span>
-                          {!!selectedQuestion.user?.is_verified && (
+                          {isUserVerified(selectedQuestion.user) && (
                             <svg className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                             </svg>
                           )}
-                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                            selectedQuestion.user?.role === 'instructor'
-                              ? 'bg-purple-100 text-purple-700'
-                              : 'bg-gray-100 text-gray-600'
-                          }`}>
-                            {selectedQuestion.user?.role?.toUpperCase()}
-                          </span>
                         </div>
                         <p className="text-[11px] text-gray-400">
                           Asked on {new Date(selectedQuestion.created_at).toLocaleDateString('en-US', {
@@ -262,17 +262,16 @@ export default function DiscussionsTab({ courseId, isOwner, isAdmin }) {
                     {replies.map((reply) => {
                       const isReplyAuthor = user && reply.user_id === user.id;
                       const isInstructorReply = reply.user?.role === 'instructor';
-                      
+
                       return (
                         <div
                           key={reply.id}
-                          className={`border rounded-xl p-5 bg-white transition-all duration-200 shadow-sm relative ${
-                            reply.is_pinned 
-                              ? 'border-amber-400 bg-amber-50/10' 
-                              : reply.is_accepted 
-                              ? 'border-green-400 bg-green-50/10' 
-                              : 'border-gray-200'
-                          }`}
+                          className={`border rounded-xl p-5 bg-white transition-all duration-200 shadow-sm relative ${reply.is_pinned
+                              ? 'border-amber-400 bg-amber-50/10'
+                              : reply.is_accepted
+                                ? 'border-green-400 bg-green-50/10'
+                                : 'border-gray-200'
+                            }`}
                         >
                           {/* Badges for Pin and Accepted */}
                           <div className="absolute top-4 right-4 flex gap-2">
@@ -295,23 +294,17 @@ export default function DiscussionsTab({ courseId, isOwner, isAdmin }) {
                           </div>
 
                           <div className="flex items-start gap-3">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-xs text-white ${
-                              isInstructorReply ? 'bg-purple-600' : 'bg-indigo-500'
-                            }`}>
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-xs text-white ${isInstructorReply ? 'bg-purple-600' : 'bg-indigo-500'
+                              }`}>
                               {getInitials(reply.user?.name)}
                             </div>
                             <div className="flex-1">
                               <div className="flex items-center gap-2">
                                 <span className="font-semibold text-sm text-gray-900">{reply.user?.name}</span>
-                                {!!reply.user?.is_verified && (
+                                {isUserVerified(reply.user) && (
                                   <svg className="w-3 h-3 text-blue-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                                   </svg>
-                                )}
-                                {isInstructorReply && (
-                                  <span className="text-[9px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded-full font-bold">
-                                    INSTRUCTOR
-                                  </span>
                                 )}
                                 <span className="text-[10px] text-gray-400">
                                   {new Date(reply.created_at).toLocaleDateString('en-US', {
@@ -329,11 +322,10 @@ export default function DiscussionsTab({ courseId, isOwner, isAdmin }) {
                                 {/* Like button */}
                                 <button
                                   onClick={() => handleToggleLike(reply.id)}
-                                  className={`inline-flex items-center gap-1 text-xs font-medium transition-colors cursor-pointer ${
-                                    reply.is_liked 
-                                      ? 'text-indigo-600 font-semibold' 
+                                  className={`inline-flex items-center gap-1 text-xs font-medium transition-colors cursor-pointer ${reply.is_liked
+                                      ? 'text-indigo-600 font-semibold'
                                       : 'text-gray-400 hover:text-gray-600'
-                                  }`}
+                                    }`}
                                 >
                                   <svg className="w-4 h-4" fill={reply.is_liked ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.757c1.27 0 2.254 1.097 2.062 2.36l-1.22 8.01A2 2 0 0117.638 22H7.574A2 2 0 015.6 20.088L4 10m7-6v6m4-6h-4m-1 12H7" />
@@ -346,17 +338,15 @@ export default function DiscussionsTab({ courseId, isOwner, isAdmin }) {
                                   <>
                                     <button
                                       onClick={() => handleTogglePin(reply.id)}
-                                      className={`text-xs font-medium cursor-pointer transition-colors ${
-                                        reply.is_pinned ? 'text-amber-600' : 'text-gray-400 hover:text-amber-500'
-                                      }`}
+                                      className={`text-xs font-medium cursor-pointer transition-colors ${reply.is_pinned ? 'text-amber-600' : 'text-gray-400 hover:text-amber-500'
+                                        }`}
                                     >
                                       {reply.is_pinned ? 'Unpin' : 'Pin Answer'}
                                     </button>
                                     <button
                                       onClick={() => handleToggleAccept(reply.id)}
-                                      className={`text-xs font-medium cursor-pointer transition-colors ${
-                                        reply.is_accepted ? 'text-green-600' : 'text-gray-400 hover:text-green-500'
-                                      }`}
+                                      className={`text-xs font-medium cursor-pointer transition-colors ${reply.is_accepted ? 'text-green-600' : 'text-gray-400 hover:text-green-500'
+                                        }`}
                                     >
                                       {reply.is_accepted ? 'Unaccept' : 'Accept Answer'}
                                     </button>
@@ -514,9 +504,9 @@ export default function DiscussionsTab({ courseId, isOwner, isAdmin }) {
                       <p className="text-[10px] text-gray-400 mt-2">
                         Posted by <span className="font-medium text-gray-600 flex items-center gap-1">
                           {q.user?.name}
-                          {!!q.user?.is_verified && (
+                          {isUserVerified(q.user) && (
                             <svg className="w-3 h-3 text-blue-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                             </svg>
                           )}
                         </span> ·{' '}

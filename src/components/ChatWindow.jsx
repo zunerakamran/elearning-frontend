@@ -94,7 +94,14 @@ export default function ChatWindow({ conversation, onClose }) {
                         )}
                     </div>
                     <div>
-                        <p className="text-sm font-semibold text-gray-800">{otherPerson?.name}</p>
+                        <div className="flex items-center gap-1">
+                            <p className="text-sm font-semibold text-gray-800">{otherPerson?.name}</p>
+                            {!!otherPerson?.is_verified && (
+                                <svg className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                                </svg>
+                            )}
+                        </div>
                         <p className="text-xs text-gray-400">{conversation.course?.title}</p>
                     </div>
                 </div>
@@ -143,8 +150,8 @@ export default function ChatWindow({ conversation, onClose }) {
                                 <div className={`max-w-xs lg:max-w-md ${isMe ? 'items-end' : 'items-start'} flex flex-col`}>
                                     <div
                                         className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm ${isMe
-                                                ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-br-sm'
-                                                : 'bg-white text-gray-800 border border-gray-100 rounded-bl-sm'
+                                            ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-br-sm'
+                                            : 'bg-white text-gray-800 border border-gray-100 rounded-bl-sm'
                                             }`}
                                     >
                                         {msg.body}

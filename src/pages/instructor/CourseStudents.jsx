@@ -43,14 +43,12 @@ export default function CourseStudents() {
           quizLessonIds.map((lesson) =>
             api.get(`/lessons/${lesson.id}/quiz`)
               .then((res) => {
-                console.log('Quiz data for lesson', lesson.id, ':', res.data);
                 return { ...res.data, lesson_title: lesson.title };
               })
               .catch(() => null)
           )
         ).then((quizzesData) => {
           const validQuizzes = quizzesData.filter((q) => q !== null);
-          console.log('Valid quizzes:', validQuizzes);
           setQuizzes(validQuizzes);
         });
       } else {
@@ -68,18 +66,14 @@ export default function CourseStudents() {
     setLoadingAttempts(true);
     setAttempts({});
 
-    console.log('Fetching attempts for quizzes:', quizzes.map(q => ({ id: q.id, lesson_id: q.lesson_id, title: q.title })));
-
     Promise.all(
       quizzes.map((quiz) =>
         api.get(`/quizzes/${quiz.id}/attempts`)
           .then((res) => {
-            console.log('Attempts response for quiz', quiz.id, ':', res.data);
             return { quizId: quiz.id, data: res.data };
           })
           .catch((err) => {
             console.error('Error fetching attempts for quiz', quiz.id, ':', err);
-            console.error('Backend endpoint /quizzes/${quiz.id}/attempts is returning 500 error - this is a backend bug');
             return { quizId: quiz.id, data: [] };
           })
       )
@@ -88,7 +82,6 @@ export default function CourseStudents() {
       results.forEach(({ quizId, data }) => {
         attemptsMap[quizId] = data;
       });
-      console.log('Final attempts map:', attemptsMap);
       setAttempts(attemptsMap);
     }).finally(() => {
       setLoadingAttempts(false);
@@ -132,10 +125,10 @@ export default function CourseStudents() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
 
         {/* Header */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-6">
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-6 mb-6">
           <Link
             to="/dashboard"
             className="inline-flex items-center gap-2 text-indigo-600 text-sm font-medium hover:text-indigo-700 transition-colors"
@@ -145,43 +138,40 @@ export default function CourseStudents() {
             </svg>
             Back to Dashboard
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900 mt-4">{course?.title}</h1>
-          <p className="text-gray-500 mt-1">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mt-4 break-words">{course?.title}</h1>
+          <p className="text-gray-500 mt-1 text-sm sm:text-base">
             {students.length} student{students.length !== 1 ? 's' : ''} enrolled
           </p>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-6 bg-gray-100 p-1 rounded-xl">
+        <div className="flex gap-1 sm:gap-2 mb-6 bg-gray-100 p-1 rounded-xl overflow-x-auto">
           <button
             onClick={() => setActiveTab('students')}
-            className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-              activeTab === 'students'
+            className={`flex-1 whitespace-nowrap px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-colors ${activeTab === 'students'
                 ? 'bg-white text-indigo-600 shadow-sm'
                 : 'text-gray-600 hover:text-gray-800'
-            }`}
+              }`}
           >
-            Enrolled Students
+            Students
           </button>
           <button
             onClick={() => setActiveTab('quizzes')}
-            className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-              activeTab === 'quizzes'
+            className={`flex-1 whitespace-nowrap px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-colors ${activeTab === 'quizzes'
                 ? 'bg-white text-indigo-600 shadow-sm'
                 : 'text-gray-600 hover:text-gray-800'
-            }`}
+              }`}
           >
             Quiz Results
           </button>
           <button
             onClick={() => setActiveTab('assignments')}
-            className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-              activeTab === 'assignments'
+            className={`flex-1 whitespace-nowrap px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-colors ${activeTab === 'assignments'
                 ? 'bg-white text-indigo-600 shadow-sm'
                 : 'text-gray-600 hover:text-gray-800'
-            }`}
+              }`}
           >
-            Assignment Results
+            Assignments
           </button>
         </div>
 
@@ -189,35 +179,42 @@ export default function CourseStudents() {
         {activeTab === 'students' && (
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             {students.length === 0 ? (
-              <div className="text-center py-12">
+              <div className="text-center py-12 px-4">
                 <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
                 <p className="text-gray-500">No students enrolled yet.</p>
               </div>
             ) : (
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
-                  <tr>
-                    <th className="text-left p-4 text-sm font-semibold text-gray-600">#</th>
-                    <th className="text-left p-4 text-sm font-semibold text-gray-600">Name</th>
-                    <th className="text-left p-4 text-sm font-semibold text-gray-600">Email</th>
-                    <th className="text-left p-4 text-sm font-semibold text-gray-600">Enrolled At</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {students.map((student, index) => (
-                    <tr key={student.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                      <td className="p-4 text-sm text-gray-400">{index + 1}</td>
-                      <td className="p-4 font-medium text-gray-900">{student.name}</td>
-                      <td className="p-4 text-gray-500 text-sm">{student.email}</td>
-                      <td className="p-4 text-gray-500 text-sm">
-                        {new Date(student.pivot?.enrolled_at).toLocaleDateString()}
-                      </td>
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[560px]">
+                  <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-600">#</th>
+                      <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-600">Name</th>
+                      <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-600 hidden sm:table-cell">Email</th>
+                      <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-600 hidden md:table-cell">Enrolled At</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {students.map((student, index) => (
+                      <tr key={student.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                        <td className="p-3 sm:p-4 text-sm text-gray-400">{index + 1}</td>
+                        <td className="p-3 sm:p-4 font-medium text-gray-900 text-sm sm:text-base">
+                          {student.name}
+                          <span className="block text-xs text-gray-400 font-normal sm:hidden truncate max-w-[160px]">
+                            {student.email}
+                          </span>
+                        </td>
+                        <td className="p-3 sm:p-4 text-gray-500 text-sm hidden sm:table-cell">{student.email}</td>
+                        <td className="p-3 sm:p-4 text-gray-500 text-sm hidden md:table-cell">
+                          {new Date(student.pivot?.enrolled_at).toLocaleDateString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
         )}
@@ -243,55 +240,61 @@ export default function CourseStudents() {
             ) : (
               quizzes.map((quiz) => (
                 <div key={quiz.id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                  <div className="p-5 border-b border-gray-200 bg-gray-50">
-                    <h3 className="font-semibold text-gray-900">{quiz.title}</h3>
-                    <p className="text-gray-500 text-sm mt-1">
+                  <div className="p-4 sm:p-5 border-b border-gray-200 bg-gray-50">
+                    <h3 className="font-semibold text-gray-900 text-sm sm:text-base break-words">{quiz.title}</h3>
+                    <p className="text-gray-500 text-xs sm:text-sm mt-1 break-words">
                       Lesson: {quiz.lesson_title} · Passing score: {quiz.passing_score}%
                     </p>
                   </div>
 
                   {attempts[quiz.id]?.length === 0 ? (
-                    <p className="p-4 text-gray-500">No attempts yet.</p>
+                    <p className="p-4 text-gray-500 text-sm">No attempts yet.</p>
                   ) : (
-                    <table className="w-full">
-                      <thead className="border-b border-gray-200">
-                        <tr>
-                          <th className="text-left p-4 text-sm font-semibold text-gray-600">Student</th>
-                          <th className="text-left p-4 text-sm font-semibold text-gray-600">Email</th>
-                          <th className="text-left p-4 text-sm font-semibold text-gray-600">Score</th>
-                          <th className="text-left p-4 text-sm font-semibold text-gray-600">Result</th>
-                          <th className="text-left p-4 text-sm font-semibold text-gray-600">Date</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {attempts[quiz.id]?.map((attempt) => (
-                          <tr key={attempt.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                            <td className="p-4 font-medium text-gray-900 flex items-center gap-1.5">
-                              {attempt.user?.name}
-                              {!!attempt.user?.is_verified && (
-                                <svg className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                                </svg>
-                              )}
-                            </td>
-                            <td className="p-4 text-gray-500 text-sm">{attempt.user?.email}</td>
-                            <td className="p-4 font-semibold text-gray-900">{attempt.score}%</td>
-                            <td className="p-4">
-                              <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
-                                attempt.passed
-                                  ? 'bg-green-100 text-green-700'
-                                  : 'bg-red-100 text-red-700'
-                              }`}>
-                                {attempt.passed ? 'Passed' : 'Failed'}
-                              </span>
-                            </td>
-                            <td className="p-4 text-gray-500 text-sm">
-                              {new Date(attempt.created_at).toLocaleDateString()}
-                            </td>
+                    <div className="overflow-x-auto">
+                      <table className="w-full min-w-[560px]">
+                        <thead className="border-b border-gray-200">
+                          <tr>
+                            <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-600">Student</th>
+                            <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-600 hidden sm:table-cell">Email</th>
+                            <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-600">Score</th>
+                            <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-600">Result</th>
+                            <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-600 hidden md:table-cell">Date</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {attempts[quiz.id]?.map((attempt) => (
+                            <tr key={attempt.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                              <td className="p-3 sm:p-4 font-medium text-gray-900 text-sm sm:text-base">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="truncate max-w-[140px] sm:max-w-none">{attempt.user?.name}</span>
+                                  {!!attempt.user?.is_verified && (
+                                    <svg className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                                    </svg>
+                                  )}
+                                </div>
+                                <span className="block text-xs text-gray-400 font-normal sm:hidden truncate max-w-[160px]">
+                                  {attempt.user?.email}
+                                </span>
+                              </td>
+                              <td className="p-3 sm:p-4 text-gray-500 text-sm hidden sm:table-cell">{attempt.user?.email}</td>
+                              <td className="p-3 sm:p-4 font-semibold text-gray-900 text-sm sm:text-base">{attempt.score}%</td>
+                              <td className="p-3 sm:p-4">
+                                <span className={`text-xs font-semibold px-2 sm:px-2.5 py-1 rounded-full whitespace-nowrap ${attempt.passed
+                                    ? 'bg-green-100 text-green-700'
+                                    : 'bg-red-100 text-red-700'
+                                  }`}>
+                                  {attempt.passed ? 'Passed' : 'Failed'}
+                                </span>
+                              </td>
+                              <td className="p-3 sm:p-4 text-gray-500 text-sm hidden md:table-cell">
+                                {new Date(attempt.created_at).toLocaleDateString()}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   )}
                 </div>
               ))
@@ -320,51 +323,57 @@ export default function CourseStudents() {
             ) : (
               assignments.map((assignment) => (
                 <div key={assignment.id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                  <div className="p-5 border-b border-gray-200 bg-gray-50">
-                    <h3 className="font-semibold text-gray-900">{assignment.title}</h3>
-                    <p className="text-gray-500 text-sm mt-1">
+                  <div className="p-4 sm:p-5 border-b border-gray-200 bg-gray-50">
+                    <h3 className="font-semibold text-gray-900 text-sm sm:text-base break-words">{assignment.title}</h3>
+                    <p className="text-gray-500 text-xs sm:text-sm mt-1 break-words">
                       Total Marks: {assignment.total_marks}
                       {assignment.due_date && ` · Due: ${new Date(assignment.due_date).toLocaleDateString()}`}
                     </p>
                   </div>
 
                   {submissions[assignment.id]?.length === 0 ? (
-                    <p className="p-4 text-gray-500">No submissions yet.</p>
+                    <p className="p-4 text-gray-500 text-sm">No submissions yet.</p>
                   ) : (
-                    <table className="w-full">
-                      <thead className="border-b border-gray-200">
-                        <tr>
-                          <th className="text-left p-4 text-sm font-semibold text-gray-600">Student</th>
-                          <th className="text-left p-4 text-sm font-semibold text-gray-600">Email</th>
-                          <th className="text-left p-4 text-sm font-semibold text-gray-600">Marks</th>
-                          <th className="text-left p-4 text-sm font-semibold text-gray-600">Status</th>
-                          <th className="text-left p-4 text-sm font-semibold text-gray-600">Submitted Date</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {submissions[assignment.id]?.map((submission) => (
-                          <tr key={submission.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                            <td className="p-4 font-medium text-gray-900">{submission.student?.name}</td>
-                            <td className="p-4 text-gray-500 text-sm">{submission.student?.email}</td>
-                            <td className="p-4 font-semibold text-gray-900">
-                              {submission.marks !== null ? `${submission.marks}/${assignment.total_marks}` : '-'}
-                            </td>
-                            <td className="p-4">
-                              <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
-                                submission.marks !== null
-                                  ? 'bg-green-100 text-green-700'
-                                  : 'bg-yellow-100 text-yellow-700'
-                              }`}>
-                                {submission.marks !== null ? 'Graded' : 'Pending'}
-                              </span>
-                            </td>
-                            <td className="p-4 text-gray-500 text-sm">
-                              {new Date(submission.submitted_at).toLocaleDateString()}
-                            </td>
+                    <div className="overflow-x-auto">
+                      <table className="w-full min-w-[560px]">
+                        <thead className="border-b border-gray-200">
+                          <tr>
+                            <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-600">Student</th>
+                            <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-600 hidden sm:table-cell">Email</th>
+                            <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-600">Marks</th>
+                            <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-600">Status</th>
+                            <th className="text-left p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-600 hidden md:table-cell">Submitted Date</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {submissions[assignment.id]?.map((submission) => (
+                            <tr key={submission.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                              <td className="p-3 sm:p-4 font-medium text-gray-900 text-sm sm:text-base">
+                                <span className="truncate block max-w-[140px] sm:max-w-none">{submission.student?.name}</span>
+                                <span className="block text-xs text-gray-400 font-normal sm:hidden truncate max-w-[160px]">
+                                  {submission.student?.email}
+                                </span>
+                              </td>
+                              <td className="p-3 sm:p-4 text-gray-500 text-sm hidden sm:table-cell">{submission.student?.email}</td>
+                              <td className="p-3 sm:p-4 font-semibold text-gray-900 text-sm sm:text-base whitespace-nowrap">
+                                {submission.marks !== null ? `${submission.marks}/${assignment.total_marks}` : '-'}
+                              </td>
+                              <td className="p-3 sm:p-4">
+                                <span className={`text-xs font-semibold px-2 sm:px-2.5 py-1 rounded-full whitespace-nowrap ${submission.marks !== null
+                                    ? 'bg-green-100 text-green-700'
+                                    : 'bg-yellow-100 text-yellow-700'
+                                  }`}>
+                                  {submission.marks !== null ? 'Graded' : 'Pending'}
+                                </span>
+                              </td>
+                              <td className="p-3 sm:p-4 text-gray-500 text-sm hidden md:table-cell">
+                                {new Date(submission.submitted_at).toLocaleDateString()}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   )}
                 </div>
               ))

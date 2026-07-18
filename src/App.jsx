@@ -35,6 +35,7 @@ import AdminCourses from './pages/admin/AdminCourses';
 import AdminCategories from './pages/admin/AdminCategories';
 import AdminCertificates from './pages/admin/AdminCertificates';
 import InstructorPending from './pages/InstructorPending';
+import AttemptResultPage from './pages/quizzes/AttemptResultPage';
 
 function ProtectedRoute({ children, role }) {
   const { user, loading } = useAuth();
@@ -140,6 +141,15 @@ function App() {
           <Route path="categories" element={<AdminCategories />} />
           <Route path="certificates" element={<AdminCertificates />} />
         </Route>
+
+        <Route
+          path="/quiz-attempts/:attemptId"
+          element={
+            <ProtectedRoute>
+              <AttemptResultPage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </div>
   );

@@ -101,14 +101,14 @@ export default function CourseLessons() {
             Back to Dashboard
           </Link>
           
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{course.title}</h1>
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 break-words">{course.title}</h1>
               <p className="text-gray-500">Manage course modules and lessons</p>
             </div>
             <Link
               to={`/courses/${id}/modules/create`}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-6 py-3 rounded-xl hover:from-indigo-700 hover:to-indigo-800 hover:shadow-lg hover:scale-[1.02] transition-all duration-200 cursor-pointer font-medium"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-6 py-3 rounded-xl hover:from-indigo-700 hover:to-indigo-800 hover:shadow-lg hover:scale-[1.02] transition-all duration-200 cursor-pointer font-medium self-start sm:self-auto"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -144,17 +144,17 @@ export default function CourseLessons() {
               <div key={module.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 {/* Module Header */}
                 <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600 font-bold">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex items-start gap-3 min-w-0">
+                      <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600 font-bold flex-shrink-0">
                         {moduleIndex + 1}
                       </div>
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900">{module.title}</h3>
+                      <div className="min-w-0">
+                        <h3 className="text-lg font-semibold text-gray-900 break-words">{module.title}</h3>
                         <p className="text-sm text-gray-500">{module.lessons?.length || 0} lesson{module.lessons?.length !== 1 ? 's' : ''}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <Link
                         to={`/courses/${id}/modules/${module.id}/lessons/create`}
                         className="inline-flex items-center gap-1.5 bg-gradient-to-r from-indigo-50 to-indigo-100 text-indigo-600 px-3 py-2 rounded-lg hover:from-indigo-100 hover:to-indigo-200 hover:shadow-md text-sm font-medium cursor-pointer transition-all duration-200"
@@ -190,13 +190,13 @@ export default function CourseLessons() {
                       {module.lessons?.map((lesson, lessonIndex) => (
                         <div
                           key={lesson.id}
-                          className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors group"
+                          className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors group"
                         >
-                          <div className="flex items-center gap-4">
-                            <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-sm font-medium text-gray-500 shadow-sm">
+                          <div className="flex items-center gap-3 sm:gap-4 min-w-0 w-full sm:w-auto">
+                            <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-sm font-medium text-gray-500 shadow-sm flex-shrink-0">
                               {lessonIndex + 1}
                             </div>
-                            <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center shadow-sm">
+                            <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center shadow-sm flex-shrink-0">
                               {lesson.content_type === 'video' && (
                                 <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -218,12 +218,12 @@ export default function CourseLessons() {
                                 </svg>
                               )}
                             </div>
-                            <div>
-                              <h4 className="font-medium text-gray-900">{lesson.title}</h4>
+                            <div className="min-w-0 flex-1">
+                              <h4 className="font-medium text-gray-900 truncate">{lesson.title}</h4>
                               <p className="text-xs text-gray-500 capitalize">{lesson.content_type}</p>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="flex items-center gap-2 self-end sm:self-auto opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                             <Link
                               to={`/modules/${module.id}/lessons/${lesson.id}`}
                               className="inline-flex items-center gap-1.5 bg-white text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium border border-gray-200 cursor-pointer"

@@ -208,7 +208,7 @@ export default function CourseDetail() {
                   <span className="text-sm">By {course.instructor?.name || 'Instructor'}</span>
                   {!!course.instructor?.is_verified && (
                     <svg className="w-4 h-4 text-blue-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                     </svg>
                   )}
                 </div>
@@ -348,44 +348,45 @@ export default function CourseDetail() {
                 <div className="space-y-3">
                   {modules.map((module, moduleIndex) => (
                     <div key={module.id} className="border border-gray-200 rounded-lg overflow-hidden hover:border-indigo-300 transition-all duration-200">
-                      <button
-                        onClick={() => {/* Add expand/collapse logic */ }}
-                        className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-indigo-50/30 hover:from-indigo-50 hover:to-purple-50 transition-all duration-200 cursor-pointer"
-                      >
+                      <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-4 bg-gradient-to-r from-gray-50 to-indigo-50/30 hover:from-indigo-50 hover:to-purple-50 transition-all duration-200">
+                        {/* Module title row */}
                         <div className="flex items-center gap-3">
-                          <span className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-lg flex items-center justify-center font-semibold text-sm shadow-md">
+                          <span className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-lg flex items-center justify-center font-semibold text-sm shadow-md flex-shrink-0">
                             {moduleIndex + 1}
                           </span>
-                          <span className="font-medium text-gray-900">{module.title}</span>
-
+                          <span className="font-medium text-gray-900 text-sm sm:text-base">{module.title}</span>
                         </div>
+
+                        {/* Owner action buttons */}
                         {isOwner && (
-                          <div className="flex gap-2">
+                          <div className="flex items-center gap-2 ml-auto">
                             <Link
                               to={`/courses/${id}/modules/${module.id}/lessons/create`}
                               onClick={(e) => e.stopPropagation()}
-                              className="inline-flex items-center gap-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-3 py-1.5 rounded-md hover:from-indigo-700 hover:to-purple-700 hover:shadow-md transition-all duration-200 text-xs font-medium"
+                              className="inline-flex items-center justify-center gap-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-1.5 rounded-md hover:from-indigo-700 hover:to-purple-700 hover:shadow-md transition-all duration-200 text-xs font-medium"
+                              title="Add Lesson"
                             >
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                               </svg>
-                              Add Lesson
+                              <span className="hidden sm:inline">Add Lesson</span>
                             </Link>
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleDeleteModule(module.id);
                               }}
-                              className="inline-flex items-center gap-1.5 bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1.5 rounded-md hover:from-red-600 hover:to-red-700 hover:shadow-md transition-all duration-200 text-xs font-medium cursor-pointer"
+                              className="inline-flex items-center justify-center gap-1.5 bg-gradient-to-r from-red-500 to-red-600 text-white w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-1.5 rounded-md hover:from-red-600 hover:to-red-700 hover:shadow-md transition-all duration-200 text-xs font-medium cursor-pointer"
+                              title="Delete Module"
                             >
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                               </svg>
-                              Delete
+                              <span className="hidden sm:inline">Delete</span>
                             </button>
                           </div>
                         )}
-                      </button>
+                      </div>
                       {module.lessons?.length > 0 && (
                         <div className="p-3 bg-gradient-to-br from-white to-gray-50">
                           <ul className="space-y-1">
@@ -470,7 +471,7 @@ export default function CourseDetail() {
 
           {/* Discussions Tab */}
           {activeTab === 'discussions' && (
-            <DiscussionsTab courseId={id} isOwner={isOwner} isAdmin={isAdmin} />
+            <DiscussionsTab courseId={id} isOwner={isOwner} isAdmin={isAdmin} course={course} />
           )}
 
           {/* Reviews Tab */}

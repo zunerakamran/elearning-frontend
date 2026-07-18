@@ -179,9 +179,16 @@ export default function Certificate({ certificate, fullWidth = false, categories
             }}>
                 {/* Instructor */}
                 <div style={{ flex: 1, minWidth: '100px' }}>
-                    <p style={{ fontSize: '12px', color: '#1e1b4b', fontStyle: 'italic', margin: '0 0 3px' }}>
-                        {instructorName}
-                    </p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', margin: '0 0 3px' }}>
+                        <p style={{ fontSize: '12px', color: '#1e1b4b', fontStyle: 'italic', margin: 0 }}>
+                            {instructorName}
+                        </p>
+                        {!!(certificate.issued_by?.is_verified || certificate.issuedBy?.is_verified || certificate.course?.instructor?.is_verified) && (
+                            <svg style={{ width: '12px', height: '12px', color: '#60a5fa', flexShrink: 0 }} viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                        )}
+                    </div>
                     <div style={{ width: '80px', height: '1px', background: '#c7d2fe', marginBottom: '3px' }} />
                     <p style={{ fontSize: '7px', color: '#a5b4fc', letterSpacing: '1.5px', textTransform: 'uppercase', fontFamily: 'Arial, sans-serif', margin: 0 }}>
                         Instructor
